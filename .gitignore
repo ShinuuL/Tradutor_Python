@@ -1,0 +1,46 @@
+# === Jogos de teste (nunca enviar) ===
+*Kimochi*/
+*RJ01*/
+
+# === Reports e traducoes ===
+reports/
+
+# === Build / executaveis gerados ===
+build/
+dist/
+*.spec.bak
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+
+# === Testes / temporarios ===
+tmp_*/
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# === Ollama / modelos ===
+*.gguf
+*.bin
+
+# === IDE / editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# === PyInstaller intermediarios ===
+*.manifest
+*.spec
+
+# === Logs ===
+*.log

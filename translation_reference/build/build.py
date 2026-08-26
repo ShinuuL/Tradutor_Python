@@ -124,12 +124,15 @@ def main(argv=None):
     else:
         alvos = [args.target]
 
-    # Limpar diretorios de build anteriores
+    # Limpar diretorios de build anteriores (uma vez so)
     _limpar_diretorios()
 
-    # Executar builds
+    # Executar builds (nao limpa entre targets quando 'all')
     falhas = []
-    for target in alvos:
+    for i, target in enumerate(alvos):
+        if i > 0:
+            # Nao limpar entre targets: manter dist/ do build anterior
+            pass
         if not _executar_build(target):
             falhas.append(target)
 
