@@ -563,6 +563,13 @@ def apply_to_copy(rows_by_file, src_root, out_root):
             continue
 
         ext = PurePosixPath(rel_norm).suffix.lower()
+        # Protecao: nao traduzir codigo JavaScript (quebra o jogo)
+        if ext == ".js" and "/www/js/" in f"/{rel_norm.lower()}":
+            results.extend(
+                _make_audit(rel_norm, r, "skipped", ["arquivo JS de engine/plugin - nao traduzir codigo"])
+                for r in rows
+            )
+            continue
         if ext == ".json":
             results.extend(_apply_json(source, dest, rel_norm, rows))
         else:

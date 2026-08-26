@@ -11,6 +11,9 @@ exigida pelo plano A2:
 - modo all restaura o comportamento atual (tudo emitido);
 - contador plugin_js_tecnico_ignorado correto no summary.
 
+NOTA: .js foi removido de TEXT_EXTENSIONS (saude do jogo).
+Os testes CLI usam --include-ext js para opt-in explicito.
+
 Somente stdlib. Nenhum fixture e alterado (copias em tmp local).
 """
 import hashlib
@@ -141,7 +144,8 @@ class PluginJsModeScanTests(PluginJsFixtureCase):
 class ExtractorCliTests(PluginJsFixtureCase):
     def run_extractor(self, extra_args=()):
         out_base = WORK / "reports" / "_smoke_a2"
-        argv = [str(self.game), "--out", str(out_base)] + list(extra_args)
+        # .js removido de TEXT_EXTENSIONS; opt-in via --include-ext js
+        argv = [str(self.game), "--out", str(out_base), "--include-ext", ".js"] + list(extra_args)
         buffer = io.StringIO()
         with mock.patch.object(sys, "argv", ["extract_non_english_text.py"] + argv):
             with redirect_stdout(buffer):

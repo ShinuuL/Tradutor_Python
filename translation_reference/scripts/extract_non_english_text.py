@@ -9,7 +9,6 @@ TEXT_EXTENSIONS = {
     ".asset",
     ".csv",
     ".ini",
-    ".js",
     ".json",
     ".ks",
     ".lua",
@@ -22,6 +21,9 @@ TEXT_EXTENSIONS = {
     ".yaml",
     ".yml",
 }
+# .js REMOVIDO: arquivos JavaScript sao CODIGO, nao texto traduzivel.
+# Traduzi-las quebra o jogo (case strings, nomes de parametros, etc).
+# Para escanear .js de forma explicita, usar: --include-ext js
 
 SKIP_DIRS = {
     ".git",
