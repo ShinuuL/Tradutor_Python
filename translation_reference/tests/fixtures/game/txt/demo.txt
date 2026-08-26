@@ -1,0 +1,4 @@
+# Cena de demonstracao
+これは日本語のテキストです。
+Esta linha permanece em ingles.
+{player_name}、こんにちは！

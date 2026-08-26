@@ -1,0 +1,3 @@
+## Comandos de Engine / Scripts (Atenção): Algumas entradas, como a linha PA_INIT 5 40 横 0 (T000009), contêm comandos ou parâmetros de plugins. O agente deve ser instruído a não traduzir códigos/comandos, traduzindo apenas o texto visível em japonês. 
+
+## Formatação do Output: O agente de tradução deve retornar um arquivo JSONL mantendo exatamente a mesma estrutura (ou simplificada com item_id e text_translated), garantindo que o script responsável pelo patch encontre os arquivos especificados em file e substitua no nó definido por source_key

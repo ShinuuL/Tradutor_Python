@@ -1,0 +1,11 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: scene.tscn:10
+msgid "Pressione Enter"
+msgstr "Press Enter"
+
+#: scene.tscn:14
+msgid "Bem-vindo ao jogo!"
+msgstr "Welcome to the game!"

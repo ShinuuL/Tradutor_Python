@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1"]
+
+[node name="Main" type="Control"]
+script = ExtResource("1")
+
+[node name="Label" type="Label" parent="."]
+text="Pressione Enter"
+
+[node name="Button" type="Button" parent="."]
+tooltip_text="Clique aqui para continuar"
+text="Iniciar"
+placeholder_text="Digite seu nome"
+
+[node name="DialogBox" type="Dialog" parent="."]
+dialog_text="Bem-vindo ao jogo!"
+title="Menu Principal"
+
+[node name="Empty" type="Label" parent="."]
+text=""

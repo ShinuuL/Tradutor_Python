@@ -1,0 +1,6 @@
+{"file": "txt/data.csv", "item_id": "T000001", "lang": "ja-en", "source": "スライム", "target": "Slime", "ts": 1750000001.0}
+{"file": "txt/data.csv", "item_id": "T000002", "lang": "ja-en", "source": "ゴブリン", "target": "Gobrin", "ts": 1750000002.0}
+{"file": "txt/demo.txt", "item_id": "T000003", "lang": "ja-en", "source": "これは日本語のテキストです。", "target": "This is Japanese text.", "ts": 1750000003.0}
+{linha corrompida de proposito para teste de tolerancia
+{"file": "txt/script.rpy", "item_id": "T000004", "lang": "ja-en", "source": "こんにちは、世界。", "target": "Hello, world.", "ts": 1750000005.0}
+{"file": "txt/data.csv", "item_id": "T000002b", "lang": "ja-en", "source": "ゴブリン", "target": "Goblin", "ts": 1750000006.0}

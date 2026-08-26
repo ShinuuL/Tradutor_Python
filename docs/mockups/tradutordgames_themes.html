@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockups de Temas - TradutorDGames</title>
+<style>
+/* =====================================================================
+   Mockups estaticos das 3 direcoes de UI pesquisadas.
+   Tokens IDENTICOS ao preview Tkinter: translation_reference/tools/ui_theme_preview.py
+   Fidelidade ao Tkinter: SEM border-radius e SEM sombras (cantos retos, flat).
+   Borda de entry escolhida com contraste >= 3:1 contra o fundo do painel.
+   ===================================================================== */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: #0d0f12;
+  color: #e9edf2;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+}
+
+.page { max-width: 1080px; margin: 0 auto; padding: 24px 24px 48px; }
+
+/* ----- Seletor puro CSS (radio hack, sem dependencias externas) ----- */
+input.viewopt { position: absolute; opacity: 0; pointer-events: none; }
+nav.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 8px; }
+nav.tabs label {
+  padding: 7px 14px;
+  border: 1px solid #39414e;
+  background: #171b21;
+  color: #cfd6df;
+  cursor: pointer;
+  font-size: 13px;
+}
+nav.tabs label:hover { background: #20262f; }
+#tab-all:checked ~ * label[for="tab-all"],
+#tab-a:checked   ~ * label[for="tab-a"],
+#tab-b:checked   ~ * label[for="tab-b"],
+#tab-c:checked   ~ * label[for="tab-c"] {
+  background: #2b3646;
+  color: #ffffff;
+  border-color: #5b8def;
+}
+#tab-a:checked ~ main .theme:not(.t-a),
+#tab-b:checked ~ main .theme:not(.t-b),
+#tab-c:checked ~ main .theme:not(.t-c) { display: none; }
+
+h1 { font-size: 22px; margin: 0; font-weight: 600; }
+p.pagesub { color: #98a2b3; margin: 6px 0 0; }
+
+/* ===================== Secao de cada direcao ===================== */
+.theme { margin-top: 28px; }
+.theme-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.badge {
+  display: inline-block; width: 26px; height: 26px; line-height: 26px;
+  text-align: center; font-weight: 700; font-size: 14px;
+  background: var(--accent); color: var(--accent-fg);
+}
+.theme-head h2 { margin: 0; font-size: 18px; }
+.tdesc { width: 100%; color: #aab4c0; margin: 4px 0 8px; font-size: 13px; }
+.swatches { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0 4px; }
+.sw { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #93a0af; font-family: Consolas, monospace; }
+.sw i { width: 16px; height: 16px; display: inline-block; border: 1px solid #000; }
+
+/* ----- Variaveis por tema (mesmos hex do preview Tkinter) ----- */
+.t-a {
+  --root-bg:#0B100C; --panel:#121A14; --panel-border:#24352A;
+  --header-fg:#EAFBE8; --sub-fg:#A8BCA6; --label-fg:#D6EAD3; --muted-fg:#8FA892;
+  --field-bg:#0F1711; --field-fg:#D9FBCE; --entry-border:#56785E;
+  --accent:#50FA7B; --accent-fg:#05230F; --accent-hover:#79F09A;
+  --btn-bg:#1B291F; --btn-fg:#EAFBE8; --btn-hover:#24382B;
+  --danger-bg:#A63D3A; --danger-fg:#FFEDEA; --danger-hover:#BF4A46;
+  --disabled-bg:#17211A; --disabled-fg:#66796A;
+  --status-bg:#16221A; --status-fg:#D6EAD3;
+  --log-bg:#070B08; --log-fg:#CFEFC8; --sel-bg:#2C4434;
+  --ok:#50FA7B; --warn:#F1FA8C; --err:#FF6E6E; --path:#8BE9FD;
+}
+.t-b {
+  --root-bg:#15181D; --panel:#1D222A; --panel-border:#2C333E;
+  --header-fg:#EEF2F7; --sub-fg:#9AA7B8; --label-fg:#D5DCE6; --muted-fg:#8391A3;
+  --field-bg:#232A34; --field-fg:#EDF1F7; --entry-border:#5E6D86;
+  --accent:#4C8DFF; --accent-fg:#0B1B33; --accent-hover:#6BA3FF;
+  --btn-bg:#272F3A; --btn-fg:#EEF2F7; --btn-hover:#323C4A;
+  --danger-bg:#C74E5E; --danger-fg:#FFF0F2; --danger-hover:#DB5F6F;
+  --disabled-bg:#20262E; --disabled-fg:#6B7686;
+  --status-bg:#242C37; --status-fg:#D5DCE6;
+  --log-bg:#14181E; --log-fg:#D9E1EC; --sel-bg:#33415A;
+  --ok:#5BD98A; --warn:#E8C268; --err:#FF7A85; --path:#6EC3FF;
+}
+.t-c {
+  --root-bg:#171310; --panel:#211A15; --panel-border:#362A20;
+  --header-fg:#FBF3E6; --sub-fg:#C0AE99; --label-fg:#EBDCC7; --muted-fg:#A5947F;
+  --field-bg:#2A211A; --field-fg:#F8EEDD; --entry-border:#7A654D;
+  --accent:#F5A623; --accent-fg:#241503; --accent-hover:#FFB84D;
+  --btn-bg:#2E251C; --btn-fg:#FBF3E6; --btn-hover:#3A2F23;
+  --danger-bg:#B04A32; --danger-fg:#FFF1EA; --danger-hover:#C95B41;
+  --disabled-bg:#241D17; --disabled-fg:#7D6E5D;
+  --status-bg:#2A211A; --status-fg:#EBDCC7;
+  --log-bg:#120E0B; --log-fg:#F0E4CF; --sel-bg:#46351F;
+  --ok:#A3D160; --warn:#F5C542; --err:#FF7A5C; --path:#8AD8C6;
+}
+
+/* ===================== Janela mockada (replica do app) ===================== */
+.window { border: 1px solid var(--panel-border); background: var(--root-bg); margin-top: 10px; }
+.titlebar {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--panel); border-bottom: 1px solid var(--panel-border);
+  padding: 6px 12px; font-size: 12px; color: var(--sub-fg);
+}
+.tb-controls span {
+  display: inline-block; width: 10px; height: 10px;
+  border: 1px solid var(--sub-fg); margin-left: 6px; vertical-align: middle;
+}
+.content { padding: 20px; } /* grid 4pt: padding da raiz = 20 */
+
+.app-header { margin-bottom: 16px; } /* entre paineis = 16 */
+.app-header h3 { margin: 0; font-size: 22px; font-weight: 600; color: var(--header-fg); }
+.app-header p { margin: 4px 0 0; color: var(--sub-fg); font-size: 13px; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  padding: 16px;              /* interno dos paineis = 16 */
+  margin-bottom: 16px;        /* entre paineis = 16 */
+}
+.panel:last-child { margin-bottom: 0; }
+.panel-title { font-weight: 600; font-size: 13px; color: var(--header-fg); margin: 0 0 2px; }
+
+.fgroup { margin-top: 12px; }
+.flabel { display: block; color: var(--label-fg); font-size: 13px; margin: 0 0 4px; } /* label -> campo = 4 */
+.frow { display: flex; gap: 12px; align-items: stretch; }
+.field {
+  flex: 1; min-width: 0;
+  background: var(--field-bg); color: var(--field-fg);
+  border: 1px solid var(--entry-border);
+  padding: 7px 10px; font-size: 13px; overflow: hidden; white-space: nowrap;
+}
+.field.noflex { flex: 0 0 auto; width: 110px; }
+.field.focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.fhint { color: var(--muted-fg); font-size: 11px; margin-top: 4px; }
+
+.btn {
+  display: inline-block; padding: 7px 12px;   /* altura unica de botoes */
+  background: var(--btn-bg); color: var(--btn-fg);
+  border: 1px solid var(--panel-border);
+  font-size: 13px; white-space: nowrap; cursor: pointer;
+}
+.btn:hover { background: var(--btn-hover); }
+.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
+.btn.primary:hover { background: var(--accent-hover); }
+.btn.danger { background: var(--danger-bg); color: var(--danger-fg); border-color: var(--danger-bg); font-weight: 600; }
+.btn.danger:hover { background: var(--danger-hover); }
+.btn.disabled, .btn.disabled:hover { background: var(--disabled-bg); color: var(--disabled-fg); border-color: var(--disabled-bg); cursor: default; }
+
+.opts-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px; align-items: flex-start; }
+.opts-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; flex-wrap: wrap; gap: 8px; }
+.checks { display: flex; gap: 16px; align-items: center; color: var(--label-fg); font-size: 13px; }
+.actions-right { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.cb {
+  position: relative; display: inline-block; width: 14px; height: 14px;
+  border: 1px solid var(--entry-border); background: var(--field-bg); margin-right: 7px; vertical-align: -2px;
+}
+.cb.on { background: var(--accent); border-color: var(--accent); }
+.cb.on::after {
+  content: ""; position: absolute; left: 3px; top: 0px; width: 4px; height: 8px;
+  border-right: 2px solid var(--accent-fg); border-bottom: 2px solid var(--accent-fg);
+  transform: rotate(40deg);
+}
+
+.engine-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+.engine-row .fgroup { flex: 1 1 220px; margin-top: 12px; }
+.engine-row .cb-label { white-space: nowrap; padding-bottom: 7px; color: var(--label-fg); font-size: 13px; }
+
+.progress { height: 10px; background: var(--field-bg); border: 1px solid var(--panel-border); margin-top: 16px; }
+.progress i { display: block; height: 100%; width: 62%; background: var(--accent); }
+.progress-status { color: var(--muted-fg); font-size: 12px; margin-top: 4px; }
+
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.chip {
+  font-family: "Cascadia Code", Consolas, monospace; font-size: 11px;
+  padding: 2px 8px; border: 1px solid currentColor; background: var(--log-bg);
+}
+.chip.ok { color: var(--ok); } .chip.warn { color: var(--warn); }
+.chip.err { color: var(--err); } .chip.path { color: var(--path); }
+
+.statusline {
+  background: var(--status-bg); color: var(--status-fg);
+  font-weight: 600; font-size: 13px; padding: 8px 10px; margin: 12px 0 10px;
+}
+pre.log {
+  margin: 0; padding: 12px;
+  background: var(--log-bg); color: var(--log-fg);
+  border: 1px solid var(--panel-border);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 12.5px; line-height: 1.55;
+  overflow: auto; max-height: 300px;
+}
+.log .ok { color: var(--ok); } .log .warn { color: var(--warn); }
+.log .err { color: var(--err); } .log .path { color: var(--path); }
+
+.panel-footer { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.panel-footer .spacer { flex: 1; }
+
+footer.pagenote {
+  margin-top: 32px; text-align: center; color: #97a1ad; font-size: 12.5px;
+}
+footer.pagenote code { font-family: Consolas, monospace; font-size: 11.5px; color: #b9c2cd; }
+</style>
+</head>
+<body>
+
+<!-- Seletor (radio hack): "Todos" mostra as 3 direcoes empilhadas -->
+<input class="viewopt" type="radio" name="view" id="tab-all" checked>
+<input class="viewopt" type="radio" name="view" id="tab-a">
+<input class="viewopt" type="radio" name="view" id="tab-b">
+<input class="viewopt" type="radio" name="view" id="tab-c">
+
+<div class="page">
+  <header>
+    <h1>Preview de Temas - TradutorDGames</h1>
+    <p class="pagesub">Tres direcoes visuais para o app Tkinter. Mesma estrutura, tokens diferentes. Escolha uma aba ou compare todas.</p>
+    <nav class="tabs">
+      <label for="tab-all">Todos</label>
+      <label for="tab-a">A - Console Fosforo</label>
+      <label for="tab-b">B - Bancada Slate</label>
+      <label for="tab-c">C - Oficina Ambar</label>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ==================== A - CONSOLE FOSFORO ==================== -->
+    <section class="theme t-a">
+      <div class="theme-head">
+        <span class="badge">A</span><h2>Console Fosforo</h2>
+      </div>
+      <p class="tdesc">Terminal CRT verde fosforescente. Acento fosforo no primario e na barra de progresso; bordas de entry em verde acinzentado (contraste 3:1 contra o painel).</p>
+      <div class="swatches">
+        <span class="sw"><i style="background:#0B100C"></i>#0B100C</span>
+        <span class="sw"><i style="background:#121A14"></i>#121A14</span>
+        <span class="sw"><i style="background:#50FA7B"></i>#50FA7B</span>
+        <span class="sw"><i style="background:#A63D3A"></i>#A63D3A</span>
+        <span class="sw"><i style="background:#56785E"></i>borda #56785E</span>
+        <span class="sw"><i style="background:#F1FA8C"></i>warn</span>
+        <span class="sw"><i style="background:#FF6E6E"></i>error</span>
+        <span class="sw"><i style="background:#8BE9FD"></i>path</span>
+      </div>
+
+      <div class="window">
+        <div class="titlebar"><span>TradutorDGames Scanner</span><span class="tb-controls"><span></span><span></span><span></span></span></div>
+        <div class="content">
+          <div class="app-header">
+            <h3>TradutorDGames Scanner</h3>
+            <p>Varra pastas de jogos e gere CSV/JSONL com textos candidatos a traducao.</p>
+          </div>
+
+          <div class="panel">
+            <p class="panel-title">Entrada</p>
+            <div class="fgroup">
+              <span class="flabel">Pasta do jogo</span>
+              <div class="frow"><div class="field focus">D:/Jogos/Exemplo</div><span class="btn">Escolher</span></div>
+            </div>
+            <div class="fgroup">
+              <span class="flabel">Saida do relatorio</span>
+              <div class="frow"><div class="field">reports/exemplo_non_english_text</div><span class="btn">Salvar como</span></div>
+            </div>
+            <div class="opts-row">
+              <div style="flex:1 1 200px">
+                <span class="flabel">Extensoes extras</span>
+                <div class="field">.dat, .bytes</div>
+                <div class="fhint">Ex.: .dat, .bytes</div>
+              </div>
+              <div><span class="flabel">Max MB por arquivo</span><div class="field noflex">25</div></div>
+              <div><span class="flabel">Caracteres por trecho</span><div class="field noflex">180</div></div>
+              <div><span class="flabel">Linhas por lote</span><div class="field noflex">500</div></div>
+            </div>
+            <div class="opts-actions">
+              <div class="checks"><span><span class="cb on"></span>Remover repetidos</span><span><span class="cb on"></span>Ignorar plugins JS</span></div>
+              <div class="actions-right"><span class="btn primary">Executar varredura</span><span class="btn danger disabled">Parar</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <p class="panel-title">Traduzir</p>
+            <div class="fgroup">
+              <span class="flabel">Scan JSONL</span>
+              <div class="frow"><div class="field">reports/exemplo_non_english_text.jsonl</div><span class="btn">Escolher</span></div>
+            </div>
+            <div class="fgroup">
+              <span class="flabel">Pasta do jogo</span>
+              <div class="frow"><div class="field">D:/Jogos/Exemplo</div><span class="btn">Escolher</span></div>
+            </div>
+            <div class="engine-row">
+              <div class="fgroup"><span class="flabel">URL do engine</span><div class="field">http://localhost:11434/v1</div></div>
+              <div class="fgroup"><span class="flabel">Modelo</span><div class="field">qwen2.5:7b-instruct</div></div>
+              <span class="cb-label"><span class="cb on"></span>Usar memoria de traducao</span>
+            </div>
+            <div class="opts-actions" style="justify-content:flex-end">
+              <div class="actions-right">
+                <span class="btn primary">Traduzir</span>
+                <span class="btn danger disabled">Parar</span>
+                <span class="btn danger disabled">Aplicar no jogo</span>
+                <span class="btn danger">Restaurar backups</span>
+              </div>
+            </div>
+            <div class="progress"><i></i></div>
+            <div class="progress-status">62/100 linhas traduzidas - aguardando revisao.</div>
+            <div class="chips">
+              <span class="chip ok">SUCCESS 61 tm hits</span>
+              <span class="chip warn">WARN 3 needs_review</span>
+              <span class="chip err">ERROR 1 falha</span>
+              <span class="chip path">PATH reports/exemplo.jsonl</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <p class="panel-title">Execucao</p>
+            <div class="statusline">Varredura concluida. Relatorios prontos para revisar.</div>
+            <pre class="log"><span>&gt; python extract_non_english_text.py "D:/Jogos/Exemplo" --out reports/exemplo --dedupe</span>
+<span class="path">[PATH]</span><span> Pasta do jogo: D:/Jogos/Exemplo</span>
+<span class="path">[PATH]</span><span> Saida: reports/exemplo_non_english_text.jsonl</span>
+<span>--- Resultado da varredura ---</span>
+<span class="ok">[SUCCESS]</span><span> 128 textos candidatos encontrados em 42 arquivos</span>
+<span class="warn">[WARN]</span><span> Arquivo grande ignorado: movies/intro.mp4 (512 MB &gt; 25 MB)</span>
+<span class="err">[ERROR]</span><span> Falha ao ler data/Map009.json: permissao negada</span>
+<span>--- Traducao ---</span>
+<span class="path">[PATH]</span><span> Engine: http://localhost:11434/v1 (modelo qwen2.5:7b-instruct)</span>
+<span class="ok">[SUCCESS]</span><span> Memoria de traducao: 61/100 linhas reutilizadas</span>
+<span>PROGRESS 62/100 linhas</span>
+<span class="warn">[WARN]</span><span> 3 linhas marcadas como needs_review</span>
+<span class="err">[ERROR]</span><span> Linha 87 falhou apos 3 tentativas (timeout)</span>
+<span class="ok">[SUCCESS]</span><span> Relatorios gerados: CSV, JSONL e resumo MD</span></pre>
+            <div class="panel-footer">
+              <span class="btn">Abrir CSV</span><span class="btn">Abrir JSONL</span><span class="btn">Abrir resumo</span>
+              <span class="spacer"></span><span class="btn">Limpar log</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== B - BANCADA SLATE ==================== -->
+    <section class="theme t-b">
+      <div class="theme-head">
+        <span class="badge">B</span><h2>Bancada Slate</h2>
+      </div>
+      <p class="tdesc">Cinzas neutros de bancada com acento azul. Saturacao baixa para leitura prolongada; bordas de entry em azul-acinzentado (contraste 3:1 contra o painel).</p>
+      <div class="swatches">
+        <span class="sw"><i style="background:#15181D"></i>#15181D</span>
+        <span class="sw"><i style="background:#1D222A"></i>#1D222A</span>
+        <span class="sw"><i style="background:#4C8DFF"></i>#4C8DFF</span>
+        <span class="sw"><i style="background:#C74E5E"></i>#C74E5E</span>
+        <span class="sw"><i style="background:#5E6D86"></i>borda #5E6D86</span>
+        <span class="sw"><i style="background:#E8C268"></i>warn</span>
+        <span class="sw"><i style="background:#FF7A85"></i>error</span>
+        <span class="sw"><i style="background:#6EC3FF"></i>path</span>
+      </div>
+
+      <div class="window">
+        <div class="titlebar"><span>TradutorDGames Scanner</span><span class="tb-controls"><span></span><span></span><span></span></span></div>
+        <div class="content">
+          <div class="app-header">
+            <h3>TradutorDGames Scanner</h3>
+            <p>Varra pastas de jogos e gere CSV/JSONL com textos candidatos a traducao.</p>
+          </div>
+
+          <div class="panel">
+            <p class="panel-title">Entrada</p>
+            <div class="fgroup">
+              <span class="flabel">Pasta do jogo</span>
+              <div class="frow"><div class="field focus">D:/Jogos/Exemplo</div><span class="btn">Escolher</span></div>
+            </div>
+            <div class="fgroup">
+              <span class="flabel">Saida do relatorio</span>
+              <div class="frow"><div class="field">reports/exemplo_non_english_text</div><span class="btn">Salvar como</span></div>
+            </div>
+            <div class="opts-row">
+              <div style="flex:1 1 200px">
+                <span class="flabel">Extensoes extras</span>
+                <div class="field">.dat, .bytes</div>
+                <div class="fhint">Ex.: .dat, .bytes</div>
+              </div>
+              <div><span class="flabel">Max MB por arquivo</span><div class="field noflex">25</div></div>
+              <div><span class="flabel">Caracteres por trecho</span><div class="field noflex">180</div></div>
+              <div><span class="flabel">Linhas por lote</span><div class="field noflex">500</div></div>
+            </div>
+            <div class="opts-actions">
+              <div class="checks"><span><span class="cb on"></span>Remover repetidos</span><span><span class="cb on"></span>Ignorar plugins JS</span></div>
+              <div class="actions-right"><span class="btn primary">Executar varredura</span><span class="btn danger disabled">Parar</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <p class="panel-title">Traduzir</p>
+            <div class="fgroup">
+              <span class="flabel">Scan JSONL</span>
+              <div class="frow"><div class="field">reports/exemplo_non_english_text.jsonl</div><span class="btn">Escolher</span></div>
+            </div>
+            <div class="fgroup">
+              <span class="flabel">Pasta do jogo</span>
+              <div class="frow"><div class="field">D:/Jogos/Exemplo</div><span class="btn">Escolher</span></div>
+            </div>
+            <div class="engine-row">
+              <div class="fgroup"><span class="flabel">URL do engine</span><div class="field">http://localhost:11434/v1</div></div>
+              <div class="fgroup"><span class="flabel">Modelo</span><div class="field">qwen2.5:7b-instruct</div></div>
+              <span class="cb-label"><span class="cb on"></span>Usar memoria de traducao</span>
+            </div>
+            <div class="opts-actions" style="justify-content:flex-end">
+              <div class="actions-right">
+                <span class="btn primary">Traduzir</span>
+                <span class="btn danger disabled">Parar</span>
+                <span class="btn danger disabled">Aplicar no jogo</span>
+                <span class="btn danger">Restaurar backups</span>
+              </div>
+            </div>
+            <div class="progress"><i></i></div>
+            <div class="progress-status">62/100 linhas traduzidas - aguardando revisao.</div>
+            <div class="chips">
+              <span class="chip ok">SUCCESS 61 tm hits</span>
+              <span class="chip warn">WARN 3 needs_review</span>
+              <span class="chip err">ERROR 1 falha</span>
+              <span class="chip path">PATH reports/exemplo.jsonl</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <p class="panel-title">Execucao</p>
+            <div class="statusline">Varredura concluida. Relatorios prontos para revisar.</div>
+            <pre class="log"><span>&gt; python extract_non_english_text.py "D:/Jogos/Exemplo" --out reports/exemplo --dedupe</span>
+<span class="path">[PATH]</span><span> Pasta do jogo: D:/Jogos/Exemplo</span>
+<span class="path">[PATH]</span><span> Saida: reports/exemplo_non_english_text.jsonl</span>
+<span>--- Resultado da varredura ---</span>
+<span class="ok">[SUCCESS]</span><span> 128 textos candidatos encontrados em 42 arquivos</span>
+<span class="warn">[WARN]</span><span> Arquivo grande ignorado: movies/intro.mp4 (512 MB &gt; 25 MB)</span>
+<span class="err">[ERROR]</span><span> Falha ao ler data/Map009.json: permissao negada</span>
+<span>--- Traducao ---</span>
+<span class="path">[PATH]</span><span> Engine: http://localhost:11434/v1 (modelo qwen2.5:7b-instruct)</span>
+<span class="ok">[SUCCESS]</span><span> Memoria de traducao: 61/100 linhas reutilizadas</span>
+<span>PROGRESS 62/100 linhas</span>
+<span class="warn">[WARN]</span><span> 3 linhas marcadas como needs_review</span>
+<span class="err">[ERROR]</span><span> Linha 87 falhou apos 3 tentativas (timeout)</span>
+<span class="ok">[SUCCESS]</span><span> Relatorios gerados: CSV, JSONL e resumo MD</span></pre>
+            <div class="panel-footer">
+              <span class="btn">Abrir CSV</span><span class="btn">Abrir JSONL</span><span class="btn">Abrir resumo</span>
+              <span class="spacer"></span><span class="btn">Limpar log</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== C - OFICINA AMBAR ==================== -->
+    <section class="theme t-c">
+      <div class="theme-head">
+        <span class="badge">C</span><h2>Oficina Ambar</h2>
+      </div>
+      <p class="tdesc">Grafite quente com acento ambar de oficina. Contraste alto sem a frieza do slate; bordas de entry em bronzeadas (contraste 3:1 contra o painel).</p>
+      <div class="swatches">
+        <span class="sw"><i style="background:#171310"></i>#171310</span>
+        <span class="sw"><i style="background:#211A15"></i>#211A15</span>
+        <span class="sw"><i style="background:#F5A623"></i>#F5A623</span>
+        <span class="sw"><i style="background:#B04A32"></i>#B04A32</span>
+        <span class="sw"><i style="background:#7A654D"></i>borda #7A654D</span>
+        <span class="sw"><i style="background:#F5C542"></i>warn</span>
+        <span class="sw"><i style="background:#FF7A5C"></i>error</span>
+        <span class="sw"><i style="background:#8AD8C6"></i>path</span>
+      </div>
+
+      <div class="window">
+        <div class="titlebar"><span>TradutorDGames Scanner</span><span class="tb-controls"><span></span><span></span><span></span></span></div>
+        <div class="content">
+          <div class="app-header">
+            <h3>TradutorDGames Scanner</h3>
+            <p>Varra pastas de jogos e gere CSV/JSONL com textos candidatos a traducao.</p>
+          </div>
+
+          <div class="panel">
+            <p class="panel-title">Entrada</p>
+            <div class="fgroup">
+              <span class="flabel">Pasta do jogo</span>
+              <div class="frow"><div class="field focus">D:/Jogos/Exemplo</div><span class="btn">Escolher</span></div>
+            </div>
+            <div class="fgroup">
+              <span class="flabel">Saida do relatorio</span>
+              <div class="frow"><div class="field">reports/exemplo_non_english_text</div><span class="btn">Salvar como</span></div>
+            </div>
+            <div class="opts-row">
+              <div style="flex:1 1 200px">
+                <span class="flabel">Extensoes extras</span>
+                <div class="field">.dat, .bytes</div>
+                <div class="fhint">Ex.: .dat, .bytes</div>
+              </div>
+              <div><span class="flabel">Max MB por arquivo</span><div class="field noflex">25</div></div>
+              <div><span class="flabel">Caracteres por trecho</span><div class="field noflex">180</div></div>
+              <div><span class="flabel">Linhas por lote</span><div class="field noflex">500</div></div>
+            </div>
+            <div class="opts-actions">
+              <div class="checks"><span><span class="cb on"></span>Remover repetidos</span><span><span class="cb on"></span>Ignorar plugins JS</span></div>
+              <div class="actions-right"><span class="btn primary">Executar varredura</span><span class="btn danger disabled">Parar</span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <p class="panel-title">Traduzir</p>
+            <div class="fgroup">
+              <span class="flabel">Scan JSONL</span>
+              <div class="frow"><div class="field">reports/exemplo_non_english_text.jsonl</div><span class="btn">Escolher</span></div>
+            </div>
+            <div class="fgroup">
+              <span class="flabel">Pasta do jogo</span>
+              <div class="frow"><div class="field">D:/Jogos/Exemplo</div><span class="btn">Escolher</span></div>
+            </div>
+            <div class="engine-row">
+              <div class="fgroup"><span class="flabel">URL do engine</span><div class="field">http://localhost:11434/v1</div></div>
+              <div class="fgroup"><span class="flabel">Modelo</span><div class="field">qwen2.5:7b-instruct</div></div>
+              <span class="cb-label"><span class="cb on"></span>Usar memoria de traducao</span>
+            </div>
+            <div class="opts-actions" style="justify-content:flex-end">
+              <div class="actions-right">
+                <span class="btn primary">Traduzir</span>
+                <span class="btn danger disabled">Parar</span>
+                <span class="btn danger disabled">Aplicar no jogo</span>
+                <span class="btn danger">Restaurar backups</span>
+              </div>
+            </div>
+            <div class="progress"><i></i></div>
+            <div class="progress-status">62/100 linhas traduzidas - aguardando revisao.</div>
+            <div class="chips">
+              <span class="chip ok">SUCCESS 61 tm hits</span>
+              <span class="chip warn">WARN 3 needs_review</span>
+              <span class="chip err">ERROR 1 falha</span>
+              <span class="chip path">PATH reports/exemplo.jsonl</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <p class="panel-title">Execucao</p>
+            <div class="statusline">Varredura concluida. Relatorios prontos para revisar.</div>
+            <pre class="log"><span>&gt; python extract_non_english_text.py "D:/Jogos/Exemplo" --out reports/exemplo --dedupe</span>
+<span class="path">[PATH]</span><span> Pasta do jogo: D:/Jogos/Exemplo</span>
+<span class="path">[PATH]</span><span> Saida: reports/exemplo_non_english_text.jsonl</span>
+<span>--- Resultado da varredura ---</span>
+<span class="ok">[SUCCESS]</span><span> 128 textos candidatos encontrados em 42 arquivos</span>
+<span class="warn">[WARN]</span><span> Arquivo grande ignorado: movies/intro.mp4 (512 MB &gt; 25 MB)</span>
+<span class="err">[ERROR]</span><span> Falha ao ler data/Map009.json: permissao negada</span>
+<span>--- Traducao ---</span>
+<span class="path">[PATH]</span><span> Engine: http://localhost:11434/v1 (modelo qwen2.5:7b-instruct)</span>
+<span class="ok">[SUCCESS]</span><span> Memoria de traducao: 61/100 linhas reutilizadas</span>
+<span>PROGRESS 62/100 linhas</span>
+<span class="warn">[WARN]</span><span> 3 linhas marcadas como needs_review</span>
+<span class="err">[ERROR]</span><span> Linha 87 falhou apos 3 tentativas (timeout)</span>
+<span class="ok">[SUCCESS]</span><span> Relatorios gerados: CSV, JSONL e resumo MD</span></pre>
+            <div class="panel-footer">
+              <span class="btn">Abrir CSV</span><span class="btn">Abrir JSONL</span><span class="btn">Abrir resumo</span>
+              <span class="spacer"></span><span class="btn">Limpar log</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="pagenote">
+    <p>Mock conceitual - Tkinter nao suporta border-radius/sombras.</p>
+    <p>Tokens identicos ao preview interativo: <code>translation_reference/tools/ui_theme_preview.py</code> (python translation_reference/tools/ui_theme_preview.py)</p>
+  </footer>
+</div>
+
+</body>
+</html>

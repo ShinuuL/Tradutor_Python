@@ -1,0 +1,941 @@
+﻿item_id,status,file,line,source_key,source,translated,notes
+T000001,failed,www\data\CommonEvents.json,0,$[11].name,タッチ立ち絵明るく,,sem traducao disponivel; chunk divergente apos subdivisao
+T000002,failed,www\data\CommonEvents.json,0,$[12].name,タッチ立ち絵暗く,,sem traducao disponivel; chunk divergente apos subdivisao
+T000003,failed,www\data\CommonEvents.json,0,$[14].name,スマホ処理 1,,sem traducao disponivel; chunk divergente apos subdivisao
+T000004,failed,www\data\CommonEvents.json,0,$[15].name,スマホ処理 A,,sem traducao disponivel; chunk divergente apos subdivisao
+T000005,failed,www\data\CommonEvents.json,0,$[16].name,スマホ処理 B,,sem traducao disponivel; chunk divergente apos subdivisao
+T000006,failed,www\data\CommonEvents.json,0,$[18].list[0].parameters[0],円ゲージ、改変ゲージ　削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000007,failed,www\data\CommonEvents.json,0,$[18].list[3].parameters[0],30＝スマホ画面1　31＝スマホ画面2　32＝ピストン断面図,,sem traducao disponivel; chunk divergente apos subdivisao
+T000008,failed,www\data\CommonEvents.json,0,$[18].name,ゲージ・スマホ削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000009,failed,www\data\CommonEvents.json,0,$[1].list[9].parameters[0],PA_INIT 5 40 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000010,failed,www\data\CommonEvents.json,0,$[1].name,オートアイコン表示,,sem traducao disponivel; chunk divergente apos subdivisao
+T000011,failed,www\data\CommonEvents.json,0,$[23].list[0].parameters[0],アイコン本体の番号,,sem traducao disponivel; chunk divergente apos subdivisao
+T000012,failed,www\data\CommonEvents.json,0,$[23].list[5].parameters[0],テキストの番号,,sem traducao disponivel; chunk divergente apos subdivisao
+T000013,failed,www\data\CommonEvents.json,0,$[23].name,Mov_icon リセット,,sem traducao disponivel; chunk divergente apos subdivisao
+T000014,failed,www\data\CommonEvents.json,0,$[26].name,タッチ立ち絵削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000015,failed,www\data\CommonEvents.json,0,$[2].name,オート重ねる,,sem traducao disponivel; chunk divergente apos subdivisao
+T000016,failed,www\data\CommonEvents.json,0,$[30].list[2].parameters[0],↑でオフにするとTgame中に移動アイコンが表示される。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000017,failed,www\data\CommonEvents.json,0,$[30].list[9].parameters[0],スタミナ削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000018,failed,www\data\CommonEvents.json,0,$[30].name,ADV開始　auto表示 movリセット スタミナ削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000019,failed,www\data\CommonEvents.json,0,$[31].list[0].parameters[0],19=ADVバック 20=ADV立ち絵 22＝ADVの上装飾,,sem traducao disponivel; chunk divergente apos subdivisao
+T000020,failed,www\data\CommonEvents.json,0,$[31].list[12].parameters[0],タッチ立ち絵のスイッチをリセット,,sem traducao disponivel; chunk divergente apos subdivisao
+T000021,failed,www\data\CommonEvents.json,0,$[31].list[15].parameters[0],移動アイコン　動作再開,,sem traducao disponivel; chunk divergente apos subdivisao
+T000022,failed,www\data\CommonEvents.json,0,$[31].list[9].parameters[0],個人イベントの進行をリセット,,sem traducao disponivel; chunk divergente apos subdivisao
+T000023,failed,www\data\CommonEvents.json,0,$[31].name,ADV終了　会話初期 evオフ automsg スタミナ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000024,failed,www\data\CommonEvents.json,0,$[33].name,ADVロード１　姉,,sem traducao disponivel; chunk divergente apos subdivisao
+T000025,failed,www\data\CommonEvents.json,0,$[34].name,ADVロード２　教師,,sem traducao disponivel; chunk divergente apos subdivisao
+T000026,failed,www\data\CommonEvents.json,0,$[35].name,ADVロード３　モミジ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000027,failed,www\data\CommonEvents.json,0,$[36].name,ADVロード４　ヒマリ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000028,failed,www\data\CommonEvents.json,0,$[37].name,ADVロード５　姉友人,,sem traducao disponivel; chunk divergente apos subdivisao
+T000029,failed,www\data\CommonEvents.json,0,$[38].name,ADVロード６　路地裏,,sem traducao disponivel; chunk divergente apos subdivisao
+T000030,failed,www\data\CommonEvents.json,0,$[39].name,ADVロード７　酒屋さん,,sem traducao disponivel; chunk divergente apos subdivisao
+T000031,failed,www\data\CommonEvents.json,0,$[3].name,オート離す,,sem traducao disponivel; chunk divergente apos subdivisao
+T000032,failed,www\data\CommonEvents.json,0,$[40].name,ADVロード８　警官,,sem traducao disponivel; chunk divergente apos subdivisao
+T000033,failed,www\data\CommonEvents.json,0,$[41].name,ADVロード９　JC,,sem traducao disponivel; chunk divergente apos subdivisao
+T000034,failed,www\data\CommonEvents.json,0,$[42].name,ADVロード１０　管理局,,sem traducao disponivel; chunk divergente apos subdivisao
+T000035,failed,www\data\CommonEvents.json,0,$[49].list[2].parameters[0],学校にいる女子は一通り種付けできたかな。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000036,failed,www\data\CommonEvents.json,0,$[49].list[5].parameters[0],初めての経験で歯止めが効かないさすがにつかれた,,sem traducao disponivel; chunk divergente apos subdivisao
+T000037,failed,www\data\CommonEvents.json,0,$[4].list[1].parameters[0],PA_INIT 12 8 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000038,failed,www\data\CommonEvents.json,0,$[4].name,オート再生/停止,,sem traducao disponivel; chunk divergente apos subdivisao
+T000039,failed,www\data\CommonEvents.json,0,$[50].list[10].parameters[0],僕はそろそろ帰ることにした。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000040,failed,www\data\CommonEvents.json,0,$[50].list[14].parameters[0],帰り道に何人か女性を見かけたので、しっかりと種付けをしておいた。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000041,failed,www\data\CommonEvents.json,0,$[50].list[7].parameters[0],学校にいる女子は大体種付けが出来たみたいだ。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000042,failed,www\data\CommonEvents.json,0,$[50].name,学校パート終了,,sem traducao disponivel; chunk divergente apos subdivisao
+T000043,failed,www\data\CommonEvents.json,0,$[51].list[11].parameters[0],そろそろ家にもどって休もうかな。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000044,failed,www\data\CommonEvents.json,0,$[51].list[7].parameters[0],僕はその後、目についた女の人に種付けし続け、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000045,failed,www\data\CommonEvents.json,0,$[51].list[8].parameters[0],あっという間に一日が終わった。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000046,failed,www\data\CommonEvents.json,0,$[51].name,街パート終了,,sem traducao disponivel; chunk divergente apos subdivisao
+T000047,failed,www\data\CommonEvents.json,0,$[54].list[0].parameters[0],PA_INIT 6 12 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000048,failed,www\data\CommonEvents.json,0,$[54].name,ピストンa1初期位置,,sem traducao disponivel; chunk divergente apos subdivisao
+T000049,failed,www\data\CommonEvents.json,0,$[55].name,ピストンa1再生,,sem traducao disponivel; chunk divergente apos subdivisao
+T000050,failed,www\data\CommonEvents.json,0,$[56].list[0].parameters[0],PA_INIT 4 12 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000051,failed,www\data\CommonEvents.json,0,$[56].name,ピストンa2ループ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000052,failed,www\data\CommonEvents.json,0,$[57].list[0].parameters[0],PA_INIT 12 12 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000053,failed,www\data\CommonEvents.json,0,$[57].name,ピストンa3射精,,sem traducao disponivel; chunk divergente apos subdivisao
+T000054,failed,www\data\CommonEvents.json,0,$[58].list[0].parameters[0],PA_INIT 4 6 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000055,failed,www\data\CommonEvents.json,0,$[58].name,ピストンa2ループ　二倍速,,sem traducao disponivel; chunk divergente apos subdivisao
+T000056,failed,www\data\CommonEvents.json,0,$[59].name,ピストンa4　終了画像,,sem traducao disponivel; chunk divergente apos subdivisao
+T000057,failed,www\data\CommonEvents.json,0,$[5].name,オートaキー入力判定,,sem traducao disponivel; chunk divergente apos subdivisao
+T000058,failed,www\data\CommonEvents.json,0,$[62].name,ピストンb1　初期位置,,sem traducao disponivel; chunk divergente apos subdivisao
+T000059,failed,www\data\CommonEvents.json,0,$[63].name,ピストンb1　再生,,sem traducao disponivel; chunk divergente apos subdivisao
+T000060,failed,www\data\CommonEvents.json,0,$[64].name,ピストンb2　ループ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000061,failed,www\data\CommonEvents.json,0,$[65].list[0].parameters[0],PA_INIT 11 12 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000062,failed,www\data\CommonEvents.json,0,$[65].name,ピストンb3　射精,,sem traducao disponivel; chunk divergente apos subdivisao
+T000063,failed,www\data\CommonEvents.json,0,$[66].name,ピストンb2　二倍ループ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000064,failed,www\data\CommonEvents.json,0,$[67].name,ピストンb4　終了画像,,sem traducao disponivel; chunk divergente apos subdivisao
+T000065,failed,www\data\CommonEvents.json,0,$[6].name,オートアイコン停止、削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000066,failed,www\data\CommonEvents.json,0,$[70].name,Gal 選択　重ね,,sem traducao disponivel; chunk divergente apos subdivisao
+T000067,failed,www\data\CommonEvents.json,0,$[71].list[2].parameters[0],if ($gameScreen.isPointerInnerPicture(i)) return; // どれかに乗っていたら何もしない,,sem traducao disponivel; chunk divergente apos subdivisao
+T000068,failed,www\data\CommonEvents.json,0,$[71].list[4].parameters[0],$gameScreen.erasePicture(22); // どれにも乗っていなければ削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000069,failed,www\data\CommonEvents.json,0,$[71].name,Gal 選択　離す,,sem traducao disponivel; chunk divergente apos subdivisao
+T000070,failed,www\data\CommonEvents.json,0,$[72].name,Gal タイトル　重ね,,sem traducao disponivel; chunk divergente apos subdivisao
+T000071,failed,www\data\CommonEvents.json,0,$[74].name,Gal 選択　タイトル戻る,,sem traducao disponivel; chunk divergente apos subdivisao
+T000072,failed,www\data\CommonEvents.json,0,$[75].name,Gal シーン開始,,sem traducao disponivel; chunk divergente apos subdivisao
+T000073,failed,www\data\CommonEvents.json,0,$[76].name,Gal シーン終了,,sem traducao disponivel; chunk divergente apos subdivisao
+T000074,failed,www\data\MapInfos.json,0,$[11].name,路地裏,,sem traducao disponivel; chunk divergente apos subdivisao
+T000075,failed,www\data\MapInfos.json,0,$[1].name,自室,,sem traducao disponivel; chunk divergente apos subdivisao
+T000076,failed,www\data\MapInfos.json,0,$[27].name,家廊下,,sem traducao disponivel; chunk divergente apos subdivisao
+T000077,failed,www\data\MapInfos.json,0,$[28].name,学校玄関,,sem traducao disponivel; chunk divergente apos subdivisao
+T000078,failed,www\data\MapInfos.json,0,$[29].name,職員室,,sem traducao disponivel; chunk divergente apos subdivisao
+T000079,failed,www\data\MapInfos.json,0,$[2].name,ギャラリー,,sem traducao disponivel; chunk divergente apos subdivisao
+T000080,failed,www\data\MapInfos.json,0,$[32].name,図書室,,sem traducao disponivel; chunk divergente apos subdivisao
+T000081,failed,www\data\MapInfos.json,0,$[34].name,姉の部屋,,sem traducao disponivel; chunk divergente apos subdivisao
+T000082,failed,www\data\MapInfos.json,0,$[3].name,街路１,,sem traducao disponivel; chunk divergente apos subdivisao
+T000083,failed,www\data\MapInfos.json,0,$[4].name,酒屋,,sem traducao disponivel; chunk divergente apos subdivisao
+T000084,failed,www\data\MapInfos.json,0,$[5].name,体育館,,sem traducao disponivel; chunk divergente apos subdivisao
+T000085,failed,www\data\MapInfos.json,0,$[7].name,街路２ 警官,,sem traducao disponivel; chunk divergente apos subdivisao
+T000086,failed,www\data\MapInfos.json,0,$[8].name,公園　JC,,sem traducao disponivel; chunk divergente apos subdivisao
+T000087,failed,www\data\MapInfos.json,0,$[9].name,エンディング,,sem traducao disponivel; chunk divergente apos subdivisao
+T000088,failed,www\data\Actors.json,0,$[1].name,操作キャラ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000089,failed,www\data\Map001.json,0,$.events[1].pages[0].list[10].parameters[0],すると最近与えられた,,sem traducao disponivel; chunk divergente apos subdivisao
+T000090,failed,www\data\Map001.json,0,$.events[1].pages[0].list[11].parameters[0],僕のスマホにこんなメールが届く。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000091,failed,www\data\Map001.json,0,$.events[1].pages[0].list[21].parameters[0],メールの内容を僕はよく理解できなかった。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000092,failed,www\data\Map001.json,0,$.events[1].pages[0].list[27].parameters[0],勝手にアプリがインストールされている……。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000093,failed,www\data\Map001.json,0,$.events[1].pages[0].list[33].parameters[0],なんだか面白そうだと思ったので、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000094,failed,www\data\Map001.json,0,$.events[1].pages[0].list[34].parameters[0],姉に使ってみることにした。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000095,failed,www\data\Map001.json,0,$.events[1].pages[0].list[6].parameters[0],僕は夏休みが始まってからというものの、特にやることはなく、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000096,failed,www\data\Map001.json,0,$.events[1].pages[0].list[7].parameters[0],暇を持て余してだらだらと毎日を過ごしていた。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000097,failed,www\data\Map001.json,0,$.events[1].pages[2].list[12].parameters[0],とりあえず誰かいるかもしれないし、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000098,failed,www\data\Map001.json,0,$.events[1].pages[2].list[13].parameters[0],学校へいってみようかな。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000099,failed,www\data\Map001.json,0,$.events[1].pages[2].list[5].parameters[0],なんだかすごい事をしてしまった気がする。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000100,failed,www\data\Map001.json,0,$.events[1].pages[2].list[8].parameters[0],ぼくは呆然としつつも、先ほどの快感が頭から離れず、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000101,failed,www\data\Map001.json,0,$.events[1].pages[2].list[9].parameters[0],もう次は誰に たねづけ しようかと考えている。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000102,failed,www\data\Map001.json,0,$.events[1].pages[4].list[6].parameters[0],僕はしっかり休んで、体力を回復した。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000103,failed,www\data\Map001.json,0,$.events[1].pages[4].list[9].parameters[0],今日は街の方に行ってみようかな……。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000104,failed,www\data\Map001.json,0,$.events[1].pages[6].list[12].parameters[0],だれか来たようだ。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000105,failed,www\data\Map001.json,0,$.events[1].pages[6].list[6].parameters[0],しっかり休んで、体力が回復した僕は,,sem traducao disponivel; chunk divergente apos subdivisao
+T000106,failed,www\data\Map001.json,0,$.events[1].pages[6].list[7].parameters[0],今日はどうしようかと考える。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000107,failed,www\data\Map002.json,0,$.events[10].pages[0].list[11].parameters[0],玄関へ行くと暑そうなスーツを着た女性が立っていた。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000108,failed,www\data\Map002.json,0,$.events[10].pages[0].list[14].parameters[0],「こんにちは～、わたくし生殖促進管理局の,,sem traducao disponivel; chunk divergente apos subdivisao
+T000109,failed,www\data\Map002.json,0,$.events[10].pages[0].list[15].parameters[0],小林と申します～」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000110,failed,www\data\Map002.json,0,$.events[10].pages[0].list[18].parameters[0],小林,,sem traducao disponivel; chunk divergente apos subdivisao
+T000111,failed,www\data\Map002.json,0,$.events[10].pages[0].list[19].parameters[0],「お父様かお兄さまはいらっしゃいますか？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000112,failed,www\data\Map002.json,0,$.events[10].pages[0].list[20].parameters[0],種付け適任者に選ばれた方の経過を調査しているのですが……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000113,failed,www\data\Map002.json,0,$.events[10].pages[0].list[24].parameters[0],「……？あなたが適任者……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000114,failed,www\data\Map002.json,0,$.events[10].pages[0].list[27].parameters[0],「え……こんな子が……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000115,failed,www\data\Map002.json,0,$.events[10].pages[0].list[31].parameters[0],「あぁいえ、えっと……それじゃあ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000116,failed,www\data\Map002.json,0,$.events[10].pages[0].list[32].parameters[0],活動についていくつかお聞きしたいんですけど……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000117,failed,www\data\Map002.json,0,$.events[10].pages[0].list[37].parameters[0],僕は 小林 にアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000118,failed,www\data\Map002.json,0,$.events[10].pages[0].list[43].parameters[0],「あの、ちょっと……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000119,failed,www\data\Map002.json,0,$.events[10].pages[0].list[49].parameters[0],どうやら 小林 には効かないみたいだ……。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000120,failed,www\data\Map002.json,0,$.events[10].pages[0].list[53].parameters[0],「あー……すいません、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000121,failed,www\data\Map002.json,0,$.events[10].pages[0].list[54].parameters[0],それ私には効かないんです」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000122,failed,www\data\Map002.json,0,$.events[10].pages[0].list[58].parameters[0],「種付けするなら他の女に,,sem traducao disponivel; chunk divergente apos subdivisao
+T000123,failed,www\data\Map002.json,0,$.events[10].pages[0].list[59].parameters[0],使ってくださいねー」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000124,failed,www\data\Map002.json,0,$.events[10].pages[0].list[63].parameters[0],種付けアプリの様子が……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000125,failed,www\data\Map002.json,0,$.events[10].pages[0].list[83].parameters[0],「ん…………あぇ……？？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000126,failed,www\data\Map002.json,0,$.events[10].pages[1].list[10].parameters[0],種付けを…………？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000127,failed,www\data\Map002.json,0,$.events[10].pages[1].list[110].parameters[0],「おっ……♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000128,failed,www\data\Map002.json,0,$.events[10].pages[1].list[111].parameters[0],おぉっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000129,failed,www\data\Map002.json,0,$.events[10].pages[1].list[115].parameters[0],僕は 小林 に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000130,failed,www\data\Map002.json,0,$.events[10].pages[1].list[14].parameters[0],「そ、そうだ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000131,failed,www\data\Map002.json,0,$.events[10].pages[1].list[15].parameters[0],実際に私に種付けを行ってもらい,,sem traducao disponivel; chunk divergente apos subdivisao
+T000132,failed,www\data\Map002.json,0,$.events[10].pages[1].list[16].parameters[0],様子を確認する必要があるんでした……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000133,failed,www\data\Map002.json,0,$.events[10].pages[1].list[29].parameters[0],「んっ……おぉっ……♥♥！？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000134,failed,www\data\Map002.json,0,$.events[10].pages[1].list[32].parameters[0],「あっ……あぁっ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000135,failed,www\data\Map002.json,0,$.events[10].pages[1].list[33].parameters[0],これっ……だめっ……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000136,failed,www\data\Map002.json,0,$.events[10].pages[1].list[36].parameters[0],「感度っ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000137,failed,www\data\Map002.json,0,$.events[10].pages[1].list[37].parameters[0],あげられすぎっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000138,failed,www\data\Map002.json,0,$.events[10].pages[1].list[40].parameters[0],「いぎぃっ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000139,failed,www\data\Map002.json,0,$.events[10].pages[1].list[41].parameters[0],い、いかされっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000140,failed,www\data\Map002.json,0,$.events[10].pages[1].list[4].parameters[0],「ん…………あれ……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000141,failed,www\data\Map002.json,0,$.events[10].pages[1].list[53].parameters[0],「んっ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000142,failed,www\data\Map002.json,0,$.events[10].pages[1].list[54].parameters[0],おおおぉぉっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000143,failed,www\data\Map002.json,0,$.events[10].pages[1].list[5].parameters[0],えーと…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000144,failed,www\data\Map002.json,0,$.events[10].pages[1].list[62].parameters[0],「あぁっ……♥♥ぁっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000145,failed,www\data\Map002.json,0,$.events[10].pages[1].list[65].parameters[0],「や、やめっ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000146,failed,www\data\Map002.json,0,$.events[10].pages[1].list[66].parameters[0],全然奥……♥届いてないのにっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000147,failed,www\data\Map002.json,0,$.events[10].pages[1].list[69].parameters[0],「き、きもちよすぎっ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000148,failed,www\data\Map002.json,0,$.events[10].pages[1].list[70].parameters[0],てっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000149,failed,www\data\Map002.json,0,$.events[10].pages[1].list[73].parameters[0],「頭おかしくなるっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000150,failed,www\data\Map002.json,0,$.events[10].pages[1].list[76].parameters[0],「んんぁっ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000151,failed,www\data\Map002.json,0,$.events[10].pages[1].list[77].parameters[0],も、もう……♥やめっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000152,failed,www\data\Map002.json,0,$.events[10].pages[1].list[80].parameters[0],「いきころされるぅっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000153,failed,www\data\Map002.json,0,$.events[10].pages[1].list[83].parameters[0],「あぁっ……♥ま、また……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000154,failed,www\data\Map002.json,0,$.events[10].pages[1].list[86].parameters[0],「い、いくっ……♥♥いくいく……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000155,failed,www\data\Map002.json,0,$.events[10].pages[1].list[97].parameters[0],「あぁぁっ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000156,failed,www\data\Map002.json,0,$.events[10].pages[1].list[98].parameters[0],んんっ……あああぁっ……♥♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000157,failed,www\data\Map002.json,0,$.events[10].pages[1].list[9].parameters[0],「わ、わたしも……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000158,failed,www\data\Map002.json,0,$.events[11].pages[0].list[13].parameters[0],重ねた時の処理,,sem traducao disponivel; chunk divergente apos subdivisao
+T000159,failed,www\data\Map002.json,0,$.events[11].pages[0].list[17].parameters[0],離した時の処理,,sem traducao disponivel; chunk divergente apos subdivisao
+T000160,failed,www\data\Map002.json,0,$.events[11].pages[0].list[21].parameters[0],クリックした時、各イベントのスイッチをオン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000161,failed,www\data\Map002.json,0,$.events[1].pages[0].list[11].parameters[0],図書室の奥で静かに読書をしている人がいる。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000162,failed,www\data\Map002.json,0,$.events[1].pages[0].list[12].parameters[0],僕と同じクラスの モミジ ちゃんだ。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000163,failed,www\data\Map002.json,0,$.events[1].pages[0].list[15].parameters[0],モミジ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000164,failed,www\data\Map002.json,0,$.events[1].pages[0].list[16].parameters[0],「あれ？　なんで夏休みなのに学校にいるの？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000165,failed,www\data\Map002.json,0,$.events[1].pages[0].list[20].parameters[0],「私はね、家のクーラーの調子が悪いんだよね,,sem traducao disponivel; chunk divergente apos subdivisao
+T000166,failed,www\data\Map002.json,0,$.events[1].pages[0].list[21].parameters[0],ここなら涼しいし」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000167,failed,www\data\Map002.json,0,$.events[1].pages[0].list[25].parameters[0],僕は要件を伝える。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000168,failed,www\data\Map002.json,0,$.events[1].pages[0].list[30].parameters[0],よくわかんないけど、危ないことじゃないならいいよ？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000169,failed,www\data\Map002.json,0,$.events[1].pages[0].list[36].parameters[0],僕は モミジ にアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000170,failed,www\data\Map002.json,0,$.events[1].pages[0].list[44].parameters[0],「あ…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000171,failed,www\data\Map002.json,0,$.events[1].pages[0].list[47].parameters[0],"モミジは ""にんしきかいへん"" された！",,sem traducao disponivel; chunk divergente apos subdivisao
+T000172,failed,www\data\Map002.json,0,$.events[1].pages[1].list[100].parameters[0],「んんっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000173,failed,www\data\Map002.json,0,$.events[1].pages[1].list[101].parameters[0],あっ……あぁっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000174,failed,www\data\Map002.json,0,$.events[1].pages[1].list[113].parameters[0],「な、なんか……すごい気持ちよかった……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000175,failed,www\data\Map002.json,0,$.events[1].pages[1].list[117].parameters[0],「うぅ……なにこのどろどろ……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000176,failed,www\data\Map002.json,0,$.events[1].pages[1].list[118].parameters[0],あったかい……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000177,failed,www\data\Map002.json,0,$.events[1].pages[1].list[121].parameters[0],「え？これが赤ちゃんになるの……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000178,failed,www\data\Map002.json,0,$.events[1].pages[1].list[124].parameters[0],「これで種付け完了なんだ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000179,failed,www\data\Map002.json,0,$.events[1].pages[1].list[125].parameters[0],へー……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000180,failed,www\data\Map002.json,0,$.events[1].pages[1].list[133].parameters[0],「……ね、ねえ？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000181,failed,www\data\Map002.json,0,$.events[1].pages[1].list[134].parameters[0],また今度これ……やらない？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000182,failed,www\data\Map002.json,0,$.events[1].pages[1].list[135].parameters[0],嫌だったらいいけど……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000183,failed,www\data\Map002.json,0,$.events[1].pages[1].list[139].parameters[0],僕は モミジ に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000184,failed,www\data\Map002.json,0,$.events[1].pages[1].list[13].parameters[0],「私やり方分からないけど大丈夫？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000185,failed,www\data\Map002.json,0,$.events[1].pages[1].list[16].parameters[0],PA_INIT 7 12 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000186,failed,www\data\Map002.json,0,$.events[1].pages[1].list[21].parameters[0],「こ、こうしてればいいの……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000187,failed,www\data\Map002.json,0,$.events[1].pages[1].list[24].parameters[0],「あ、お、おちんちん……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000188,failed,www\data\Map002.json,0,$.events[1].pages[1].list[25].parameters[0],ここにいれるの……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000189,failed,www\data\Map002.json,0,$.events[1].pages[1].list[28].parameters[0],「こ、これさ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000190,failed,www\data\Map002.json,0,$.events[1].pages[1].list[29].parameters[0],大人の人がやるやつ……じゃない？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000191,failed,www\data\Map002.json,0,$.events[1].pages[1].list[32].parameters[0],「なんか……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000192,failed,www\data\Map002.json,0,$.events[1].pages[1].list[33].parameters[0],やったら、ダメな気が……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000193,failed,www\data\Map002.json,0,$.events[1].pages[1].list[39].parameters[0],「あっ……いっ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000194,failed,www\data\Map002.json,0,$.events[1].pages[1].list[42].parameters[0],「は……入っ……ちゃった……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000195,failed,www\data\Map002.json,0,$.events[1].pages[1].list[45].parameters[0],「痛くは……無いけど……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000196,failed,www\data\Map002.json,0,$.events[1].pages[1].list[46].parameters[0],なんかへんなかんじ……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000197,failed,www\data\Map002.json,0,$.events[1].pages[1].list[54].parameters[0],「なっ……、あっ、あぁっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000198,failed,www\data\Map002.json,0,$.events[1].pages[1].list[57].parameters[0],「なっ……なにこれっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000199,failed,www\data\Map002.json,0,$.events[1].pages[1].list[58].parameters[0],なんかっ……これっ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000200,failed,www\data\Map002.json,0,$.events[1].pages[1].list[61].parameters[0],「へんなっ……感覚が……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000201,failed,www\data\Map002.json,0,$.events[1].pages[1].list[62].parameters[0],のぼってくるような……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000202,failed,www\data\Map002.json,0,$.events[1].pages[1].list[65].parameters[0],「いっ……あっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000203,failed,www\data\Map002.json,0,$.events[1].pages[1].list[66].parameters[0],あぁっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000204,failed,www\data\Map002.json,0,$.events[1].pages[1].list[69].parameters[0],「おなか……押されるの……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000205,failed,www\data\Map002.json,0,$.events[1].pages[1].list[70].parameters[0],きもちいいかも……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000206,failed,www\data\Map002.json,0,$.events[1].pages[1].list[78].parameters[0],「なっ……あぁっ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000207,failed,www\data\Map002.json,0,$.events[1].pages[1].list[81].parameters[0],「だ、だめっ……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000208,failed,www\data\Map002.json,0,$.events[1].pages[1].list[82].parameters[0],なんかこれ……、おかしいっ……！？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000209,failed,www\data\Map002.json,0,$.events[1].pages[1].list[85].parameters[0],「な、なんか……きちゃう……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000210,failed,www\data\Map002.json,0,$.events[1].pages[1].list[86].parameters[0],きもちいいのきちゃう……！？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000211,failed,www\data\Map002.json,0,$.events[1].pages[1].list[89].parameters[0],「あっ……！いぁっ……！？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000212,failed,www\data\Map002.json,0,$.events[1].pages[1].list[8].parameters[0],「えーと、わたしもその種付け……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000213,failed,www\data\Map002.json,0,$.events[1].pages[1].list[91].parameters[0],PA_INIT 9 12 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000214,failed,www\data\Map002.json,0,$.events[1].pages[1].list[9].parameters[0],に協力しないといけないんだよね？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000215,failed,www\data\Map002.json,0,$.events[2].pages[0].list[11].parameters[0],姉の部屋にいくと部活から,,sem traducao disponivel; chunk divergente apos subdivisao
+T000216,failed,www\data\Map002.json,0,$.events[2].pages[0].list[12].parameters[0],帰ってきたばかりの姉がいた。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000217,failed,www\data\Map002.json,0,$.events[2].pages[0].list[15].parameters[0],ナツメ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000218,failed,www\data\Map002.json,0,$.events[2].pages[0].list[16].parameters[0],「んー？なにー？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000219,failed,www\data\Map002.json,0,$.events[2].pages[0].list[20].parameters[0],「アプリ？またへんなもの見つけてきたな……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000220,failed,www\data\Map002.json,0,$.events[2].pages[0].list[24].parameters[0],「まあいいけど……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000221,failed,www\data\Map002.json,0,$.events[2].pages[0].list[29].parameters[0],僕は ナツメ にアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000222,failed,www\data\Map002.json,0,$.events[2].pages[0].list[40].parameters[0],ナツメは にんしきかいへん された！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000223,failed,www\data\Map002.json,0,$.events[2].pages[1].list[100].parameters[0],「こうやっておちんちんを……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000224,failed,www\data\Map002.json,0,$.events[2].pages[1].list[101].parameters[0],おまんこに入れて擦るだけだからっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000225,failed,www\data\Map002.json,0,$.events[2].pages[1].list[104].parameters[0],「あとは気持ちよくなってっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000226,failed,www\data\Map002.json,0,$.events[2].pages[1].list[105].parameters[0],んっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000227,failed,www\data\Map002.json,0,$.events[2].pages[1].list[108].parameters[0],「お腹の中に,,sem traducao disponivel; chunk divergente apos subdivisao
+T000228,failed,www\data\Map002.json,0,$.events[2].pages[1].list[109].parameters[0],せーしを出すだけだからっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000229,failed,www\data\Map002.json,0,$.events[2].pages[1].list[117].parameters[0],「ど、どう……？でそう……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000230,failed,www\data\Map002.json,0,$.events[2].pages[1].list[120].parameters[0],「でそうなら……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000231,failed,www\data\Map002.json,0,$.events[2].pages[1].list[121].parameters[0],そのまま中にだしてっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000232,failed,www\data\Map002.json,0,$.events[2].pages[1].list[126].parameters[0],PA_INIT 8 12 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000233,failed,www\data\Map002.json,0,$.events[2].pages[1].list[135].parameters[0],「んっ……あぁっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000234,failed,www\data\Map002.json,0,$.events[2].pages[1].list[13].parameters[0],「私があんたに ”種付け”,,sem traducao disponivel; chunk divergente apos subdivisao
+T000235,failed,www\data\Map002.json,0,$.events[2].pages[1].list[147].parameters[0],「はぁ……ふぅ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000236,failed,www\data\Map002.json,0,$.events[2].pages[1].list[148].parameters[0],あっつ…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000237,failed,www\data\Map002.json,0,$.events[2].pages[1].list[14].parameters[0],してもらわないといけないんだっけ」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000238,failed,www\data\Map002.json,0,$.events[2].pages[1].list[152].parameters[0],「てかすごい出したね……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000239,failed,www\data\Map002.json,0,$.events[2].pages[1].list[153].parameters[0],これなら一発で種付けできたんじゃない？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000240,failed,www\data\Map002.json,0,$.events[2].pages[1].list[157].parameters[0],「じゃあ……だいたいこんな感じだから……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000241,failed,www\data\Map002.json,0,$.events[2].pages[1].list[160].parameters[0],「これからも女の子いっぱい,,sem traducao disponivel; chunk divergente apos subdivisao
+T000242,failed,www\data\Map002.json,0,$.events[2].pages[1].list[161].parameters[0],孕ませるために,,sem traducao disponivel; chunk divergente apos subdivisao
+T000243,failed,www\data\Map002.json,0,$.events[2].pages[1].list[162].parameters[0],種付け頑張ってね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000244,failed,www\data\Map002.json,0,$.events[2].pages[1].list[166].parameters[0],僕は ナツメ に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000245,failed,www\data\Map002.json,0,$.events[2].pages[1].list[18].parameters[0],「普通姉弟でとかありえないんだけど……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000246,failed,www\data\Map002.json,0,$.events[2].pages[1].list[22].parameters[0],「そういう決まりになったんだから,,sem traducao disponivel; chunk divergente apos subdivisao
+T000247,failed,www\data\Map002.json,0,$.events[2].pages[1].list[23].parameters[0],仕方ないか……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000248,failed,www\data\Map002.json,0,$.events[2].pages[1].list[27].parameters[0],「でもあんたやり方知らないよね？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000249,failed,www\data\Map002.json,0,$.events[2].pages[1].list[30].parameters[0],「しょうがないなぁ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000250,failed,www\data\Map002.json,0,$.events[2].pages[1].list[31].parameters[0],ちょっと説明するね」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000251,failed,www\data\Map002.json,0,$.events[2].pages[1].list[34].parameters[0],PA_INIT 4 30 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000252,failed,www\data\Map002.json,0,$.events[2].pages[1].list[40].parameters[0],「ほら、見える？女の子はね、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000253,failed,www\data\Map002.json,0,$.events[2].pages[1].list[41].parameters[0],ここにおちんちんを入れるための,,sem traducao disponivel; chunk divergente apos subdivisao
+T000254,failed,www\data\Map002.json,0,$.events[2].pages[1].list[42].parameters[0],穴が開いてるの」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000255,failed,www\data\Map002.json,0,$.events[2].pages[1].list[45].parameters[0],「ここにおちんちんから出る,,sem traducao disponivel; chunk divergente apos subdivisao
+T000256,failed,www\data\Map002.json,0,$.events[2].pages[1].list[46].parameters[0],”せーし” をたくさん出したら,,sem traducao disponivel; chunk divergente apos subdivisao
+T000257,failed,www\data\Map002.json,0,$.events[2].pages[1].list[47].parameters[0],種付け完了だから……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000258,failed,www\data\Map002.json,0,$.events[2].pages[1].list[4].parameters[0],「ん……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000259,failed,www\data\Map002.json,0,$.events[2].pages[1].list[50].parameters[0],「とりあえずやってみよっか」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000260,failed,www\data\Map002.json,0,$.events[2].pages[1].list[53].parameters[0],「まあ、私も初めてだから,,sem traducao disponivel; chunk divergente apos subdivisao
+T000261,failed,www\data\Map002.json,0,$.events[2].pages[1].list[54].parameters[0],上手くできるか分かんないけどね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000262,failed,www\data\Map002.json,0,$.events[2].pages[1].list[58].parameters[0],僕はよくわからないまま,,sem traducao disponivel; chunk divergente apos subdivisao
+T000263,failed,www\data\Map002.json,0,$.events[2].pages[1].list[59].parameters[0],姉にされるがままになった……。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000264,failed,www\data\Map002.json,0,$.events[2].pages[1].list[5].parameters[0],あれ……何してたんだっけ？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000265,failed,www\data\Map002.json,0,$.events[2].pages[1].list[60].parameters[0],PA_INIT 4 20 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000266,failed,www\data\Map002.json,0,$.events[2].pages[1].list[66].parameters[0],「なんだもうガチガチじゃん、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000267,failed,www\data\Map002.json,0,$.events[2].pages[1].list[67].parameters[0],これならいけそうだね」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000268,failed,www\data\Map002.json,0,$.events[2].pages[1].list[70].parameters[0],「じゃ、とりあえず入れてみるね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000269,failed,www\data\Map002.json,0,$.events[2].pages[1].list[71].parameters[0],PA_INIT 5 12 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000270,failed,www\data\Map002.json,0,$.events[2].pages[1].list[78].parameters[0],「んんっ…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000271,failed,www\data\Map002.json,0,$.events[2].pages[1].list[81].parameters[0],「ほら……入ったでしょ？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000272,failed,www\data\Map002.json,0,$.events[2].pages[1].list[82].parameters[0],こんな感じ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000273,failed,www\data\Map002.json,0,$.events[2].pages[1].list[85].parameters[0],「じゃ、動くから……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000274,failed,www\data\Map002.json,0,$.events[2].pages[1].list[93].parameters[0],「んっ……んっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000275,failed,www\data\Map002.json,0,$.events[2].pages[1].list[96].parameters[0],「ほ、ほらっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000276,failed,www\data\Map002.json,0,$.events[2].pages[1].list[97].parameters[0],簡単でしょ……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000277,failed,www\data\Map002.json,0,$.events[2].pages[1].list[9].parameters[0],「あ、あーそうだ、たしか……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000278,failed,www\data\Map002.json,0,$.events[3].pages[0].list[11].parameters[0],リン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000279,failed,www\data\Map002.json,0,$.events[3].pages[0].list[12].parameters[0],「おー弟君か」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000280,failed,www\data\Map002.json,0,$.events[3].pages[0].list[16].parameters[0],「ナツメなら私との息止め勝負で負けて,,sem traducao disponivel; chunk divergente apos subdivisao
+T000281,failed,www\data\Map002.json,0,$.events[3].pages[0].list[17].parameters[0],アイスを買いに行ってるよ」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000282,failed,www\data\Map002.json,0,$.events[3].pages[0].list[21].parameters[0],「暇だし何かして遊ぶ？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000283,failed,www\data\Map002.json,0,$.events[3].pages[0].list[22].parameters[0],クラクラして起き上がれないけどｗ」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000284,failed,www\data\Map002.json,0,$.events[3].pages[0].list[26].parameters[0],「ん？やりたいことがある？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000285,failed,www\data\Map002.json,0,$.events[3].pages[0].list[27].parameters[0],いいよー、お姉さんがなんでもやってあげよう」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000286,failed,www\data\Map002.json,0,$.events[3].pages[0].list[32].parameters[0],僕はリンにアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000287,failed,www\data\Map002.json,0,$.events[3].pages[0].list[43].parameters[0],リンは にんしきかいへん された！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000288,failed,www\data\Map002.json,0,$.events[3].pages[1].list[100].parameters[0],「んんっ……！あぁっ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000289,failed,www\data\Map002.json,0,$.events[3].pages[1].list[10].parameters[0],するってことだよね？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000290,failed,www\data\Map002.json,0,$.events[3].pages[1].list[112].parameters[0],「あぁっ……あっつ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000291,failed,www\data\Map002.json,0,$.events[3].pages[1].list[113].parameters[0],出しすぎでしょ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000292,failed,www\data\Map002.json,0,$.events[3].pages[1].list[116].parameters[0],「今日危険日なのに……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000293,failed,www\data\Map002.json,0,$.events[3].pages[1].list[120].parameters[0],「いや……それでいいのか……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000294,failed,www\data\Map002.json,0,$.events[3].pages[1].list[124].parameters[0],僕は リン に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000295,failed,www\data\Map002.json,0,$.events[3].pages[1].list[14].parameters[0],「いや……いいんだけどさ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000296,failed,www\data\Map002.json,0,$.events[3].pages[1].list[15].parameters[0],なんか違和感があるような……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000297,failed,www\data\Map002.json,0,$.events[3].pages[1].list[19].parameters[0],「う、うん……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000298,failed,www\data\Map002.json,0,$.events[3].pages[1].list[20].parameters[0],種付けは義務……！義務だから……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000299,failed,www\data\Map002.json,0,$.events[3].pages[1].list[24].parameters[0],「仕方ない……か……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000300,failed,www\data\Map002.json,0,$.events[3].pages[1].list[32].parameters[0],「え、ちょっとまって……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000301,failed,www\data\Map002.json,0,$.events[3].pages[1].list[33].parameters[0],ほんとうにやるの……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000302,failed,www\data\Map002.json,0,$.events[3].pages[1].list[36].parameters[0],「や、やっぱりやめとかない……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000303,failed,www\data\Map002.json,0,$.events[3].pages[1].list[42].parameters[0],「んっ………あぁっ……！！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000304,failed,www\data\Map002.json,0,$.events[3].pages[1].list[45].parameters[0],「あ……え？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000305,failed,www\data\Map002.json,0,$.events[3].pages[1].list[46].parameters[0],はいった……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000306,failed,www\data\Map002.json,0,$.events[3].pages[1].list[4].parameters[0],「うん、種付けね……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000307,failed,www\data\Map002.json,0,$.events[3].pages[1].list[54].parameters[0],「んっ……あっ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000308,failed,www\data\Map002.json,0,$.events[3].pages[1].list[57].parameters[0],「も、もうちょっとゆっくり……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000309,failed,www\data\Map002.json,0,$.events[3].pages[1].list[5].parameters[0],種付け……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000310,failed,www\data\Map002.json,0,$.events[3].pages[1].list[60].parameters[0],「痛くないけど……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000311,failed,www\data\Map002.json,0,$.events[3].pages[1].list[63].parameters[0],「なんか……違和感が……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000312,failed,www\data\Map002.json,0,$.events[3].pages[1].list[66].parameters[0],「あぁっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000313,failed,www\data\Map002.json,0,$.events[3].pages[1].list[74].parameters[0],「あっ……あっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000314,failed,www\data\Map002.json,0,$.events[3].pages[1].list[75].parameters[0],ちょ、ちょっときもちいい……？？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000315,failed,www\data\Map002.json,0,$.events[3].pages[1].list[78].parameters[0],「あっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000316,failed,www\data\Map002.json,0,$.events[3].pages[1].list[79].parameters[0],こ、これ……中に出すんだよね……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000317,failed,www\data\Map002.json,0,$.events[3].pages[1].list[82].parameters[0],「い、いや……いいけど……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000318,failed,www\data\Map002.json,0,$.events[3].pages[1].list[85].parameters[0],「う、うん……大丈夫……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000319,failed,www\data\Map002.json,0,$.events[3].pages[1].list[86].parameters[0],全部中にだして……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000320,failed,www\data\Map002.json,0,$.events[3].pages[1].list[89].parameters[0],「いっ……あっ……あぁっ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000321,failed,www\data\Map002.json,0,$.events[3].pages[1].list[9].parameters[0],「え？要するに今から私とエッチ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000322,failed,www\data\Map002.json,0,$.events[4].pages[0].list[12].parameters[0],この暑さの中、元気に走り回っている女子がいる。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000323,failed,www\data\Map002.json,0,$.events[4].pages[0].list[14].parameters[0],ヒマリ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000324,failed,www\data\Map002.json,0,$.events[4].pages[0].list[15].parameters[0],「あれー？ボク君じゃん！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000325,failed,www\data\Map002.json,0,$.events[4].pages[0].list[18].parameters[0],同じクラスの女子のヒマリちゃんが一人で遊んでいた。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000326,failed,www\data\Map002.json,0,$.events[4].pages[0].list[22].parameters[0],「ボク君も暇で学校に来たの？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000327,failed,www\data\Map002.json,0,$.events[4].pages[0].list[23].parameters[0],じゃあ一緒にあそぼ！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000328,failed,www\data\Map002.json,0,$.events[4].pages[0].list[26].parameters[0],僕はしばらく一緒に遊ぶことにした。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000329,failed,www\data\Map002.json,0,$.events[4].pages[0].list[32].parameters[0],「はぁ……はぁ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000330,failed,www\data\Map002.json,0,$.events[4].pages[0].list[33].parameters[0],汗だくになっちゃったね……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000331,failed,www\data\Map002.json,0,$.events[4].pages[0].list[39].parameters[0],僕はヒマリちゃんの張り付いた服を見て,,sem traducao disponivel; chunk divergente apos subdivisao
+T000332,failed,www\data\Map002.json,0,$.events[4].pages[0].list[40].parameters[0],自分の目的を思い出す。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000333,failed,www\data\Map002.json,0,$.events[4].pages[0].list[44].parameters[0],「え？ヒマリに用があったの？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000334,failed,www\data\Map002.json,0,$.events[4].pages[0].list[45].parameters[0],なにー？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000335,failed,www\data\Map002.json,0,$.events[4].pages[0].list[49].parameters[0],「たねづけ？なにそれ？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000336,failed,www\data\Map002.json,0,$.events[4].pages[0].list[53].parameters[0],「よくわかんないけどいいよー！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000337,failed,www\data\Map002.json,0,$.events[4].pages[0].list[59].parameters[0],僕は ヒマリ にアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000338,failed,www\data\Map002.json,0,$.events[4].pages[0].list[67].parameters[0],「んっ…………,,sem traducao disponivel; chunk divergente apos subdivisao
+T000339,failed,www\data\Map002.json,0,$.events[4].pages[0].list[71].parameters[0],"ヒマリは ""にんしきかいへん"" された！",,sem traducao disponivel; chunk divergente apos subdivisao
+T000340,failed,www\data\Map002.json,0,$.events[4].pages[1].list[102].parameters[0],「あぁっ……あぁ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000341,failed,www\data\Map002.json,0,$.events[4].pages[1].list[103].parameters[0],いぎぃぃっ…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000342,failed,www\data\Map002.json,0,$.events[4].pages[1].list[114].parameters[0],「んっ……あっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000343,failed,www\data\Map002.json,0,$.events[4].pages[1].list[118].parameters[0],「な、なんか……ちょっと怖かったけど,,sem traducao disponivel; chunk divergente apos subdivisao
+T000344,failed,www\data\Map002.json,0,$.events[4].pages[1].list[119].parameters[0],きもちよかった……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000345,failed,www\data\Map002.json,0,$.events[4].pages[1].list[123].parameters[0],「またやろうね……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000346,failed,www\data\Map002.json,0,$.events[4].pages[1].list[127].parameters[0],僕は ヒマリ に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000347,failed,www\data\Map002.json,0,$.events[4].pages[1].list[13].parameters[0],「たねづけ……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000348,failed,www\data\Map002.json,0,$.events[4].pages[1].list[14].parameters[0],してもらえばいいんだよね！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000349,failed,www\data\Map002.json,0,$.events[4].pages[1].list[17].parameters[0],「よくわかんないけど、協力するね！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000350,failed,www\data\Map002.json,0,$.events[4].pages[1].list[25].parameters[0],「え……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000351,failed,www\data\Map002.json,0,$.events[4].pages[1].list[26].parameters[0],こ、ここにおちんちん入れるの？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000352,failed,www\data\Map002.json,0,$.events[4].pages[1].list[29].parameters[0],「い、いいけど……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000353,failed,www\data\Map002.json,0,$.events[4].pages[1].list[30].parameters[0],入るかな……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000354,failed,www\data\Map002.json,0,$.events[4].pages[1].list[36].parameters[0],「んっ……！あっ、あぁっ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000355,failed,www\data\Map002.json,0,$.events[4].pages[1].list[39].parameters[0],「お、おちんちん入っ……！？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000356,failed,www\data\Map002.json,0,$.events[4].pages[1].list[40].parameters[0],……った！？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000357,failed,www\data\Map002.json,0,$.events[4].pages[1].list[43].parameters[0],「こ、これっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000358,failed,www\data\Map002.json,0,$.events[4].pages[1].list[44].parameters[0],これが たねづけ なの……？？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000359,failed,www\data\Map002.json,0,$.events[4].pages[1].list[47].parameters[0],「ちょっとっ……苦しいかも……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000360,failed,www\data\Map002.json,0,$.events[4].pages[1].list[55].parameters[0],「あっ……あぁっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000361,failed,www\data\Map002.json,0,$.events[4].pages[1].list[58].parameters[0],「な、なにこれぇっ…,,sem traducao disponivel; chunk divergente apos subdivisao
+T000362,failed,www\data\Map002.json,0,$.events[4].pages[1].list[59].parameters[0],なんかっ……声でちゃうっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000363,failed,www\data\Map002.json,0,$.events[4].pages[1].list[62].parameters[0],「こ、このまま……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000364,failed,www\data\Map002.json,0,$.events[4].pages[1].list[63].parameters[0],なかにせーし？出したら完了なの……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000365,failed,www\data\Map002.json,0,$.events[4].pages[1].list[66].parameters[0],「わ、わかった……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000366,failed,www\data\Map002.json,0,$.events[4].pages[1].list[74].parameters[0],「んっ　あっ　あっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000367,failed,www\data\Map002.json,0,$.events[4].pages[1].list[77].parameters[0],「な、なんかっ……体っ……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000368,failed,www\data\Map002.json,0,$.events[4].pages[1].list[78].parameters[0],へんになってきた……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000369,failed,www\data\Map002.json,0,$.events[4].pages[1].list[81].parameters[0],「あぁっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000370,failed,www\data\Map002.json,0,$.events[4].pages[1].list[82].parameters[0],ま、まって……な、なんか,,sem traducao disponivel; chunk divergente apos subdivisao
+T000371,failed,www\data\Map002.json,0,$.events[4].pages[1].list[83].parameters[0],きちゃっ……うっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000372,failed,www\data\Map002.json,0,$.events[4].pages[1].list[86].parameters[0],「だ、だめっ……からだっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000373,failed,www\data\Map002.json,0,$.events[4].pages[1].list[87].parameters[0],おかしくなるっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000374,failed,www\data\Map002.json,0,$.events[4].pages[1].list[8].parameters[0],「あー、えーっと？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000375,failed,www\data\Map002.json,0,$.events[4].pages[1].list[90].parameters[0],「いっ、いぎっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000376,failed,www\data\Map002.json,0,$.events[4].pages[1].list[91].parameters[0],あぁっ……あっ……！？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000377,failed,www\data\Map002.json,0,$.events[4].pages[1].list[9].parameters[0],ヒマリがボク君に……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000378,failed,www\data\Map002.json,0,$.events[5].pages[0].list[10].parameters[0],サツキ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000379,failed,www\data\Map002.json,0,$.events[5].pages[0].list[11].parameters[0],「おー！きたのか！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000380,failed,www\data\Map002.json,0,$.events[5].pages[0].list[14].parameters[0],僕の担任の 吉宮先生 だ。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000381,failed,www\data\Map002.json,0,$.events[5].pages[0].list[18].parameters[0],「ちょうどよかった、いまから倉庫の,,sem traducao disponivel; chunk divergente apos subdivisao
+T000382,failed,www\data\Map002.json,0,$.events[5].pages[0].list[19].parameters[0],整理するから手伝ってくれ！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000383,failed,www\data\Map002.json,0,$.events[5].pages[0].list[22].parameters[0],「暑くて全くやる気が出なかったんだ！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000384,failed,www\data\Map002.json,0,$.events[5].pages[0].list[25].parameters[0],どうやらタイミングが悪かったようだ……。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000385,failed,www\data\Map002.json,0,$.events[5].pages[0].list[32].parameters[0],僕は蒸し暑い倉庫の中で、だらだと汗を流しせっせと働いた。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000386,failed,www\data\Map002.json,0,$.events[5].pages[0].list[36].parameters[0],「ふぅ……いやぁ本当に助かった！一人だと倒れてたかもな！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000387,failed,www\data\Map002.json,0,$.events[5].pages[0].list[37].parameters[0],ありがとう！！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000388,failed,www\data\Map002.json,0,$.events[5].pages[0].list[41].parameters[0],「ところで何か用事があって学校へ来たんじゃないのか？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000389,failed,www\data\Map002.json,0,$.events[5].pages[0].list[44].parameters[0],完全に忘れていた……。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000390,failed,www\data\Map002.json,0,$.events[5].pages[0].list[45].parameters[0],僕はスマホを先生に向ける。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000391,failed,www\data\Map002.json,0,$.events[5].pages[0].list[49].parameters[0],「ん、写真か？記念に撮っておくか,,sem traducao disponivel; chunk divergente apos subdivisao
+T000392,failed,www\data\Map002.json,0,$.events[5].pages[0].list[50].parameters[0],撮るなら綺麗に撮ってくれな」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000393,failed,www\data\Map002.json,0,$.events[5].pages[0].list[55].parameters[0],僕は サツキ にアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000394,failed,www\data\Map002.json,0,$.events[5].pages[0].list[63].parameters[0],「う……、んん……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000395,failed,www\data\Map002.json,0,$.events[5].pages[0].list[66].parameters[0],"サツキは ""にんしきかいへん"" された！",,sem traducao disponivel; chunk divergente apos subdivisao
+T000396,failed,www\data\Map002.json,0,$.events[5].pages[1].list[102].parameters[0],「あっ……ぁあっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000397,failed,www\data\Map002.json,0,$.events[5].pages[1].list[113].parameters[0],「ふぅ……おつかれ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000398,failed,www\data\Map002.json,0,$.events[5].pages[1].list[114].parameters[0],いっぱい出せたな……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000399,failed,www\data\Map002.json,0,$.events[5].pages[1].list[118].parameters[0],「これだけ出したら,,sem traducao disponivel; chunk divergente apos subdivisao
+T000400,failed,www\data\Map002.json,0,$.events[5].pages[1].list[119].parameters[0],妊娠は確実だろうな……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000401,failed,www\data\Map002.json,0,$.events[5].pages[1].list[123].parameters[0],僕は サツキ に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000402,failed,www\data\Map002.json,0,$.events[5].pages[1].list[13].parameters[0],「あぁそうか……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000403,failed,www\data\Map002.json,0,$.events[5].pages[1].list[14].parameters[0],種付けしてもらうんだったな！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000404,failed,www\data\Map002.json,0,$.events[5].pages[1].list[18].parameters[0],「でも私、汗かいてて匂うかも……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000405,failed,www\data\Map002.json,0,$.events[5].pages[1].list[19].parameters[0],今のままで大丈夫か？また今度でも……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000406,failed,www\data\Map002.json,0,$.events[5].pages[1].list[31].parameters[0],「んっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000407,failed,www\data\Map002.json,0,$.events[5].pages[1].list[32].parameters[0],お……おぉっ…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000408,failed,www\data\Map002.json,0,$.events[5].pages[1].list[35].parameters[0],「は、入っちゃったな……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000409,failed,www\data\Map002.json,0,$.events[5].pages[1].list[46].parameters[0],「まさか自分の教え子に,,sem traducao disponivel; chunk divergente apos subdivisao
+T000410,failed,www\data\Map002.json,0,$.events[5].pages[1].list[47].parameters[0],種付けされる日が来るとはな……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000411,failed,www\data\Map002.json,0,$.events[5].pages[1].list[4].parameters[0],「ん……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000412,failed,www\data\Map002.json,0,$.events[5].pages[1].list[50].parameters[0],「私の汗かかってないか……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000413,failed,www\data\Map002.json,0,$.events[5].pages[1].list[51].parameters[0],暑かったら無理しなくていいからな……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000414,failed,www\data\Map002.json,0,$.events[5].pages[1].list[54].parameters[0],「んっ…………ふぅ…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000415,failed,www\data\Map002.json,0,$.events[5].pages[1].list[57].parameters[0],「そうそう、その調子……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000416,failed,www\data\Map002.json,0,$.events[5].pages[1].list[5].parameters[0],あれ？私ぼーっとしてたか……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000417,failed,www\data\Map002.json,0,$.events[5].pages[1].list[60].parameters[0],「なかなか上手いじゃないか？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000418,failed,www\data\Map002.json,0,$.events[5].pages[1].list[61].parameters[0],他にも誰かに種付けしたのか？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000419,failed,www\data\Map002.json,0,$.events[5].pages[1].list[64].parameters[0],「お姉ちゃんと……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000420,failed,www\data\Map002.json,0,$.events[5].pages[1].list[65].parameters[0],そ、そうか、それは…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000421,failed,www\data\Map002.json,0,$.events[5].pages[1].list[68].parameters[0],「……え、えらいな！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000422,failed,www\data\Map002.json,0,$.events[5].pages[1].list[71].parameters[0],「その調子で私にも種付け頑張ってくれ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000423,failed,www\data\Map002.json,0,$.events[5].pages[1].list[79].parameters[0],「んっ、んっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000424,failed,www\data\Map002.json,0,$.events[5].pages[1].list[80].parameters[0],い、いいぞ……がんばれがんばれ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000425,failed,www\data\Map002.json,0,$.events[5].pages[1].list[84].parameters[0],そろそろ出そうか……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000426,failed,www\data\Map002.json,0,$.events[5].pages[1].list[87].parameters[0],「いつでも出していいからな……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000427,failed,www\data\Map002.json,0,$.events[5].pages[1].list[8].parameters[0],「えーと,,sem traducao disponivel; chunk divergente apos subdivisao
+T000428,failed,www\data\Map002.json,0,$.events[5].pages[1].list[90].parameters[0],「たくさん射精してっ……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000429,failed,www\data\Map002.json,0,$.events[5].pages[1].list[91].parameters[0],しっかり先生を孕ませてくれ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000430,failed,www\data\Map002.json,0,$.events[5].pages[1].list[9].parameters[0],何の話してたっけ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000431,failed,www\data\Map002.json,0,$.events[6].pages[0].list[11].parameters[0],日陰の涼しそうな場所でたばこを,,sem traducao disponivel; chunk divergente apos subdivisao
+T000432,failed,www\data\Map002.json,0,$.events[6].pages[0].list[12].parameters[0],吸っているお姉さんがいる。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000433,failed,www\data\Map002.json,0,$.events[6].pages[0].list[15].parameters[0],お姉さん,,sem traducao disponivel; chunk divergente apos subdivisao
+T000434,failed,www\data\Map002.json,0,$.events[6].pages[0].list[16].parameters[0],「ん……なんか用？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000435,failed,www\data\Map002.json,0,$.events[6].pages[0].list[20].parameters[0],「ここは私が占領してるから、暑いなら家に帰りなー？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000436,failed,www\data\Map002.json,0,$.events[6].pages[0].list[23].parameters[0],僕はお姉さんに近づいていく。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000437,failed,www\data\Map002.json,0,$.events[6].pages[0].list[27].parameters[0],「なんだよ……夏休みで暇なのか？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000438,failed,www\data\Map002.json,0,$.events[6].pages[0].list[28].parameters[0],ここに面白い物なんてないぞ？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000439,failed,www\data\Map002.json,0,$.events[6].pages[0].list[31].parameters[0],お姉さんは拒絶しながらも、僕が近づくとたばこをやめる。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000440,failed,www\data\Map002.json,0,$.events[6].pages[0].list[35].parameters[0],「まぁ少しくらいなら、涼んでいってもいいけど」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000441,failed,www\data\Map002.json,0,$.events[6].pages[0].list[42].parameters[0],「んん？アプリがなに……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000442,failed,www\data\Map002.json,0,$.events[6].pages[0].list[43].parameters[0],最近流行ってるゲームとか？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000443,failed,www\data\Map002.json,0,$.events[6].pages[0].list[47].parameters[0],「まあいいよ、暑くてまいってたから,,sem traducao disponivel; chunk divergente apos subdivisao
+T000444,failed,www\data\Map002.json,0,$.events[6].pages[0].list[48].parameters[0],気がまぎれるかもだし」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000445,failed,www\data\Map002.json,0,$.events[6].pages[0].list[53].parameters[0],僕は サヤ にアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000446,failed,www\data\Map002.json,0,$.events[6].pages[0].list[61].parameters[0],サヤ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000447,failed,www\data\Map002.json,0,$.events[6].pages[0].list[65].parameters[0],"サヤは ""にんしきかいへん"" された！",,sem traducao disponivel; chunk divergente apos subdivisao
+T000448,failed,www\data\Map002.json,0,$.events[6].pages[1].list[100].parameters[0],「あ……あぁ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000449,failed,www\data\Map002.json,0,$.events[6].pages[1].list[101].parameters[0],またいく……っ♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000450,failed,www\data\Map002.json,0,$.events[6].pages[1].list[106].parameters[0],「いっ……ぎぃぃぃ♥♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000451,failed,www\data\Map002.json,0,$.events[6].pages[1].list[109].parameters[0],「あぁ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000452,failed,www\data\Map002.json,0,$.events[6].pages[1].list[110].parameters[0],ちんぽ♥♥ちんぽ気持ちいい♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000453,failed,www\data\Map002.json,0,$.events[6].pages[1].list[113].parameters[0],「とまんない……♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000454,failed,www\data\Map002.json,0,$.events[6].pages[1].list[114].parameters[0],いくのとまんない……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000455,failed,www\data\Map002.json,0,$.events[6].pages[1].list[117].parameters[0],「あたまバカになっちゃう……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000456,failed,www\data\Map002.json,0,$.events[6].pages[1].list[11].parameters[0],「なんか……ここも暑くなってきた？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000457,failed,www\data\Map002.json,0,$.events[6].pages[1].list[120].parameters[0],「あぁこれ……♥またくる……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000458,failed,www\data\Map002.json,0,$.events[6].pages[1].list[123].parameters[0],「い、いくっ…………,,sem traducao disponivel; chunk divergente apos subdivisao
+T000459,failed,www\data\Map002.json,0,$.events[6].pages[1].list[124].parameters[0],いくいくっ……！！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000460,failed,www\data\Map002.json,0,$.events[6].pages[1].list[127].parameters[0],「いっ……♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000461,failed,www\data\Map002.json,0,$.events[6].pages[1].list[128].parameters[0],あっ……あぁっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000462,failed,www\data\Map002.json,0,$.events[6].pages[1].list[139].parameters[0],「んんっ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000463,failed,www\data\Map002.json,0,$.events[6].pages[1].list[140].parameters[0],いっ……♥ぐぅ……！？！？♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000464,failed,www\data\Map002.json,0,$.events[6].pages[1].list[145].parameters[0],PA_INIT 12 24 横 0,,sem traducao disponivel; chunk divergente apos subdivisao
+T000465,failed,www\data\Map002.json,0,$.events[6].pages[1].list[153].parameters[0],「おっ……♥いぎっ……っ♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000466,failed,www\data\Map002.json,0,$.events[6].pages[1].list[157].parameters[0],僕は サヤ に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000467,failed,www\data\Map002.json,0,$.events[6].pages[1].list[16].parameters[0],た、種付け……するんだよね……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000468,failed,www\data\Map002.json,0,$.events[6].pages[1].list[20].parameters[0],「あれ……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000469,failed,www\data\Map002.json,0,$.events[6].pages[1].list[21].parameters[0],こんないきなりするもんだっけ？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000470,failed,www\data\Map002.json,0,$.events[6].pages[1].list[25].parameters[0],「まあいいか……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000471,failed,www\data\Map002.json,0,$.events[6].pages[1].list[26].parameters[0],でも私じゃ、あんま楽しめないと思うよ？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000472,failed,www\data\Map002.json,0,$.events[6].pages[1].list[30].parameters[0],「セックスでいったことないんだよね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000473,failed,www\data\Map002.json,0,$.events[6].pages[1].list[43].parameters[0],「……んおぉっ！？！？♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000474,failed,www\data\Map002.json,0,$.events[6].pages[1].list[46].parameters[0],「あっ……あっ……！？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000475,failed,www\data\Map002.json,0,$.events[6].pages[1].list[47].parameters[0],ま、まって……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000476,failed,www\data\Map002.json,0,$.events[6].pages[1].list[48].parameters[0],なんかおかしい……！！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000477,failed,www\data\Map002.json,0,$.events[6].pages[1].list[56].parameters[0],「んおおぉぉっ……？♥？♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000478,failed,www\data\Map002.json,0,$.events[6].pages[1].list[59].parameters[0],「あぁっ……ま、まって,,sem traducao disponivel; chunk divergente apos subdivisao
+T000479,failed,www\data\Map002.json,0,$.events[6].pages[1].list[60].parameters[0],いったん止まって……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000480,failed,www\data\Map002.json,0,$.events[6].pages[1].list[63].parameters[0],「な、なにこれ……！？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000481,failed,www\data\Map002.json,0,$.events[6].pages[1].list[64].parameters[0],しらないっ……！？！？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000482,failed,www\data\Map002.json,0,$.events[6].pages[1].list[68].parameters[0],こんなぁっ…………♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000483,failed,www\data\Map002.json,0,$.events[6].pages[1].list[6].parameters[0],「ん……ふぅっ……♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000484,failed,www\data\Map002.json,0,$.events[6].pages[1].list[71].parameters[0],「あっ……あぁっ♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000485,failed,www\data\Map002.json,0,$.events[6].pages[1].list[72].parameters[0],うそっ……！？♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000486,failed,www\data\Map002.json,0,$.events[6].pages[1].list[75].parameters[0],「い、いくっっ……！？♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000487,failed,www\data\Map002.json,0,$.events[6].pages[1].list[7].parameters[0],あれ？意識が飛んでたような……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000488,failed,www\data\Map002.json,0,$.events[6].pages[1].list[80].parameters[0],「あぁっ♥♥あっ……♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000489,failed,www\data\Map002.json,0,$.events[6].pages[1].list[81].parameters[0],ひぎっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000490,failed,www\data\Map002.json,0,$.events[6].pages[1].list[89].parameters[0],「だ、だめっ……♥もうむりっ……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000491,failed,www\data\Map002.json,0,$.events[6].pages[1].list[92].parameters[0],「い、いきたくない……♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000492,failed,www\data\Map002.json,0,$.events[6].pages[1].list[93].parameters[0],これだめっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000493,failed,www\data\Map002.json,0,$.events[6].pages[1].list[96].parameters[0],「か、からだ……♥♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000494,failed,www\data\Map002.json,0,$.events[6].pages[1].list[97].parameters[0],もどれなくなる……♥♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000495,failed,www\data\Map002.json,0,$.events[7].pages[0].list[11].parameters[0],ここはヒマリちゃんの家の酒屋だ。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000496,failed,www\data\Map002.json,0,$.events[7].pages[0].list[12].parameters[0],母のエリさんが店の準備をしている。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000497,failed,www\data\Map002.json,0,$.events[7].pages[0].list[15].parameters[0],エリ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000498,failed,www\data\Map002.json,0,$.events[7].pages[0].list[16].parameters[0],「あら～ヒマリならどこかにいっちゃったわよー？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000499,failed,www\data\Map002.json,0,$.events[7].pages[0].list[19].parameters[0],僕はスマホを取り出して要件を伝える。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000500,failed,www\data\Map002.json,0,$.events[7].pages[0].list[23].parameters[0],「んん～？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000501,failed,www\data\Map002.json,0,$.events[7].pages[0].list[24].parameters[0],おばさん、そういうのはよくわからないんだけど……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000502,failed,www\data\Map002.json,0,$.events[7].pages[0].list[28].parameters[0],「ちょっと時間あるし、すこしだけならいいわよ～」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000503,failed,www\data\Map002.json,0,$.events[7].pages[0].list[33].parameters[0],僕は エリ にアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000504,failed,www\data\Map002.json,0,$.events[7].pages[0].list[42].parameters[0],「ん……………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000505,failed,www\data\Map002.json,0,$.events[7].pages[0].list[45].parameters[0],"エリは ""にんしきかいへん"" された！",,sem traducao disponivel; chunk divergente apos subdivisao
+T000506,failed,www\data\Map002.json,0,$.events[7].pages[1].list[103].parameters[0],「ボク君ありがとね……♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000507,failed,www\data\Map002.json,0,$.events[7].pages[1].list[104].parameters[0],また気が向いたらよろしくね……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000508,failed,www\data\Map002.json,0,$.events[7].pages[1].list[108].parameters[0],僕は エリ に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000509,failed,www\data\Map002.json,0,$.events[7].pages[1].list[13].parameters[0],「偉いわねぇ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000510,failed,www\data\Map002.json,0,$.events[7].pages[1].list[14].parameters[0],こんなおばさんだけど、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000511,failed,www\data\Map002.json,0,$.events[7].pages[1].list[15].parameters[0],ほんとにいいの？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000512,failed,www\data\Map002.json,0,$.events[7].pages[1].list[23].parameters[0],「どう？はいりそー？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000513,failed,www\data\Map002.json,0,$.events[7].pages[1].list[24].parameters[0],ゆっくりでいいからね～」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000514,failed,www\data\Map002.json,0,$.events[7].pages[1].list[30].parameters[0],「そう、そこそこっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000515,failed,www\data\Map002.json,0,$.events[7].pages[1].list[42].parameters[0],「で、出そうになったら……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000516,failed,www\data\Map002.json,0,$.events[7].pages[1].list[43].parameters[0],すぐに出していいからね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000517,failed,www\data\Map002.json,0,$.events[7].pages[1].list[49].parameters[0],「久しぶりだからかしらっ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000518,failed,www\data\Map002.json,0,$.events[7].pages[1].list[50].parameters[0],すごくきもちいいわ……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000519,failed,www\data\Map002.json,0,$.events[7].pages[1].list[53].parameters[0],「ボク君も私に構わず好きなだけ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000520,failed,www\data\Map002.json,0,$.events[7].pages[1].list[54].parameters[0],気持ちよくなってね……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000521,failed,www\data\Map002.json,0,$.events[7].pages[1].list[62].parameters[0],「あっあっ……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000522,failed,www\data\Map002.json,0,$.events[7].pages[1].list[63].parameters[0],きもちいい……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000523,failed,www\data\Map002.json,0,$.events[7].pages[1].list[66].parameters[0],「そ、そこっ……いいところ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000524,failed,www\data\Map002.json,0,$.events[7].pages[1].list[67].parameters[0],当たってる……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000525,failed,www\data\Map002.json,0,$.events[7].pages[1].list[71].parameters[0],「う、うそ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000526,failed,www\data\Map002.json,0,$.events[7].pages[1].list[72].parameters[0],いっちゃうかも……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000527,failed,www\data\Map002.json,0,$.events[7].pages[1].list[75].parameters[0],「いっ……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000528,failed,www\data\Map002.json,0,$.events[7].pages[1].list[76].parameters[0],ああぁっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000529,failed,www\data\Map002.json,0,$.events[7].pages[1].list[87].parameters[0],「あぁぁっ……♥♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000530,failed,www\data\Map002.json,0,$.events[7].pages[1].list[8].parameters[0],「あーなるほど！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000531,failed,www\data\Map002.json,0,$.events[7].pages[1].list[98].parameters[0],「あっ……♥すごい量……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000532,failed,www\data\Map002.json,0,$.events[7].pages[1].list[99].parameters[0],こぼれちゃう……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000533,failed,www\data\Map002.json,0,$.events[7].pages[1].list[9].parameters[0],ボク君種付けしてくれるのね？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000534,failed,www\data\Map002.json,0,$.events[8].pages[0].list[11].parameters[0],日陰でおまわりさんが休憩している様だ。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000535,failed,www\data\Map002.json,0,$.events[8].pages[0].list[14].parameters[0],おまわりさん,,sem traducao disponivel; chunk divergente apos subdivisao
+T000536,failed,www\data\Map002.json,0,$.events[8].pages[0].list[15].parameters[0],「やあ、今日も暑いねぇ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000537,failed,www\data\Map002.json,0,$.events[8].pages[0].list[16].parameters[0],熱中症に気を付けてね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000538,failed,www\data\Map002.json,0,$.events[8].pages[0].list[20].parameters[0],「しかしこの日差しの中、外で遊んでるの？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000539,failed,www\data\Map002.json,0,$.events[8].pages[0].list[21].parameters[0],元気だね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000540,failed,www\data\Map002.json,0,$.events[8].pages[0].list[24].parameters[0],僕は汗を拭いながら要件を伝える。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000541,failed,www\data\Map002.json,0,$.events[8].pages[0].list[28].parameters[0],「ん？アプリ……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000542,failed,www\data\Map002.json,0,$.events[8].pages[0].list[32].parameters[0],「うーん、一応仕事中なんだけどな……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000543,failed,www\data\Map002.json,0,$.events[8].pages[0].list[33].parameters[0],ちょっとだけね？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000544,failed,www\data\Map002.json,0,$.events[8].pages[0].list[38].parameters[0],僕は シオリ にアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000545,failed,www\data\Map002.json,0,$.events[8].pages[0].list[50].parameters[0],"シオリは ""にんしきかいへん"" された！",,sem traducao disponivel; chunk divergente apos subdivisao
+T000546,failed,www\data\Map002.json,0,$.events[8].pages[1].list[107].parameters[0],「ん……ふぅ…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000547,failed,www\data\Map002.json,0,$.events[8].pages[1].list[10].parameters[0],あぁなるほど……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000548,failed,www\data\Map002.json,0,$.events[8].pages[1].list[110].parameters[0],「う、うん……いっぱい出せて偉いね♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000549,failed,www\data\Map002.json,0,$.events[8].pages[1].list[114].parameters[0],「これなら絶対に妊娠しちゃうだろうね♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000550,failed,www\data\Map002.json,0,$.events[8].pages[1].list[118].parameters[0],僕は シオリ に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000551,failed,www\data\Map002.json,0,$.events[8].pages[1].list[14].parameters[0],「私に種付けしたいのね？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000552,failed,www\data\Map002.json,0,$.events[8].pages[1].list[18].parameters[0],「いいよ、ちょっと待ってね」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000553,failed,www\data\Map002.json,0,$.events[8].pages[1].list[26].parameters[0],「これでどう……？いれられそう？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000554,failed,www\data\Map002.json,0,$.events[8].pages[1].list[32].parameters[0],「あっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000555,failed,www\data\Map002.json,0,$.events[8].pages[1].list[35].parameters[0],「んっ……はいったね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000556,failed,www\data\Map002.json,0,$.events[8].pages[1].list[46].parameters[0],「どう？きもちいい？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000557,failed,www\data\Map002.json,0,$.events[8].pages[1].list[49].parameters[0],「ちんぽ……ガチガチだね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000558,failed,www\data\Map002.json,0,$.events[8].pages[1].list[53].parameters[0],もっと激しくしてもいいよ……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000559,failed,www\data\Map002.json,0,$.events[8].pages[1].list[56].parameters[0],「いっぱい射精できるように,,sem traducao disponivel; chunk divergente apos subdivisao
+T000560,failed,www\data\Map002.json,0,$.events[8].pages[1].list[57].parameters[0],好きなように使っていいからね……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000561,failed,www\data\Map002.json,0,$.events[8].pages[1].list[5].parameters[0],えーとそれで何してほしいんだっけ？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000562,failed,www\data\Map002.json,0,$.events[8].pages[1].list[65].parameters[0],「あっ……うっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000563,failed,www\data\Map002.json,0,$.events[8].pages[1].list[68].parameters[0],「い、いいかんじ……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000564,failed,www\data\Map002.json,0,$.events[8].pages[1].list[71].parameters[0],「ど、どう……？きもちいい……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000565,failed,www\data\Map002.json,0,$.events[8].pages[1].list[74].parameters[0],「んんっ…………♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000566,failed,www\data\Map002.json,0,$.events[8].pages[1].list[77].parameters[0],「い、いつでも出していいからね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000567,failed,www\data\Map002.json,0,$.events[8].pages[1].list[80].parameters[0],「いっぱい出して……♥,,sem traducao disponivel; chunk divergente apos subdivisao
+T000568,failed,www\data\Map002.json,0,$.events[8].pages[1].list[81].parameters[0],無責任中出しでしっかり孕ませて……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000569,failed,www\data\Map002.json,0,$.events[8].pages[1].list[84].parameters[0],「んんっ…………あぁっ……♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000570,failed,www\data\Map002.json,0,$.events[8].pages[1].list[95].parameters[0],「あっ……ん…………♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000571,failed,www\data\Map002.json,0,$.events[9].pages[0].list[11].parameters[0],見覚えのある人がいる。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000572,failed,www\data\Map002.json,0,$.events[9].pages[0].list[14].parameters[0],コト,,sem traducao disponivel; chunk divergente apos subdivisao
+T000573,failed,www\data\Map002.json,0,$.events[9].pages[0].list[15].parameters[0],「んーー？あれボク君？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000574,failed,www\data\Map002.json,0,$.events[9].pages[0].list[18].parameters[0],家も近くて卒業するまで良く面倒を見てくれてた,,sem traducao disponivel; chunk divergente apos subdivisao
+T000575,failed,www\data\Map002.json,0,$.events[9].pages[0].list[19].parameters[0],コトちゃんだ。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000576,failed,www\data\Map002.json,0,$.events[9].pages[0].list[23].parameters[0],「久しぶりだね？ここらへんで遊んでるの？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000577,failed,www\data\Map002.json,0,$.events[9].pages[0].list[24].parameters[0],私は部活帰りだよ」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000578,failed,www\data\Map002.json,0,$.events[9].pages[0].list[28].parameters[0],「種付けしてる……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000579,failed,www\data\Map002.json,0,$.events[9].pages[0].list[29].parameters[0],何？自由研究とか？私も手伝おうか？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000580,failed,www\data\Map002.json,0,$.events[9].pages[0].list[34].parameters[0],僕は コト にアプリをつかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000581,failed,www\data\Map002.json,0,$.events[9].pages[0].list[46].parameters[0],"コトは ""にんしきかいへん"" された！",,sem traducao disponivel; chunk divergente apos subdivisao
+T000582,failed,www\data\Map002.json,0,$.events[9].pages[1].list[100].parameters[0],「お、おつかれ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000583,failed,www\data\Map002.json,0,$.events[9].pages[1].list[101].parameters[0],たくさん出たね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000584,failed,www\data\Map002.json,0,$.events[9].pages[1].list[105].parameters[0],「私……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000585,failed,www\data\Map002.json,0,$.events[9].pages[1].list[106].parameters[0],これで本当に孕んじゃったのかな？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000586,failed,www\data\Map002.json,0,$.events[9].pages[1].list[109].parameters[0],「まぁ、一発で必ず出来るとも,,sem traducao disponivel; chunk divergente apos subdivisao
+T000587,failed,www\data\Map002.json,0,$.events[9].pages[1].list[10].parameters[0],手伝うよー何すればいい？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000588,failed,www\data\Map002.json,0,$.events[9].pages[1].list[110].parameters[0],限らないか……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000589,failed,www\data\Map002.json,0,$.events[9].pages[1].list[114].parameters[0],僕は コト に種付けした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000590,failed,www\data\Map002.json,0,$.events[9].pages[1].list[21].parameters[0],「いぃっ…………あっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000591,failed,www\data\Map002.json,0,$.events[9].pages[1].list[29].parameters[0],「あっ……、た、種付けって,,sem traducao disponivel; chunk divergente apos subdivisao
+T000592,failed,www\data\Map002.json,0,$.events[9].pages[1].list[30].parameters[0],エッチの事だったのね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000593,failed,www\data\Map002.json,0,$.events[9].pages[1].list[33].parameters[0],「大丈夫……痛くは……ないけどっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000594,failed,www\data\Map002.json,0,$.events[9].pages[1].list[36].parameters[0],「は、初めては……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000595,failed,www\data\Map002.json,0,$.events[9].pages[1].list[37].parameters[0],好きな人としたかったかな……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000596,failed,www\data\Map002.json,0,$.events[9].pages[1].list[40].parameters[0],「まあ、しょうがないよねっ……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000597,failed,www\data\Map002.json,0,$.events[9].pages[1].list[41].parameters[0],そういう決まりだし……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000598,failed,www\data\Map002.json,0,$.events[9].pages[1].list[44].parameters[0],「ボク君となら、まぁ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000599,failed,www\data\Map002.json,0,$.events[9].pages[1].list[45].parameters[0],いいかな……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000600,failed,www\data\Map002.json,0,$.events[9].pages[1].list[48].parameters[0],「んっ…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000601,failed,www\data\Map002.json,0,$.events[9].pages[1].list[4].parameters[0],「うん……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000602,failed,www\data\Map002.json,0,$.events[9].pages[1].list[51].parameters[0],「た、たくさん中に出してね……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000603,failed,www\data\Map002.json,0,$.events[9].pages[1].list[5].parameters[0],なんかぼーっとしてたような……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000604,failed,www\data\Map002.json,0,$.events[9].pages[1].list[62].parameters[0],「そ、そろそろでそう……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000605,failed,www\data\Map002.json,0,$.events[9].pages[1].list[65].parameters[0],「あっ……んんっ……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000606,failed,www\data\Map002.json,0,$.events[9].pages[1].list[68].parameters[0],「こ、これ……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000607,failed,www\data\Map002.json,0,$.events[9].pages[1].list[69].parameters[0],いっちゃうかも……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000608,failed,www\data\Map002.json,0,$.events[9].pages[1].list[72].parameters[0],「いっ……あっ……だめ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000609,failed,www\data\Map002.json,0,$.events[9].pages[1].list[75].parameters[0],「いっ……く…………！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000610,failed,www\data\Map002.json,0,$.events[9].pages[1].list[86].parameters[0],「んっ……あぁっ……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000611,failed,www\data\Map002.json,0,$.events[9].pages[1].list[97].parameters[0],「うぅっ…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000612,failed,www\data\Map002.json,0,$.events[9].pages[1].list[9].parameters[0],「あぁえっと、種付けだっけ？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000613,failed,www\data\Map003.json,0,$.events[1].pages[0].list[0].parameters[0],ピクチャ番号　5　14,,sem traducao disponivel; chunk divergente apos subdivisao
+T000614,failed,www\data\Map003.json,0,$.events[2].pages[0].list[8].parameters[0],D_TEXT  酒屋 24,,sem traducao disponivel; chunk divergente apos subdivisao
+T000615,failed,www\data\Map003.json,0,$.events[5].pages[0].list[8].parameters[0],D_TEXT  路地裏 24,,sem traducao disponivel; chunk divergente apos subdivisao
+T000616,failed,www\data\Map007.json,0,$.events[5].pages[1].list[77].parameters[0],「い、いつでも出していいからね……！」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000617,failed,www\data\Map009.json,0,$.events[1].pages[0].list[10].parameters[0],極めて順調で続々と成果を発揮しています」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000618,failed,www\data\Map009.json,0,$.events[1].pages[0].list[12].parameters[0],局長,,sem traducao disponivel; chunk divergente apos subdivisao
+T000619,failed,www\data\Map009.json,0,$.events[1].pages[0].list[13].parameters[0],「そうかそうか……実に素晴らしい……！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000620,failed,www\data\Map009.json,0,$.events[1].pages[0].list[14].parameters[0],この調子でどんどん人口を増やしてもらおう……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000621,failed,www\data\Map009.json,0,$.events[1].pages[0].list[17].parameters[0],「特に例の町の適任者ですが……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000622,failed,www\data\Map009.json,0,$.events[1].pages[0].list[18].parameters[0],これまでに２００件以上の成果を上げています」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000623,failed,www\data\Map009.json,0,$.events[1].pages[0].list[21].parameters[0],「２００件以上……？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000624,failed,www\data\Map009.json,0,$.events[1].pages[0].list[22].parameters[0],とんだミラクルおちんぽボーイだな……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000625,failed,www\data\Map009.json,0,$.events[1].pages[0].list[25].parameters[0],「ミラクル……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000626,failed,www\data\Map009.json,0,$.events[1].pages[0].list[28].parameters[0],「あぁいやなんでもない……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000627,failed,www\data\Map009.json,0,$.events[1].pages[0].list[29].parameters[0],引き続き計画を進めてくれ」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000628,failed,www\data\Map009.json,0,$.events[1].pages[0].list[32].parameters[0],「我々には愚民どもには理解できない責務があるのだからな」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000629,failed,www\data\Map009.json,0,$.events[1].pages[0].list[35].parameters[0],「承知しました」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000630,failed,www\data\Map009.json,0,$.events[1].pages[0].list[38].parameters[0],「ところで……君のお腹なんだが……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000631,failed,www\data\Map009.json,0,$.events[1].pages[0].list[41].parameters[0],「あぁこれですか？私も計画の一助となるため,,sem traducao disponivel; chunk divergente apos subdivisao
+T000632,failed,www\data\Map009.json,0,$.events[1].pages[0].list[42].parameters[0],このとおり種付けしてもらいました」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000633,failed,www\data\Map009.json,0,$.events[1].pages[0].list[54].parameters[0],「あぁ……そうか……そうだな…………」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000634,failed,www\data\Map009.json,0,$.events[1].pages[0].list[57].parameters[0],「私も計画のために……,,sem traducao disponivel; chunk divergente apos subdivisao
+T000635,failed,www\data\Map009.json,0,$.events[1].pages[0].list[58].parameters[0],種付けしてもらわないとな……」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000636,failed,www\data\Map009.json,0,$.events[1].pages[0].list[65].parameters[0],ここまでプレイして頂きありがとうございました！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000637,failed,www\data\Map009.json,0,$.events[1].pages[0].list[68].parameters[0],タイトル画面にギャラリーが追加されました！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000638,failed,www\data\Map009.json,0,$.events[1].pages[0].list[9].parameters[0],「えー例の計画ですが、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000639,failed,www\data\Map027.json,0,$.events[1].pages[0].list[8].parameters[0],D_TEXT  自分の部屋 24,,sem traducao disponivel; chunk divergente apos subdivisao
+T000640,failed,www\data\Map027.json,0,$.events[2].pages[0].list[8].parameters[0],D_TEXT  姉の部屋 24,,sem traducao disponivel; chunk divergente apos subdivisao
+T000641,failed,www\data\Map027.json,0,$.events[3].pages[0].list[15].parameters[0],D_TEXT  学校へ 24,,sem traducao disponivel; chunk divergente apos subdivisao
+T000642,failed,www\data\Map027.json,0,$.events[3].pages[0].list[1].parameters[0],移動アイコン表示しない,,sem traducao disponivel; chunk divergente apos subdivisao
+T000643,failed,www\data\Map027.json,0,$.events[3].pages[0].list[34].parameters[0],D_TEXT  街へ 24,,sem traducao disponivel; chunk divergente apos subdivisao
+T000644,failed,www\data\Map027.json,0,$.events[3].pages[0].list[40].parameters[0],！マーク表示　メインシナリオ4以上の時,,sem traducao disponivel; chunk divergente apos subdivisao
+T000645,failed,www\data\Map027.json,0,$.events[3].pages[0].list[6].parameters[0],移動アイコン表示,,sem traducao disponivel; chunk divergente apos subdivisao
+T000646,failed,www\data\Map027.json,0,$.events[4].pages[0].list[22].parameters[0],あなたが適任者……？」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000647,failed,www\data\Map027.json,0,$.events[4].pages[1].list[124].parameters[0],僕はその後、この町の女子にとどまらず,,sem traducao disponivel; chunk divergente apos subdivisao
+T000648,failed,www\data\Map027.json,0,$.events[4].pages[1].list[125].parameters[0],時には隣町へ赴き、”たねづけ” を行い続けた。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000649,failed,www\data\Map027.json,0,$.events[4].pages[1].list[128].parameters[0],みんな ”たねづけ” を行うと喜んで褒めてくれるので、,,sem traducao disponivel; chunk divergente apos subdivisao
+T000650,failed,www\data\Map027.json,0,$.events[4].pages[1].list[129].parameters[0],とてもやりがいのある仕事だ。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000651,failed,www\data\Map027.json,0,$.events[4].pages[1].list[80].parameters[0],「しんじゃうぅっ……♥♥」,,sem traducao disponivel; chunk divergente apos subdivisao
+T000652,failed,www\data\Map028.json,0,$.events[1].pages[0].list[5].parameters[0],ここは田舎の学校というのもあるが、いつものような騒がしさは無く,,sem traducao disponivel; chunk divergente apos subdivisao
+T000653,failed,www\data\Map028.json,0,$.events[1].pages[0].list[6].parameters[0],静まり返っていた。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000654,failed,www\data\Map028.json,0,$.events[1].pages[0].list[9].parameters[0],やはり夏休み中に学校へ来る人なんていないのだろうか。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000655,failed,www\data\Map028.json,0,$.events[2].pages[0].list[8].parameters[0],D_TEXT  職員室へ 24,,sem traducao disponivel; chunk divergente apos subdivisao
+T000656,failed,www\data\Map028.json,0,$.events[4].pages[0].list[8].parameters[0],D_TEXT  図書室へ 24,,sem traducao disponivel; chunk divergente apos subdivisao
+T000657,failed,www\data\Map028.json,0,$.events[5].pages[0].list[9].parameters[0],D_TEXT  体育館へ 24,,sem traducao disponivel; chunk divergente apos subdivisao
+T000658,failed,www\data\System.json,0,$.gameTitle,種付けアプリ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000659,failed,www\data\Tilesets.json,0,$[1].name,エリア,,sem traducao disponivel; chunk divergente apos subdivisao
+T000660,failed,www\data\System.json,0,$.switches[12],メッセージ表示中,,sem traducao disponivel; chunk divergente apos subdivisao
+T000661,failed,www\data\System.json,0,$.switches[13],オート動作(プラグイン),,sem traducao disponivel; chunk divergente apos subdivisao
+T000662,failed,www\data\System.json,0,$.switches[14],オート解除しない（プラグ）,,sem traducao disponivel; chunk divergente apos subdivisao
+T000663,failed,www\data\System.json,0,$.switches[15],オートアニメ開始/停止,,sem traducao disponivel; chunk divergente apos subdivisao
+T000664,failed,www\data\System.json,0,$.switches[16],msgWin 全体,,sem traducao disponivel; chunk divergente apos subdivisao
+T000665,failed,www\data\System.json,0,$.switches[17],msgWin 小,,sem traducao disponivel; chunk divergente apos subdivisao
+T000666,failed,www\data\System.json,0,$.switches[22],教師完了立ち絵削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000667,failed,www\data\System.json,0,$.switches[23],モミジ完了立ち絵削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000668,failed,www\data\System.json,0,$.switches[24],ヒマリ完了立ち絵削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000669,failed,www\data\System.json,0,$.switches[25],姉友人完了立ち絵削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000670,failed,www\data\System.json,0,$.switches[26],路地裏完了立ち絵削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000671,failed,www\data\System.json,0,$.switches[27],酒屋完了立ち絵削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000672,failed,www\data\System.json,0,$.switches[28],警官完了立ち絵削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000673,failed,www\data\System.json,0,$.switches[29],JC完了立ち絵削除,,sem traducao disponivel; chunk divergente apos subdivisao
+T000674,failed,www\data\System.json,0,$.switches[2],メッセージスキップ無効,,sem traducao disponivel; chunk divergente apos subdivisao
+T000675,failed,www\data\System.json,0,$.switches[35],tgameクリア,,sem traducao disponivel; chunk divergente apos subdivisao
+T000676,failed,www\data\System.json,0,$.switches[41],立ち絵　クリック動作,,sem traducao disponivel; chunk divergente apos subdivisao
+T000677,failed,www\data\System.json,0,$.switches[42],立ち絵　表示完了,,sem traducao disponivel; chunk divergente apos subdivisao
+T000678,failed,www\data\System.json,0,$.switches[46],イベント開始,,sem traducao disponivel; chunk divergente apos subdivisao
+T000679,failed,www\data\System.json,0,$.switches[50],Movicon クリック動作,,sem traducao disponivel; chunk divergente apos subdivisao
+T000680,failed,www\data\System.json,0,$.switches[51],移動アイコン1表示,,sem traducao disponivel; chunk divergente apos subdivisao
+T000681,failed,www\data\System.json,0,$.switches[52],移動アイコン2表示,,sem traducao disponivel; chunk divergente apos subdivisao
+T000682,failed,www\data\System.json,0,$.switches[53],移動アイコン3表示,,sem traducao disponivel; chunk divergente apos subdivisao
+T000683,failed,www\data\System.json,0,$.switches[54],移動アイコン4表示,,sem traducao disponivel; chunk divergente apos subdivisao
+T000684,failed,www\data\System.json,0,$.switches[55],移動アイコン5表示,,sem traducao disponivel; chunk divergente apos subdivisao
+T000685,failed,www\data\System.json,0,$.switches[5],aキー入力判定開始,,sem traducao disponivel; chunk divergente apos subdivisao
+T000686,failed,www\data\System.json,0,$.switches[61],Gal キャラ表示完了,,sem traducao disponivel; chunk divergente apos subdivisao
+T000687,failed,www\data\System.json,0,$.switches[62],Gal 姉,,sem traducao disponivel; chunk divergente apos subdivisao
+T000688,failed,www\data\System.json,0,$.switches[63],Gal 教師,,sem traducao disponivel; chunk divergente apos subdivisao
+T000689,failed,www\data\System.json,0,$.switches[64],Gal モミジ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000690,failed,www\data\System.json,0,$.switches[65],Gal ヒマリ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000691,failed,www\data\System.json,0,$.switches[66],Gal 姉友人,,sem traducao disponivel; chunk divergente apos subdivisao
+T000692,failed,www\data\System.json,0,$.switches[67],Gal 酒屋,,sem traducao disponivel; chunk divergente apos subdivisao
+T000693,failed,www\data\System.json,0,$.switches[68],Gal 路地裏,,sem traducao disponivel; chunk divergente apos subdivisao
+T000694,failed,www\data\System.json,0,$.switches[69],Gal 警官,,sem traducao disponivel; chunk divergente apos subdivisao
+T000695,failed,www\data\System.json,0,$.switches[71],Gal 局員,,sem traducao disponivel; chunk divergente apos subdivisao
+T000696,failed,www\data\System.json,0,$.terms.basic[0],レベル,,sem traducao disponivel; chunk divergente apos subdivisao
+T000697,failed,www\data\System.json,0,$.terms.basic[8],経験値,,sem traducao disponivel; chunk divergente apos subdivisao
+T000698,failed,www\data\System.json,0,$.terms.commands[0],戦う,,sem traducao disponivel; chunk divergente apos subdivisao
+T000699,failed,www\data\System.json,0,$.terms.commands[10],ゲーム終了,,sem traducao disponivel; chunk divergente apos subdivisao
+T000700,failed,www\data\System.json,0,$.terms.commands[11],オプション,,sem traducao disponivel; chunk divergente apos subdivisao
+T000701,failed,www\data\System.json,0,$.terms.commands[12],武器,,sem traducao disponivel; chunk divergente apos subdivisao
+T000702,failed,www\data\System.json,0,$.terms.commands[13],防具,,sem traducao disponivel; chunk divergente apos subdivisao
+T000703,failed,www\data\System.json,0,$.terms.commands[14],大事なもの,,sem traducao disponivel; chunk divergente apos subdivisao
+T000704,failed,www\data\System.json,0,$.terms.commands[16],最強装備,,sem traducao disponivel; chunk divergente apos subdivisao
+T000705,failed,www\data\System.json,0,$.terms.commands[17],全て外す,,sem traducao disponivel; chunk divergente apos subdivisao
+T000706,failed,www\data\System.json,0,$.terms.commands[18],ニューゲーム,,sem traducao disponivel; chunk divergente apos subdivisao
+T000707,failed,www\data\System.json,0,$.terms.commands[19],コンティニュー,,sem traducao disponivel; chunk divergente apos subdivisao
+T000708,failed,www\data\System.json,0,$.terms.commands[1],逃げる,,sem traducao disponivel; chunk divergente apos subdivisao
+T000709,failed,www\data\System.json,0,$.terms.commands[21],タイトルへ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000710,failed,www\data\System.json,0,$.terms.commands[22],やめる,,sem traducao disponivel; chunk divergente apos subdivisao
+T000711,failed,www\data\System.json,0,$.terms.commands[24],購入する,,sem traducao disponivel; chunk divergente apos subdivisao
+T000712,failed,www\data\System.json,0,$.terms.commands[25],売却する,,sem traducao disponivel; chunk divergente apos subdivisao
+T000713,failed,www\data\System.json,0,$.terms.commands[2],攻撃,,sem traducao disponivel; chunk divergente apos subdivisao
+T000714,failed,www\data\System.json,0,$.terms.commands[3],防御,,sem traducao disponivel; chunk divergente apos subdivisao
+T000715,failed,www\data\System.json,0,$.terms.commands[4],アイテム,,sem traducao disponivel; chunk divergente apos subdivisao
+T000716,failed,www\data\System.json,0,$.terms.commands[5],スキル,,sem traducao disponivel; chunk divergente apos subdivisao
+T000717,failed,www\data\System.json,0,$.terms.commands[6],装備,,sem traducao disponivel; chunk divergente apos subdivisao
+T000718,failed,www\data\System.json,0,$.terms.commands[7],ステータス,,sem traducao disponivel; chunk divergente apos subdivisao
+T000719,failed,www\data\System.json,0,$.terms.commands[8],並び替え,,sem traducao disponivel; chunk divergente apos subdivisao
+T000720,failed,www\data\System.json,0,$.terms.commands[9],セーブ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000721,failed,www\data\System.json,0,$.terms.messages.actionFailure,%1には効かなかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000722,failed,www\data\System.json,0,$.terms.messages.actorDamage,%1は %2 のダメージを受けた！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000723,failed,www\data\System.json,0,$.terms.messages.actorDrain,%1は%2を %3 奪われた！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000724,failed,www\data\System.json,0,$.terms.messages.actorGain,%1の%2が %3 増えた！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000725,failed,www\data\System.json,0,$.terms.messages.actorLoss,%1の%2が %3 減った！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000726,failed,www\data\System.json,0,$.terms.messages.actorNoDamage,%1はダメージを受けていない！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000727,failed,www\data\System.json,0,$.terms.messages.actorNoHit,ミス！　%1はダメージを受けていない！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000728,failed,www\data\System.json,0,$.terms.messages.actorRecovery,%1の%2が %3 回復した！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000729,failed,www\data\System.json,0,$.terms.messages.alwaysDash,常時ダッシュ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000730,failed,www\data\System.json,0,$.terms.messages.bgmVolume,BGM 音量,,sem traducao disponivel; chunk divergente apos subdivisao
+T000731,failed,www\data\System.json,0,$.terms.messages.bgsVolume,BGS 音量,,sem traducao disponivel; chunk divergente apos subdivisao
+T000732,failed,www\data\System.json,0,$.terms.messages.buffAdd,%1の%2が上がった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000733,failed,www\data\System.json,0,$.terms.messages.buffRemove,%1の%2が元に戻った！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000734,failed,www\data\System.json,0,$.terms.messages.commandRemember,コマンド記憶,,sem traducao disponivel; chunk divergente apos subdivisao
+T000735,failed,www\data\System.json,0,$.terms.messages.counterAttack,%1の反撃！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000736,failed,www\data\System.json,0,$.terms.messages.criticalToActor,痛恨の一撃！！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000737,failed,www\data\System.json,0,$.terms.messages.criticalToEnemy,会心の一撃！！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000738,failed,www\data\System.json,0,$.terms.messages.debuffAdd,%1の%2が下がった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000739,failed,www\data\System.json,0,$.terms.messages.defeat,%1は戦いに敗れた。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000740,failed,www\data\System.json,0,$.terms.messages.emerge,%1が出現！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000741,failed,www\data\System.json,0,$.terms.messages.enemyDamage,%1に %2 のダメージを与えた！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000742,failed,www\data\System.json,0,$.terms.messages.enemyDrain,%1の%2を %3 奪った！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000743,failed,www\data\System.json,0,$.terms.messages.enemyNoDamage,%1にダメージを与えられない！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000744,failed,www\data\System.json,0,$.terms.messages.enemyNoHit,ミス！　%1にダメージを与えられない！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000745,failed,www\data\System.json,0,$.terms.messages.escapeFailure,しかし逃げることはできなかった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000746,failed,www\data\System.json,0,$.terms.messages.escapeStart,%1は逃げ出した！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000747,failed,www\data\System.json,0,$.terms.messages.evasion,%1は攻撃をかわした！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000748,failed,www\data\System.json,0,$.terms.messages.expNext,次の%1まで,,sem traducao disponivel; chunk divergente apos subdivisao
+T000749,failed,www\data\System.json,0,$.terms.messages.expTotal,現在の%1,,sem traducao disponivel; chunk divergente apos subdivisao
+T000750,failed,www\data\System.json,0,$.terms.messages.file,ファイル,,sem traducao disponivel; chunk divergente apos subdivisao
+T000751,failed,www\data\System.json,0,$.terms.messages.levelUp,%1は%2 %3 に上がった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000752,failed,www\data\System.json,0,$.terms.messages.loadMessage,どのファイルをロードしますか？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000753,failed,www\data\System.json,0,$.terms.messages.magicEvasion,%1は魔法を打ち消した！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000754,failed,www\data\System.json,0,$.terms.messages.magicReflection,%1は魔法を跳ね返した！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000755,failed,www\data\System.json,0,$.terms.messages.meVolume,ME 音量,,sem traducao disponivel; chunk divergente apos subdivisao
+T000756,failed,www\data\System.json,0,$.terms.messages.obtainExp,%1 の%2を獲得！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000757,failed,www\data\System.json,0,$.terms.messages.obtainGold,お金を %1\G 手に入れた！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000758,failed,www\data\System.json,0,$.terms.messages.obtainItem,%1を手に入れた！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000759,failed,www\data\System.json,0,$.terms.messages.obtainSkill,%1を覚えた！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000760,failed,www\data\System.json,0,$.terms.messages.possession,持っている数,,sem traducao disponivel; chunk divergente apos subdivisao
+T000761,failed,www\data\System.json,0,$.terms.messages.preemptive,%1は先手を取った！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000762,failed,www\data\System.json,0,$.terms.messages.saveMessage,どのファイルにセーブしますか？,,sem traducao disponivel; chunk divergente apos subdivisao
+T000763,failed,www\data\System.json,0,$.terms.messages.seVolume,SE 音量,,sem traducao disponivel; chunk divergente apos subdivisao
+T000764,failed,www\data\System.json,0,$.terms.messages.substitute,%1が%2をかばった！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000765,failed,www\data\System.json,0,$.terms.messages.surprise,%1は不意をつかれた！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000766,failed,www\data\System.json,0,$.terms.messages.useItem,%1は%2を使った！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000767,failed,www\data\System.json,0,$.terms.messages.victory,%1の勝利！,,sem traducao disponivel; chunk divergente apos subdivisao
+T000768,failed,www\data\System.json,0,$.terms.params[0],最大ＨＰ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000769,failed,www\data\System.json,0,$.terms.params[1],最大ＭＰ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000770,failed,www\data\System.json,0,$.terms.params[2],攻撃力,,sem traducao disponivel; chunk divergente apos subdivisao
+T000771,failed,www\data\System.json,0,$.terms.params[3],防御力,,sem traducao disponivel; chunk divergente apos subdivisao
+T000772,failed,www\data\System.json,0,$.terms.params[4],魔法力,,sem traducao disponivel; chunk divergente apos subdivisao
+T000773,failed,www\data\System.json,0,$.terms.params[5],魔法防御,,sem traducao disponivel; chunk divergente apos subdivisao
+T000774,failed,www\data\System.json,0,$.terms.params[6],敏捷性,,sem traducao disponivel; chunk divergente apos subdivisao
+T000775,failed,www\data\System.json,0,$.terms.params[8],命中率,,sem traducao disponivel; chunk divergente apos subdivisao
+T000776,failed,www\data\System.json,0,$.terms.params[9],回避率,,sem traducao disponivel; chunk divergente apos subdivisao
+T000777,failed,www\data\System.json,0,$.variables[10],移動アイコン x座標 2,,sem traducao disponivel; chunk divergente apos subdivisao
+T000778,failed,www\data\System.json,0,$.variables[11],移動アイコン y座標 2,,sem traducao disponivel; chunk divergente apos subdivisao
+T000779,failed,www\data\System.json,0,$.variables[12],移動アイコン x座標 3,,sem traducao disponivel; chunk divergente apos subdivisao
+T000780,failed,www\data\System.json,0,$.variables[13],移動アイコン y座標 3,,sem traducao disponivel; chunk divergente apos subdivisao
+T000781,failed,www\data\System.json,0,$.variables[14],移動Dtext x座標1,,sem traducao disponivel; chunk divergente apos subdivisao
+T000782,failed,www\data\System.json,0,$.variables[15],移動Dtext y座標1,,sem traducao disponivel; chunk divergente apos subdivisao
+T000783,failed,www\data\System.json,0,$.variables[16],移動Dtext x座標2,,sem traducao disponivel; chunk divergente apos subdivisao
+T000784,failed,www\data\System.json,0,$.variables[17],移動Dtext y座標2,,sem traducao disponivel; chunk divergente apos subdivisao
+T000785,failed,www\data\System.json,0,$.variables[18],移動Dtext x座標3,,sem traducao disponivel; chunk divergente apos subdivisao
+T000786,failed,www\data\System.json,0,$.variables[19],移動Dtext y座標3,,sem traducao disponivel; chunk divergente apos subdivisao
+T000787,failed,www\data\System.json,0,$.variables[1],プレイヤーX座標,,sem traducao disponivel; chunk divergente apos subdivisao
+T000788,failed,www\data\System.json,0,$.variables[21],テキストオート速度,,sem traducao disponivel; chunk divergente apos subdivisao
+T000789,failed,www\data\System.json,0,$.variables[23],キャラ変数,,sem traducao disponivel; chunk divergente apos subdivisao
+T000790,failed,www\data\System.json,0,$.variables[24],スマホ表示変数,,sem traducao disponivel; chunk divergente apos subdivisao
+T000791,failed,www\data\System.json,0,$.variables[27],タッチピクチャ取得,,sem traducao disponivel; chunk divergente apos subdivisao
+T000792,failed,www\data\System.json,0,$.variables[29],tgameクリア数,,sem traducao disponivel; chunk divergente apos subdivisao
+T000793,failed,www\data\System.json,0,$.variables[2],プレイヤーY座標,,sem traducao disponivel; chunk divergente apos subdivisao
+T000794,failed,www\data\System.json,0,$.variables[3],イベント位置,,sem traducao disponivel; chunk divergente apos subdivisao
+T000795,failed,www\data\System.json,0,$.variables[41],メインシナリオ進行,,sem traducao disponivel; chunk divergente apos subdivisao
+T000796,failed,www\data\System.json,0,$.variables[53],移動アイコン x座標 4,,sem traducao disponivel; chunk divergente apos subdivisao
+T000797,failed,www\data\System.json,0,$.variables[54],移動アイコン y座標 4,,sem traducao disponivel; chunk divergente apos subdivisao
+T000798,failed,www\data\System.json,0,$.variables[55],移動Dtext x座標4,,sem traducao disponivel; chunk divergente apos subdivisao
+T000799,failed,www\data\System.json,0,$.variables[56],移動Dtext y座標4,,sem traducao disponivel; chunk divergente apos subdivisao
+T000800,failed,www\data\System.json,0,$.variables[5],メッセージウィンドウ種類,,sem traducao disponivel; chunk divergente apos subdivisao
+T000801,failed,www\data\System.json,0,$.variables[61],学校パート進行,,sem traducao disponivel; chunk divergente apos subdivisao
+T000802,failed,www\data\System.json,0,$.variables[62],街パート進行,,sem traducao disponivel; chunk divergente apos subdivisao
+T000803,failed,www\data\System.json,0,$.variables[65],シーンイベントA進行,,sem traducao disponivel; chunk divergente apos subdivisao
+T000804,failed,www\data\System.json,0,$.variables[66],シーンイベントB進行,,sem traducao disponivel; chunk divergente apos subdivisao
+T000805,failed,www\data\System.json,0,$.variables[6],現在のスタミナ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000806,failed,www\data\System.json,0,$.variables[8],移動アイコン x座標 1,,sem traducao disponivel; chunk divergente apos subdivisao
+T000807,failed,www\data\System.json,0,$.variables[9],移動アイコン y座標 1,,sem traducao disponivel; chunk divergente apos subdivisao
+T000808,failed,www\js\libs\pixi.js,23156,,|MÉq,,sem traducao disponivel; chunk divergente apos subdivisao
+T000809,failed,www\js\plugins.js,5,,[基本設定]　基本的なパラメーターを設定するプラグインです。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000810,failed,www\js\plugins.js,6,,[基本設定]　放置していると画面がフリーズするのを修正,,sem traducao disponivel; chunk divergente apos subdivisao
+T000811,failed,www\js\plugins.js,7,,[基本設定]　オプションデフォルト値設定プラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000812,failed,www\js\plugins.js,7,,BGM音量,,sem traducao disponivel; chunk divergente apos subdivisao
+T000813,failed,www\js\plugins.js,7,,BGS音量,,sem traducao disponivel; chunk divergente apos subdivisao
+T000814,failed,www\js\plugins.js,7,,ME音量,,sem traducao disponivel; chunk divergente apos subdivisao
+T000815,failed,www\js\plugins.js,7,,SE音量,,sem traducao disponivel; chunk divergente apos subdivisao
+T000816,failed,www\js\plugins.js,7,,常時ダッシュ消去,,sem traducao disponivel; chunk divergente apos subdivisao
+T000817,failed,www\js\plugins.js,7,,コマンド記憶消去,,sem traducao disponivel; chunk divergente apos subdivisao
+T000818,failed,www\js\plugins.js,7,,BGM音量消去,,sem traducao disponivel; chunk divergente apos subdivisao
+T000819,failed,www\js\plugins.js,7,,BGS音量消去,,sem traducao disponivel; chunk divergente apos subdivisao
+T000820,failed,www\js\plugins.js,7,,ME音量消去,,sem traducao disponivel; chunk divergente apos subdivisao
+T000821,failed,www\js\plugins.js,7,,SE音量消去,,sem traducao disponivel; chunk divergente apos subdivisao
+T000822,failed,www\js\plugins.js,8,,[メッセージ]　フォントのカスタマイズ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000823,failed,www\js\plugins.js,9,,[メッセージ]　メッセージスキッププラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000824,failed,www\js\plugins.js,9,,スキップキー,,sem traducao disponivel; chunk divergente apos subdivisao
+T000825,failed,www\js\plugins.js,9,,オートキー,,sem traducao disponivel; chunk divergente apos subdivisao
+T000826,failed,www\js\plugins.js,9,,スキップスイッチ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000827,failed,www\js\plugins.js,9,,オートスイッチ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000828,failed,www\js\plugins.js,9,,スキップアイコン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000829,failed,www\js\plugins.js,9,,オートアイコン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000830,failed,www\js\plugins.js,9,,アイコンX,,sem traducao disponivel; chunk divergente apos subdivisao
+T000831,failed,www\js\plugins.js,9,,アイコンY,,sem traducao disponivel; chunk divergente apos subdivisao
+T000832,failed,www\js\plugins.js,9,,押し続けスキップ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000833,failed,www\js\plugins.js,9,,オート待機フレーム,,sem traducao disponivel; chunk divergente apos subdivisao
+T000834,failed,www\js\plugins.js,9,,終了解除スイッチID,,sem traducao disponivel; chunk divergente apos subdivisao
+T000835,failed,www\js\plugins.js,9,,スキップピクチャ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000836,failed,www\js\plugins.js,9,,スキップピクチャX,,sem traducao disponivel; chunk divergente apos subdivisao
+T000837,failed,www\js\plugins.js,9,,スキップピクチャY,,sem traducao disponivel; chunk divergente apos subdivisao
+T000838,failed,www\js\plugins.js,9,,オートピクチャ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000839,failed,www\js\plugins.js,9,,オートピクチャX,,sem traducao disponivel; chunk divergente apos subdivisao
+T000840,failed,www\js\plugins.js,9,,オートピクチャY,,sem traducao disponivel; chunk divergente apos subdivisao
+T000841,failed,www\js\plugins.js,9,,スイッチピクチャ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000842,failed,www\js\plugins.js,9,,スイッチピクチャトリガー,,sem traducao disponivel; chunk divergente apos subdivisao
+T000843,failed,www\js\plugins.js,9,,スイッチピクチャX,,sem traducao disponivel; chunk divergente apos subdivisao
+T000844,failed,www\js\plugins.js,9,,スイッチピクチャY,,sem traducao disponivel; chunk divergente apos subdivisao
+T000845,failed,www\js\plugins.js,9,,ボタン原点,,sem traducao disponivel; chunk divergente apos subdivisao
+T000846,failed,www\js\plugins.js,9,,ボタン表示スイッチID,,sem traducao disponivel; chunk divergente apos subdivisao
+T000847,failed,www\js\plugins.js,9,,ピクチャ座標タイプ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000848,failed,www\js\plugins.js,9,,無効化スイッチ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000849,failed,www\js\plugins.js,10,,[移動]　ピクチャのボタン化プラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000850,failed,www\js\plugins.js,10,,透明色を考慮,,sem traducao disponivel; chunk divergente apos subdivisao
+T000851,failed,www\js\plugins.js,10,,ピクチャ番号の変数番号,,sem traducao disponivel; chunk divergente apos subdivisao
+T000852,failed,www\js\plugins.js,10,,ポインタX座標の変数番号,,sem traducao disponivel; chunk divergente apos subdivisao
+T000853,failed,www\js\plugins.js,10,,ポインタY座標の変数番号,,sem traducao disponivel; chunk divergente apos subdivisao
+T000854,failed,www\js\plugins.js,10,,タッチ操作抑制,,sem traducao disponivel; chunk divergente apos subdivisao
+T000855,failed,www\js\plugins.js,10,,タッチ操作抑制スイッチ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000856,failed,www\js\plugins.js,10,,戦闘中常にコモン実行,,sem traducao disponivel; chunk divergente apos subdivisao
+T000857,failed,www\js\plugins.js,10,,並列処理として実行,,sem traducao disponivel; chunk divergente apos subdivisao
+T000858,failed,www\js\plugins.js,10,,無効スイッチ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000859,failed,www\js\plugins.js,11,,[アニメーション]　ピクチャのアニメーションプラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000860,failed,www\js\plugins.js,11,,最初のセルに戻る,,sem traducao disponivel; chunk divergente apos subdivisao
+T000861,failed,www\js\plugins.js,12,,PictureAnimation拡張,,sem traducao disponivel; chunk divergente apos subdivisao
+T000862,failed,www\js\plugins.js,13,,[選択肢]　ウィンドウ点滅停止プラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000863,failed,www\js\plugins.js,14,,[基本設定]　1.2.1 ゲームのピクセルパーフェクトスケーリングモードを有効にする,,sem traducao disponivel; chunk divergente apos subdivisao
+T000864,failed,www\js\plugins.js,14,,"{\""mode\"":\""ピクセルパーフェクトモード\"",\""stretch\"":\""ストレッチを許可する\""}",,sem traducao disponivel; chunk divergente apos subdivisao
+T000865,failed,www\js\plugins.js,14,,"{\""mode\"":\""像素完美模式\"",\""stretch\"":\""允许拉伸\""}",,sem traducao disponivel; chunk divergente apos subdivisao
+T000866,failed,www\js\plugins.js,14,,"{\""mode\"":\""픽셀 퍼펙트 모드\"",\""stretch\"":\""스트레칭을 허용합니다\""}",,sem traducao disponivel; chunk divergente apos subdivisao
+T000867,failed,www\js\plugins.js,14,,"{\""mode\"":\""Разрешить растягивание этикетки\"",\""stretch\"":\""Разрешить растягивание\""}",,sem traducao disponivel; chunk divergente apos subdivisao
+T000868,failed,www\js\plugins.js,15,,[基本設定]　トランジション効果,,sem traducao disponivel; chunk divergente apos subdivisao
+T000869,failed,www\js\plugins.js,15,,-- 画面トランジション --,,sem traducao disponivel; chunk divergente apos subdivisao
+T000870,failed,www\js\plugins.js,15,,画面フェードに適用,,sem traducao disponivel; chunk divergente apos subdivisao
+T000871,failed,www\js\plugins.js,15,,画面フェード用画像,,sem traducao disponivel; chunk divergente apos subdivisao
+T000872,failed,www\js\plugins.js,15,,画面フェードイン用画像,,sem traducao disponivel; chunk divergente apos subdivisao
+T000873,failed,www\js\plugins.js,15,,画面フェードアウト用画像,,sem traducao disponivel; chunk divergente apos subdivisao
+T000874,failed,www\js\plugins.js,15,,画面フェードの柔らかさ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000875,failed,www\js\plugins.js,15,,画面フェード時間,,sem traducao disponivel; chunk divergente apos subdivisao
+T000876,failed,www\js\plugins.js,15,,-- メッセージウィンドウ --,,sem traducao disponivel; chunk divergente apos subdivisao
+T000877,failed,www\js\plugins.js,15,,メッセージウィンドウに適用,,sem traducao disponivel; chunk divergente apos subdivisao
+T000878,failed,www\js\plugins.js,15,,メッセージフェード用画像,,sem traducao disponivel; chunk divergente apos subdivisao
+T000879,failed,www\js\plugins.js,15,,メッセージフェード時間,,sem traducao disponivel; chunk divergente apos subdivisao
+T000880,failed,www\js\plugins.js,16,,シンプルなメニュー画面を実装します。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000881,failed,www\js\plugins.js,16,,----基本的な設定----,,sem traducao disponivel; chunk divergente apos subdivisao
+T000882,failed,www\js\plugins.js,16,,メニュー幅,,sem traducao disponivel; chunk divergente apos subdivisao
+T000883,failed,www\js\plugins.js,16,,メニュー列数,,sem traducao disponivel; chunk divergente apos subdivisao
+T000884,failed,www\js\plugins.js,16,,メニューX座標,,sem traducao disponivel; chunk divergente apos subdivisao
+T000885,failed,www\js\plugins.js,16,,メニューY座標,,sem traducao disponivel; chunk divergente apos subdivisao
+T000886,failed,www\js\plugins.js,17,,オプション任意項目作成プラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000887,failed,www\js\plugins.js,17,,数値項目,,sem traducao disponivel; chunk divergente apos subdivisao
+T000888,failed,www\js\plugins.js,17,,"[\""{\\\""Name\\\"":\\\""テキストオート速度\\\"",\\\""DefaultValue\\\"":\\\""8\\\"",\\\""VariableID\\\"":\\\""21\\\"",\\\""HiddenFlag\\\"":\\\""false\\\"",\\\""Script\\\"":\\\""\\\"",\\\""NumberMin\\\"":\\\""0\\\""",,sem traducao disponivel; chunk divergente apos subdivisao
+T000889,failed,www\js\plugins.js,17,,文字項目,,sem traducao disponivel; chunk divergente apos subdivisao
+T000890,failed,www\js\plugins.js,17,,スイッチ項目,,sem traducao disponivel; chunk divergente apos subdivisao
+T000891,failed,www\js\plugins.js,17,,音量項目,,sem traducao disponivel; chunk divergente apos subdivisao
+T000892,failed,www\js\plugins.js,18,,v1.051 ゲーム全体のウィンドウサイズを変更＆オプションに追加,,sem traducao disponivel; chunk divergente apos subdivisao
+T000893,failed,www\js\plugins.js,18,,ウィンドウサイズ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000894,failed,www\js\plugins.js,19,,動的文字列ピクチャ生成プラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000895,failed,www\js\plugins.js,20,,ver1.00 メニューコマンドにロードを追加します。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000896,failed,www\js\plugins.js,20,,ロード,,sem traducao disponivel; chunk divergente apos subdivisao
+T000897,failed,www\js\plugins.js,21,,ウィンドウ背景画像指定プラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000898,failed,www\js\plugins.js,22,,メッセージウィンドウ一時消去プラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000899,failed,www\js\plugins.js,22,,"[\""右クリック\""]",,sem traducao disponivel; chunk divergente apos subdivisao
+T000900,failed,www\js\plugins.js,23,,画面に円を表示するテスト,,sem traducao disponivel; chunk divergente apos subdivisao
+T000901,failed,www\js\plugins.js,24,,数字をアニメーションして表示する,,sem traducao disponivel; chunk divergente apos subdivisao
+T000902,failed,www\js\plugins.js,25,,アナザーニューゲーム追加プラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000903,failed,www\js\plugins.js,25,,"[\""{\\\""name\\\"":\\\""ギャラリー\\\"",\\\""mapId\\\"":\\\""2\\\"",\\\""mapX\\\"":\\\""1\\\"",\\\""mapY\\\"":\\\""1\\\"",\\\""hidden\\\"":\\\""true\\\"",\\\""disable\\\"":\\\""false\\\"",\\\""addPosition\\\"":\",,sem traducao disponivel; chunk divergente apos subdivisao
+T000904,failed,www\js\rpg_windows.js,3596,,カナ,,sem traducao disponivel; chunk divergente apos subdivisao
+T000905,failed,www\js\rpg_windows.js,3596,,決定,,sem traducao disponivel; chunk divergente apos subdivisao
+T000906,failed,www\js\rpg_windows.js,3606,,英数,,sem traducao disponivel; chunk divergente apos subdivisao
+T000907,failed,www\js\rpg_windows.js,3616,,かな,,sem traducao disponivel; chunk divergente apos subdivisao
+T000908,failed,readme.txt,1,,この度は「ボクは種付けアプリを手に入れた！」をご購入頂きありがとうございます。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000909,failed,readme.txt,3,,本作品は性的描写が含まれるため１８歳未満の方がプレイすることは出来ません。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000910,failed,readme.txt,4,,本作品に登場する人物は全て１８歳以上です。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000911,failed,readme.txt,5,,本作品はフィクションであり、実在の人物・団体とは一切関係ありません。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000912,failed,readme.txt,7,,●ゲームの起動方法,,sem traducao disponivel; chunk divergente apos subdivisao
+T000913,failed,readme.txt,8,,本編ファイル内にある「Game.exe」を起動してください。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000914,failed,readme.txt,10,,●操作方法,,sem traducao disponivel; chunk divergente apos subdivisao
+T000915,failed,readme.txt,11,,決定/調べる　　　  　　左クリック,,sem traducao disponivel; chunk divergente apos subdivisao
+T000916,failed,readme.txt,12,,メニュー/キャンセル　  右クリック,,sem traducao disponivel; chunk divergente apos subdivisao
+T000917,failed,readme.txt,13,,メッセージオート再生　Aキー,,sem traducao disponivel; chunk divergente apos subdivisao
+T000918,failed,readme.txt,14,,メッセージ高速再生　　Ctrlキー,,sem traducao disponivel; chunk divergente apos subdivisao
+T000919,failed,readme.txt,16,,●ゲームの進行について,,sem traducao disponivel; chunk divergente apos subdivisao
+T000920,failed,readme.txt,17,,画面に表示される矢印アイコンなどをクリックし、場所を移動します。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000921,failed,readme.txt,18,,その場にいるキャラクターをクリックすると会話が始まります。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000922,failed,readme.txt,19,,話しかけれられるキャラクターのイベントをすべて終えるとイベントが進行します。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000923,failed,readme.txt,21,,●ギャラリーについて,,sem traducao disponivel; chunk divergente apos subdivisao
+T000924,failed,readme.txt,22,,ゲームがエンディンを迎えた後、タイトル画面にギャラリーが追加されます。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000925,failed,readme.txt,23,,ここではすべてのHシーンが閲覧可能です。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000926,failed,readme.txt,25,,●バグなどを発見された場合は、お手数ですが以下へご報告頂けると助かります。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000927,failed,readme.txt,27,,ci-enでも受け付けております。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000928,failed,readme.txt,29,,●制作,,sem traducao disponivel; chunk divergente apos subdivisao
+T000929,failed,readme.txt,30,,サークル名　   はみはみ堂,,sem traducao disponivel; chunk divergente apos subdivisao
+T000930,failed,クレジット.txt,1,,本ゲームは「RPGツクールMV」によって制作されています。,,sem traducao disponivel; chunk divergente apos subdivisao
+T000931,failed,クレジット.txt,4,,プラグイン,,sem traducao disponivel; chunk divergente apos subdivisao
+T000932,failed,クレジット.txt,5,,・トリアコンタン様,,sem traducao disponivel; chunk divergente apos subdivisao
+T000933,failed,クレジット.txt,6,,・Tsukimi　様,,sem traducao disponivel; chunk divergente apos subdivisao
+T000934,failed,クレジット.txt,7,,・kido　様,,sem traducao disponivel; chunk divergente apos subdivisao
+T000935,failed,クレジット.txt,8,,・まっつＵＰ　様,,sem traducao disponivel; chunk divergente apos subdivisao
+T000936,failed,クレジット.txt,9,,・砂川赳　様,,sem traducao disponivel; chunk divergente apos subdivisao
+T000937,failed,クレジット.txt,10,,・ツミオ　様,,sem traducao disponivel; chunk divergente apos subdivisao
+T000938,failed,クレジット.txt,11,,・Galenmereth / TDD　様,,sem traducao disponivel; chunk divergente apos subdivisao
+T000939,failed,クレジット.txt,14,,・OtoLogic　様,,sem traducao disponivel; chunk divergente apos subdivisao
+T000940,failed,クレジット.txt,16,,クレジット漏れなどがあった際は以下へご連絡いただけると助かります。,,sem traducao disponivel; chunk divergente apos subdivisao
