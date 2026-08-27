@@ -31,7 +31,7 @@ class CollapsibleSection(ttk.Frame):
         self.expanded = False
         self.toggle_button = ttk.Button(
             self,
-            text="Mostrar opções avançadas",
+            text=f"Mostrar {self.title.lower()}",
             command=self.toggle,
         )
         self.toggle_button.pack(anchor="w")
@@ -42,11 +42,11 @@ class CollapsibleSection(ttk.Frame):
         self.expanded = not self.expanded
         if self.expanded:
             self.content.pack(fill="x", pady=(SPACING["sm"], 0))
-            self.toggle_button.configure(text="Ocultar opções avançadas")
+            self.toggle_button.configure(text=f"Ocultar {self.title.lower()}")
             self._refresh_ancestor_mousewheel_bindings()
         else:
             self.content.pack_forget()
-            self.toggle_button.configure(text="Mostrar opções avançadas")
+            self.toggle_button.configure(text=f"Mostrar {self.title.lower()}")
 
     def _refresh_ancestor_mousewheel_bindings(self):
         widget = self
@@ -80,6 +80,9 @@ class ScrollableStep(ttk.Frame):
         self.content.bind("<Configure>", self._refresh_local_mousewheel_bindings, add="+")
         self.canvas.bind("<Configure>", self._fit_content_width, add="+")
         self.content._refresh_local_mousewheel = self._refresh_local_mousewheel_bindings
+        self._toplevel = self.winfo_toplevel()
+        self._map_binding_id = self._toplevel.bind("<Map>", self._on_descendant_map, add="+")
+        self.bind("<Destroy>", self._remove_toplevel_map_binding, add="+")
         self._refresh_local_mousewheel_bindings()
 
     def _update_scrollregion(self, _event=None):
@@ -90,6 +93,22 @@ class ScrollableStep(ttk.Frame):
 
     def _refresh_local_mousewheel_bindings(self, _event=None):
         bind_local_mousewheel(self.content, self.canvas.yview_scroll)
+
+    def _on_descendant_map(self, event):
+        if self._contains_widget(event.widget):
+            self._refresh_local_mousewheel_bindings()
+
+    def _contains_widget(self, widget):
+        while widget.winfo_parent():
+            if widget is self:
+                return True
+            widget = widget.nametowidget(widget.winfo_parent())
+        return widget is self
+
+    def _remove_toplevel_map_binding(self, event):
+        if event.widget is self and self._map_binding_id:
+            self._toplevel.unbind("<Map>", self._map_binding_id)
+            self._map_binding_id = None
 
 
 class RoundedPanel(ttk.Frame):
@@ -111,6 +130,7 @@ class RoundedPanel(ttk.Frame):
     def _redraw(self, event):
         width, height = event.width, event.height
         radius = min(RADII["panel"], width // 2, height // 2)
+        inset = max(1, radius)
         points = (
             radius, 0,
             width - radius, 0,
@@ -134,7 +154,12 @@ class RoundedPanel(ttk.Frame):
             tags="rounded_background",
         )
         self.canvas.tag_lower("rounded_background")
-        self.canvas.itemconfigure(self._content_window, width=width, height=height)
+        self.canvas.coords(self._content_window, inset, inset)
+        self.canvas.itemconfigure(
+            self._content_window,
+            width=max(0, width - (inset * 2)),
+            height=max(0, height - (inset * 2)),
+        )
 
 
 class StatusBanner(tk.Frame):

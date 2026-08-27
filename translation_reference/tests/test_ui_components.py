@@ -15,6 +15,7 @@ from ui_components import (
     ScrollableStep,
     StageNavigation,
     StatusBanner,
+    bind_local_mousewheel,
 )
 from ui_state import Stage, StageStatus
 
@@ -23,7 +24,10 @@ class ComponentSmokeTests(unittest.TestCase):
     def setUp(self):
         if platform.system() != "Windows" and not os.environ.get("DISPLAY"):
             self.skipTest("Sem display disponivel")
-        self.root = tk.Tk()
+        try:
+            self.root = tk.Tk()
+        except tk.TclError as error:
+            self.skipTest(f"Tk indisponível: {error}")
         self.addCleanup(self.root.destroy)
 
     def test_collapsible_section_hides_and_restores_content(self):
@@ -67,6 +71,20 @@ class ComponentSmokeTests(unittest.TestCase):
         self.assertEqual(panel.canvas.itemcget(background[0], "smooth"), "true")
         self.assertTrue(panel.content.winfo_ismapped())
 
+    def test_rounded_panel_insets_content_window_from_visible_corners(self):
+        panel = RoundedPanel(self.root)
+        panel.pack(fill="both", expand=True)
+        self.root.update()
+
+        x, y = panel.canvas.coords(panel._content_window)
+        width = int(float(panel.canvas.itemcget(panel._content_window, "width")))
+        height = int(float(panel.canvas.itemcget(panel._content_window, "height")))
+
+        self.assertGreater(x, 0)
+        self.assertGreater(y, 0)
+        self.assertLess(width, panel.canvas.winfo_width())
+        self.assertLess(height, panel.canvas.winfo_height())
+
     def test_status_banner_shows_textual_state_and_rejects_unknown_kind(self):
         banner = StatusBanner(self.root)
         banner.pack(fill="x")
@@ -107,6 +125,61 @@ class ComponentSmokeTests(unittest.TestCase):
 
         self.assertTrue(late_child.bind("<MouseWheel>"))
         self.assertTrue(expanded_child.bind("<MouseWheel>"))
+
+    def test_scrollable_step_binds_late_child_in_fixed_size_subtree(self):
+        step = ScrollableStep(self.root)
+        step.pack(fill="both", expand=True)
+        fixed_subtree = tk.Frame(step.content, width=240, height=80)
+        fixed_subtree.pack(fill="none")
+        fixed_subtree.pack_propagate(False)
+        self.root.update()
+
+        late_child = tk.Label(fixed_subtree, text="Mapeado sem redimensionar o pai")
+        late_child.pack()
+        self.root.update()
+
+        self.assertTrue(late_child.bind("<MouseWheel>"))
+
+    def test_scrollable_step_removes_toplevel_map_binding_when_destroyed(self):
+        step = ScrollableStep(self.root)
+        binding_id = step._map_binding_id
+        self.assertIn(binding_id, self.root.bind("<Map>"))
+
+        step.destroy()
+
+        self.assertNotIn(binding_id, self.root.bind("<Map>"))
+
+    def test_mousewheel_event_calls_yview_scroll(self):
+        container = tk.Frame(self.root)
+        container.pack()
+        child = tk.Label(container, text="Rolável")
+        child.pack()
+        calls = []
+
+        bind_local_mousewheel(container, lambda units, mode: calls.append((units, mode)))
+        self.root.update()
+        child.event_generate("<MouseWheel>", delta=120)
+        self.root.update()
+
+        self.assertEqual(calls, [(-1, "units")])
+
+    def test_scrollable_step_resize_synchronizes_content_width(self):
+        step = ScrollableStep(self.root)
+        step.pack(fill="both", expand=True)
+        self.root.geometry("640x320")
+        self.root.update()
+
+        width = int(float(step.canvas.itemcget(step._content_window, "width")))
+
+        self.assertEqual(width, step.canvas.winfo_width())
+
+    def test_collapsible_section_uses_supplied_title_in_toggle_text(self):
+        section = CollapsibleSection(self.root, title="Configurações extras")
+        section.pack()
+
+        self.assertEqual(section.toggle_button.cget("text"), "Mostrar configurações extras")
+        section.toggle()
+        self.assertEqual(section.toggle_button.cget("text"), "Ocultar configurações extras")
 
 
 if __name__ == "__main__":
