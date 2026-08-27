@@ -4,6 +4,7 @@
 import os
 import platform
 import sys
+import tempfile
 import tkinter as tk
 import unittest
 from pathlib import Path
@@ -19,6 +20,7 @@ if str(APP_DIR) not in sys.path:
 from text_scanner_app import (  # noqa: E402
     DEFAULT_ENGINE_MODEL,
     DEFAULT_ENGINE_URL,
+    REPORT_CSV_NAME,
     SCRIPT_PATH,
     TM_DIR,
     TRANSLATED_BASE,
@@ -281,8 +283,26 @@ class WorkflowCallbackTests(unittest.TestCase):
             self.skipTest("Probe Tcl/Tk indisponivel")
         self.addCleanup(self.app.destroy)
 
+    def _review_directory(self):
+        temporary = tempfile.TemporaryDirectory(dir=HERE)
+        self.addCleanup(temporary.cleanup)
+        directory = Path(temporary.name)
+        (directory / REPORT_CSV_NAME).write_text(
+            "status,file,line,source,translated\nllm,a.txt,1,original,translated\n",
+            encoding="utf-8",
+        )
+        return directory
+
+    def _make_panel_actions_available(self):
+        self.app.workflow.mark_scan_finished(success=True)
+        self.app.workflow.mark_translation_finished(success=True, has_review=True)
+        self.app._preview_loaded = True
+        self.app._retry_available = True
+
     def test_scan_success_recommends_translation_in_the_banner(self):
-        self.app.output_path.set("scan-output")
+        output = self._review_directory() / "scan-output"
+        output.with_suffix(".jsonl").write_text("{}\n", encoding="utf-8")
+        self.app.output_path.set(str(output))
 
         self.app._finish_run(0)
 
@@ -292,11 +312,29 @@ class WorkflowCallbackTests(unittest.TestCase):
         self.assertIn("Traduzir", self.app.activity_banner.detail_label.cget("text"))
         self.messagebox_mocks["showinfo"].assert_not_called()
 
+    def test_scan_exit_zero_without_jsonl_keeps_translation_locked(self):
+        self.app.output_path.set("missing-scan-output")
+
+        self.app._finish_run(0)
+
+        self.assertIs(self.app.workflow.status(Stage.PREPARE), StageStatus.ERROR)
+        self.assertIs(self.app.workflow.status(Stage.TRANSLATE), StageStatus.LOCKED)
+        self.assertIsNone(self.app.recommended_stage)
+        self.assertEqual(self.app.activity_banner.kind, "error")
+
+    def test_failed_scan_clears_a_stale_translation_recommendation(self):
+        self.app.recommended_stage = Stage.TRANSLATE
+        self.app.output_path.set("missing-scan-output")
+
+        self.app._finish_run(1)
+
+        self.assertIsNone(self.app.recommended_stage)
+
     def test_translation_success_recommends_review_in_the_banner(self):
+        review_dir = self._review_directory()
         self.app._progress_total = 1
         with (
-            mock.patch.object(self.app, "_translated_dir", return_value=Path("translated-output")),
-            mock.patch.object(Path, "is_file", return_value=True),
+            mock.patch.object(self.app, "_translated_dir", return_value=review_dir),
             mock.patch.object(self.app, "_populate_preview_tree"),
             mock.patch.object(self.app, "_refresh_apply_summary"),
             mock.patch.object(self.app, "_count_report_statuses", return_value={}),
@@ -310,11 +348,10 @@ class WorkflowCallbackTests(unittest.TestCase):
         self.messagebox_mocks["showinfo"].assert_not_called()
 
     def test_retry_warning_keeps_apply_available(self):
-        self.app.workflow.mark_scan_finished(success=True)
-        self.app.workflow.mark_translation_finished(success=True, has_review=True)
-        self.app.translated_dir = Path("translated-output")
+        review_dir = self._review_directory()
+        self._make_panel_actions_available()
+        self.app.translated_dir = review_dir
         with (
-            mock.patch.object(Path, "is_file", return_value=True),
             mock.patch.object(self.app, "_populate_preview_tree"),
             mock.patch.object(
                 self.app,
@@ -327,6 +364,80 @@ class WorkflowCallbackTests(unittest.TestCase):
         self.assertEqual(self.app.workflow.status(Stage.REVIEW).value, "warning")
         self.assertTrue(self.app.workflow.can_open(Stage.APPLY))
         self.assertEqual(self.app.activity_banner.kind, "warning")
+
+    def test_scan_running_disables_all_panel_starts_but_not_their_stop(self):
+        self._make_panel_actions_available()
+        self.app.workflow.mark_scan_started()
+
+        self.app._refresh_stage_navigation()
+
+        self.assertEqual(str(self.app.stop_button.cget("state")), "normal")
+        self.assertEqual(str(self.app.translate_stop_button.cget("state")), "disabled")
+        for button in (
+            self.app.translate_button,
+            self.app.retry_button,
+            self.app.apply_button,
+            self.app.restore_button,
+        ):
+            self.assertEqual(str(button.cget("state")), "disabled")
+
+    def test_panel_command_disables_scan_start_and_keeps_only_its_stop(self):
+        self._make_panel_actions_available()
+        self.app._panel_command_running = True
+        self.app._panel_command_with_progress = True
+
+        self.app._refresh_stage_navigation()
+
+        self.assertEqual(str(self.app.run_button.cget("state")), "disabled")
+        self.assertEqual(str(self.app.stop_button.cget("state")), "disabled")
+        self.assertEqual(str(self.app.translate_stop_button.cget("state")), "normal")
+        for button in (
+            self.app.translate_button,
+            self.app.retry_button,
+            self.app.apply_button,
+            self.app.restore_button,
+        ):
+            self.assertEqual(str(button.cget("state")), "disabled")
+
+    def test_retry_failure_after_start_preserves_preview_and_apply(self):
+        self._make_panel_actions_available()
+        review_dir = self._review_directory()
+        (review_dir / REPORT_CSV_NAME).write_text(
+            "status,file,line,source,translated\nfailed,a.txt,1,original,translated\n",
+            encoding="utf-8",
+        )
+        self.app.translate_jsonl.set(str(SCRIPT_PATH))
+        self.app.translated_dir = review_dir
+        self.app._start_panel_command = mock.Mock()
+
+        self.app._run_retry()
+
+        self.app._finish_retry(1, [])
+
+        self.assertTrue(self.app._preview_loaded)
+        self.assertTrue(self.app.workflow.can_open(Stage.APPLY))
+        self.assertIs(self.app.workflow.status(Stage.REVIEW), StageStatus.ERROR)
+
+    def test_apply_start_and_warning_status_are_visible(self):
+        self._make_panel_actions_available()
+        self.app.game_path.set(str(HERE / "fixtures" / "game"))
+        self.app.translated_dir = HERE / "fixtures" / "game"
+        self.app._count_translated_files = mock.Mock(return_value=1)
+        self.app._start_panel_command = mock.Mock()
+        self.messagebox_mocks["askyesno"].return_value = True
+
+        self.app.run_apply()
+
+        self.assertIs(self.app.workflow.status(Stage.APPLY), StageStatus.RUNNING)
+        self.assertTrue(self.app._preview_loaded)
+        self.app._finish_apply(0, ["Aplicados: 0"], Path("applied_manifest.json"))
+        self.assertIs(self.app.workflow.status(Stage.APPLY), StageStatus.WARNING)
+
+    def test_restore_success_uses_banner_without_routine_dialog(self):
+        self.app._finish_restore(0, ["Restaurados: 1"], Path("applied_manifest.json"))
+
+        self.assertEqual(self.app.activity_banner.kind, "success")
+        self.messagebox_mocks["showinfo"].assert_not_called()
 
     def test_apply_success_uses_banner_without_routine_dialog(self):
         self.app.workflow.mark_scan_finished(success=True)

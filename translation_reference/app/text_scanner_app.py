@@ -440,11 +440,12 @@ class TextScannerApp(tk.Tk):
         review_status = self.workflow.status(Stage.REVIEW)
         apply_status = self.workflow.status(Stage.APPLY)
 
-        self.run_button.configure(state="disabled" if scan_running else "normal")
+        start_blocked = scan_running or panel_running
+        self.run_button.configure(state="disabled" if start_blocked else "normal")
         self.stop_button.configure(state="normal" if scan_running else "disabled")
         self.translate_button.configure(
             state="normal"
-            if translation_status not in (StageStatus.LOCKED, StageStatus.RUNNING) and not panel_running
+            if not start_blocked and translation_status not in (StageStatus.LOCKED, StageStatus.RUNNING)
             else "disabled"
         )
         self.translate_stop_button.configure(
@@ -452,15 +453,15 @@ class TextScannerApp(tk.Tk):
         )
         self.retry_button.configure(
             state="normal"
-            if review_status is not StageStatus.LOCKED and self._retry_available and not panel_running
+            if not start_blocked and review_status not in (StageStatus.LOCKED, StageStatus.RUNNING) and self._retry_available
             else "disabled"
         )
         self.apply_button.configure(
             state="normal"
-            if apply_status is not StageStatus.LOCKED and self._preview_loaded and not panel_running
+            if not start_blocked and apply_status not in (StageStatus.LOCKED, StageStatus.RUNNING) and self._preview_loaded
             else "disabled"
         )
-        self.restore_button.configure(state="disabled" if panel_running else "normal")
+        self.restore_button.configure(state="disabled" if start_blocked else "normal")
 
     def _set_stage_feedback(self, stage, kind, title, detail):
         """Show a workflow message without changing the user's active stage."""
@@ -550,6 +551,7 @@ class TextScannerApp(tk.Tk):
             return
 
         self.clear_log()
+        self.recommended_stage = None
         self.append_log("> " + " ".join(f'"{part}"' if " " in part else part for part in command))
         self.workflow.mark_scan_started()
         self.status.set("Varredura em andamento...")
@@ -590,9 +592,9 @@ class TextScannerApp(tk.Tk):
         self.last_csv = output.with_suffix(".csv")
         self.last_jsonl = output.with_suffix(".jsonl")
         self.last_summary = output.with_suffix(".summary.md")
-        success = code == 0
-        self.workflow.mark_scan_finished(code == 0)
-        if self.last_jsonl.exists():
+        success = code == 0 and self.last_jsonl.exists()
+        self.workflow.mark_scan_finished(success)
+        if success:
             self.translate_jsonl.set(str(self.last_jsonl))
         if success:
             self.status.set("Varredura concluida. Relatorios prontos para revisar.")
@@ -604,6 +606,7 @@ class TextScannerApp(tk.Tk):
                 "Os relatórios estão prontos. A etapa Traduzir está pronta quando você quiser continuar.",
             )
         else:
+            self.recommended_stage = None
             self.status.set(f"Varredura terminou com erro. Codigo: {code}")
             self._set_stage_feedback(
                 Stage.PREPARE,
@@ -677,7 +680,9 @@ class TextScannerApp(tk.Tk):
             return
 
         self.translated_dir = None
+        self.recommended_stage = None
         self._retry_available = False
+        self._preview_loaded = False
         self._refresh_apply_summary()
         self.workflow.mark_translation_started()
         self.append_log("--- Traducao ---")
@@ -704,7 +709,6 @@ class TextScannerApp(tk.Tk):
         self._panel_command_with_progress = with_progress
         self._refresh_stage_navigation()
         self._progress_total = None
-        self._preview_loaded = False
         self._eta_history = []
         if with_progress:
             self.progress.configure(value=0)
@@ -889,6 +893,8 @@ class TextScannerApp(tk.Tk):
             game_root,
             "--i-approve-write-game-files",
         ]
+        self.recommended_stage = None
+        self.workflow.mark_apply_started()
         self.append_log("--- Aplicar no jogo ---")
         self._start_panel_command(
             command,
@@ -920,7 +926,10 @@ class TextScannerApp(tk.Tk):
         outcome = classify_apply_result(code, applied_count)
         applied_line = next((line for line in output_lines if line.startswith("Aplicados:")), "")
         self.append_log("Manifesto de aplicacao: %s" % manifest_path)
-        self.workflow.mark_apply_finished(outcome == "success")
+        self.workflow.mark_apply_finished(
+            outcome == "success",
+            warning=outcome in {"warning", "no_approval"},
+        )
         if outcome == "success":
             self.status.set("Traducao aplicada no jogo. Backups .bak registrados no manifesto.")
             self._set_stage_feedback(
@@ -1054,10 +1063,11 @@ class TextScannerApp(tk.Tk):
         restored_line = next((line for line in output_lines if line.startswith("Restaurados:")), "")
         if code == 0:
             self.status.set("Backups restaurados com sucesso.")
-            messagebox.showinfo(
-                "Restauracao concluida",
-                "%s\n\nManifesto: %s" % (restored_line or "Arquivos originais recuperados.", manifest_path),
-                parent=self,
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "success",
+                "Restauração concluída",
+                "%s Manifesto: %s" % (restored_line or "Arquivos originais recuperados.", manifest_path),
             )
         else:
             self.status.set("Restauracao terminou com erro. Codigo: %s" % code)
@@ -1167,6 +1177,8 @@ class TextScannerApp(tk.Tk):
         ]
         if self.use_tm.get():
             command.extend(["--tm", str(TM_DIR / ("%s.jsonl" % self._game_name()))])
+        self.recommended_stage = None
+        self.workflow.mark_retry_started()
         self.append_log("--- Retraduzir falhas ---")
         self._start_panel_command(
             command,

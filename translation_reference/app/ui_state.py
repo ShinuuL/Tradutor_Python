@@ -48,6 +48,8 @@ class WorkflowState:
         self._statuses[Stage.PREPARE] = StageStatus.COMPLETE if success else StageStatus.ERROR
         if success:
             self._statuses[Stage.TRANSLATE] = StageStatus.READY
+        else:
+            self._statuses[Stage.TRANSLATE] = StageStatus.LOCKED
 
     def mark_translation_started(self):
         self._statuses[Stage.TRANSLATE] = StageStatus.RUNNING
@@ -58,8 +60,19 @@ class WorkflowState:
             self._statuses[Stage.REVIEW] = StageStatus.READY
             self._statuses[Stage.APPLY] = StageStatus.READY
 
-    def mark_apply_finished(self, success):
-        self._statuses[Stage.APPLY] = StageStatus.COMPLETE if success else StageStatus.ERROR
+    def mark_apply_started(self):
+        self._statuses[Stage.APPLY] = StageStatus.RUNNING
+
+    def mark_apply_finished(self, success, warning=False):
+        if success:
+            self._statuses[Stage.APPLY] = StageStatus.COMPLETE
+        elif warning:
+            self._statuses[Stage.APPLY] = StageStatus.WARNING
+        else:
+            self._statuses[Stage.APPLY] = StageStatus.ERROR
+
+    def mark_retry_started(self):
+        self._statuses[Stage.REVIEW] = StageStatus.RUNNING
 
     def mark_retry_finished(self, success, has_remaining):
         """Record a retry result without changing the already-valid apply stage."""

@@ -43,6 +43,13 @@ class WorkflowStateTests(unittest.TestCase):
         self.assertTrue(state.can_open(Stage.PREPARE))
         self.assertFalse(state.can_open(Stage.TRANSLATE))
 
+    def test_failed_scan_relocks_translation_after_a_previous_success(self):
+        state = WorkflowState()
+        state.mark_scan_finished(success=True)
+        state.mark_scan_finished(success=False)
+
+        self.assertIs(state.status(Stage.TRANSLATE), StageStatus.LOCKED)
+
     def test_failed_translation_is_recoverable(self):
         state = WorkflowState()
         state.mark_scan_finished(success=True)
@@ -58,8 +65,14 @@ class WorkflowStateTests(unittest.TestCase):
         self.assertIs(state.status(Stage.REVIEW), StageStatus.LOCKED)
         self.assertIs(state.status(Stage.APPLY), StageStatus.LOCKED)
 
-    def test_apply_success_and_failure_statuses(self):
+    def test_apply_started_and_finished_statuses(self):
         state = WorkflowState()
+        state.mark_apply_started()
+        self.assertIs(state.status(Stage.APPLY), StageStatus.RUNNING)
+
+        state.mark_apply_finished(success=False, warning=True)
+        self.assertIs(state.status(Stage.APPLY), StageStatus.WARNING)
+
         state.mark_apply_finished(success=False)
         self.assertIs(state.status(Stage.APPLY), StageStatus.ERROR)
         state.mark_apply_finished(success=True)
@@ -69,6 +82,10 @@ class WorkflowStateTests(unittest.TestCase):
         state = WorkflowState()
         state.mark_scan_finished(success=True)
         state.mark_translation_finished(success=True, has_review=True)
+
+        state.mark_retry_started()
+        self.assertIs(state.status(Stage.REVIEW), StageStatus.RUNNING)
+        self.assertIs(state.status(Stage.APPLY), StageStatus.READY)
 
         state.mark_retry_finished(success=True, has_remaining=True)
         self.assertIs(state.status(Stage.REVIEW), StageStatus.WARNING)
