@@ -7,6 +7,8 @@ import sys
 import tkinter as tk
 import unittest
 from pathlib import Path
+from unittest import mock
+from tkinter import ttk
 
 
 HERE = Path(__file__).resolve().parent
@@ -19,13 +21,25 @@ from text_scanner_app import (  # noqa: E402
     DEFAULT_ENGINE_URL,
     SCRIPT_PATH,
     TM_DIR,
+    TRANSLATED_BASE,
     TRANSLATE_SCRIPT_PATH,
     TextScannerApp,
 )
+from ui_state import Stage  # noqa: E402
 
 
 class UiCommandCharacterizationTests(unittest.TestCase):
     """The widget layout may move, but its CLI contract must not."""
+
+    _CALLBACKS = (
+        "choose_game_folder",
+        "choose_output_file",
+        "run_scan",
+        "stop_scan",
+        "choose_scan_jsonl",
+        "run_translation",
+        "stop_translation",
+    )
 
     @classmethod
     def _has_display(cls):
@@ -36,6 +50,15 @@ class UiCommandCharacterizationTests(unittest.TestCase):
     def setUp(self):
         if not self._has_display():
             self.skipTest("Sem display disponivel")
+        self.callback_calls = []
+        for callback_name in self._CALLBACKS:
+            patcher = mock.patch.object(
+                TextScannerApp,
+                callback_name,
+                self._record_callback(callback_name),
+            )
+            patcher.start()
+            self.addCleanup(patcher.stop)
         try:
             self.app = TextScannerApp()
         except tk.TclError:
@@ -44,6 +67,56 @@ class UiCommandCharacterizationTests(unittest.TestCase):
         self.game_dir = HERE / "fixtures" / "game"
         self.scan_jsonl = SCRIPT_PATH
         self.addCleanup(self.app.destroy)
+
+    def _record_callback(self, callback_name):
+        def callback(_app):
+            self.callback_calls.append(callback_name)
+
+        return callback
+
+    @staticmethod
+    def _descendants(widget):
+        for child in widget.winfo_children():
+            yield child
+            yield from UiCommandCharacterizationTests._descendants(child)
+
+    @staticmethod
+    def _is_descendant_of(widget, ancestor):
+        current = widget
+        while True:
+            if current is ancestor:
+                return True
+            parent_name = current.winfo_parent()
+            if not parent_name:
+                return False
+            current = current.nametowidget(parent_name)
+
+    @classmethod
+    def _widget_variables(cls, widget):
+        variables = set()
+        keys = widget.keys()
+        for option in ("textvariable", "variable"):
+            if option in keys:
+                value = str(widget.cget(option))
+                if value:
+                    variables.add(value)
+        return variables
+
+    @classmethod
+    def _control_variables(cls, widget):
+        return {
+            variable
+            for child in cls._descendants(widget)
+            for variable in cls._widget_variables(child)
+        }
+
+    @classmethod
+    def _buttons_with_text(cls, widget, text):
+        return [
+            child
+            for child in cls._descendants(widget)
+            if isinstance(child, ttk.Button) and child.cget("text") == text
+        ]
 
     def test_scan_command_preserves_executable_paths_and_enabled_flags(self):
         self.app.game_path.set(str(self.game_dir))
@@ -63,7 +136,12 @@ class UiCommandCharacterizationTests(unittest.TestCase):
         self.assertEqual(command[command.index("--max-file-mb") + 1], "40")
         self.assertEqual(command[command.index("--context") + 1], "240")
         self.assertEqual(command[command.index("--batch-size") + 1], "750")
-        self.assertEqual(command.count("--include-ext"), 2)
+        include_extensions = [
+            command[index + 1]
+            for index, item in enumerate(command)
+            if item == "--include-ext"
+        ]
+        self.assertEqual(include_extensions, [".rpy", ".txt"])
         self.assertIn("--dedupe", command)
         self.assertIn("--skip-plugin-js", command)
 
@@ -78,30 +156,91 @@ class UiCommandCharacterizationTests(unittest.TestCase):
 
         self.assertEqual(command[:2], [sys.executable, str(TRANSLATE_SCRIPT_PATH)])
         self.assertEqual(command[2], str(self.scan_jsonl))
+        self.assertEqual(command[command.index("--out-dir") + 1], str(TRANSLATED_BASE / "game"))
         self.assertEqual(command[command.index("--engine-url") + 1], DEFAULT_ENGINE_URL)
         self.assertEqual(command[command.index("--engine-model") + 1], DEFAULT_ENGINE_MODEL)
         self.assertIn("--tm", command)
         self.assertEqual(command[command.index("--tm") + 1], str(TM_DIR / ("game.jsonl")))
 
-    def test_advanced_sections_hold_only_the_less_used_controls(self):
+    def test_advanced_sections_hold_required_controls_recursively(self):
         self.assertFalse(self.app.prepare_advanced.expanded)
         self.assertFalse(self.app.translate_advanced.expanded)
-        prepare_variables = {
-            str(widget.cget("textvariable"))
-            for widget in self.app.prepare_advanced.content.winfo_children()
-            if "textvariable" in widget.keys()
+        prepare_variables = self._control_variables(self.app.prepare_advanced.content)
+        translate_variables = self._control_variables(self.app.translate_advanced.content)
+        prepare_visible_variables = {
+            variable
+            for widget in self._descendants(self.app.stage_frames[Stage.PREPARE].content)
+            if not self._is_descendant_of(widget, self.app.prepare_advanced.content)
+            for variable in self._widget_variables(widget)
         }
-        translate_variables = {
-            str(widget.cget("textvariable"))
-            for widget in self.app.translate_advanced.content.winfo_children()
-            if "textvariable" in widget.keys()
+        translate_visible_variables = {
+            variable
+            for widget in self._descendants(self.app.stage_frames[Stage.TRANSLATE].content)
+            if not self._is_descendant_of(widget, self.app.translate_advanced.content)
+            for variable in self._widget_variables(widget)
         }
 
-        self.assertIn(str(self.app.extra_ext), prepare_variables)
+        self.assertTrue({
+            str(self.app.extra_ext),
+            str(self.app.max_file_mb),
+            str(self.app.context_chars),
+            str(self.app.batch_size),
+            str(self.app.dedupe),
+            str(self.app.skip_plugin_js),
+        }.issubset(prepare_variables))
         self.assertIn(str(self.app.engine_url), translate_variables)
-        self.assertTrue(self.app.translate_button.winfo_exists())
-        self.assertTrue(self.app.translate_stop_button.winfo_exists())
-        self.assertTrue(self.app.progress.winfo_exists())
+        self.assertNotIn(str(self.app.engine_model), translate_variables)
+        self.assertNotIn(str(self.app.use_tm), translate_variables)
+        self.assertNotIn(str(self.app.engine_url), translate_visible_variables)
+        self.assertTrue({
+            str(self.app.game_path),
+            str(self.app.output_path),
+        }.issubset(prepare_visible_variables))
+        self.assertTrue({
+            str(self.app.translate_jsonl),
+            str(self.app.game_path),
+            str(self.app.engine_model),
+            str(self.app.use_tm),
+            str(self.app.translate_status_text),
+        }.issubset(translate_visible_variables))
+        for control in (
+            self.app.translate_button,
+            self.app.translate_stop_button,
+            self.app.progress,
+        ):
+            self.assertFalse(self._is_descendant_of(control, self.app.translate_advanced.content))
+
+    def test_visible_stage_controls_invoke_original_callback_slots(self):
+        prepare = self.app.stage_frames[Stage.PREPARE].content
+        translate = self.app.stage_frames[Stage.TRANSLATE].content
+
+        self._buttons_with_text(prepare, "Escolher")[0].invoke()
+        self._buttons_with_text(prepare, "Salvar como")[0].invoke()
+        self.app.run_button.invoke()
+        self.app.stop_button.configure(state="normal")
+        self.app.stop_button.invoke()
+
+        translate_selectors = self._buttons_with_text(translate, "Escolher")
+        self.assertEqual(len(translate_selectors), 2)
+        for selector in translate_selectors:
+            selector.invoke()
+        self.app.translate_button.invoke()
+        self.app.translate_stop_button.configure(state="normal")
+        self.app.translate_stop_button.invoke()
+
+        self.assertEqual(
+            self.callback_calls,
+            [
+                "choose_game_folder",
+                "choose_output_file",
+                "run_scan",
+                "stop_scan",
+                "choose_scan_jsonl",
+                "choose_game_folder",
+                "run_translation",
+                "stop_translation",
+            ],
+        )
 
 
 if __name__ == "__main__":
