@@ -25,7 +25,7 @@ from text_scanner_app import (  # noqa: E402
     TRANSLATE_SCRIPT_PATH,
     TextScannerApp,
 )
-from ui_state import Stage  # noqa: E402
+from ui_state import Stage, StageStatus  # noqa: E402
 
 
 class UiCommandCharacterizationTests(unittest.TestCase):
@@ -227,6 +227,8 @@ class UiCommandCharacterizationTests(unittest.TestCase):
         self.app.stop_button.configure(state="normal")
         self.app.stop_button.invoke()
 
+        self.app.workflow.mark_scan_finished(success=True)
+        self.app._refresh_stage_navigation()
         translate_selectors = self._buttons_with_text(translate, "Escolher")
         self.assertEqual(len(translate_selectors), 2)
         for selector in translate_selectors:
@@ -248,6 +250,94 @@ class UiCommandCharacterizationTests(unittest.TestCase):
                 "stop_translation",
             ],
         )
+
+
+class WorkflowCallbackTests(unittest.TestCase):
+    """Workflow feedback remains observable without launching real commands."""
+
+    @classmethod
+    def _has_display(cls):
+        if platform.system() == "Windows":
+            return True
+        return os.environ.get("DISPLAY") is not None
+
+    def setUp(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        self.messageboxes = mock.patch.multiple(
+            "text_scanner_app.messagebox",
+            showinfo=mock.DEFAULT,
+            showwarning=mock.DEFAULT,
+            showerror=mock.DEFAULT,
+            askyesno=mock.DEFAULT,
+        )
+        self.messagebox_mocks = self.messageboxes.start()
+        self.addCleanup(self.messageboxes.stop)
+        self.subprocess_popen = mock.patch("text_scanner_app.subprocess.Popen").start()
+        self.addCleanup(self.subprocess_popen.stop)
+        try:
+            self.app = TextScannerApp()
+        except tk.TclError:
+            self.skipTest("Probe Tcl/Tk indisponivel")
+        self.addCleanup(self.app.destroy)
+
+    def test_scan_success_recommends_translation_in_the_banner(self):
+        self.app.output_path.set("scan-output")
+
+        self.app._finish_run(0)
+
+        self.assertTrue(self.app.workflow.can_open(Stage.TRANSLATE))
+        self.assertEqual(self.app.recommended_stage, Stage.TRANSLATE)
+        self.assertEqual(self.app.activity_banner.kind, "success")
+        self.assertIn("Traduzir", self.app.activity_banner.detail_label.cget("text"))
+        self.messagebox_mocks["showinfo"].assert_not_called()
+
+    def test_translation_success_recommends_review_in_the_banner(self):
+        self.app._progress_total = 1
+        with (
+            mock.patch.object(self.app, "_translated_dir", return_value=Path("translated-output")),
+            mock.patch.object(Path, "is_file", return_value=True),
+            mock.patch.object(self.app, "_populate_preview_tree"),
+            mock.patch.object(self.app, "_refresh_apply_summary"),
+            mock.patch.object(self.app, "_count_report_statuses", return_value={}),
+        ):
+            self.app._finish_translation(0, ["PROGRESS 1/1"])
+
+        self.assertTrue(self.app.workflow.can_open(Stage.REVIEW))
+        self.assertEqual(self.app.recommended_stage, Stage.REVIEW)
+        self.assertEqual(self.app.activity_banner.kind, "success")
+        self.assertIn("Revisar", self.app.activity_banner.detail_label.cget("text"))
+        self.messagebox_mocks["showinfo"].assert_not_called()
+
+    def test_retry_warning_keeps_apply_available(self):
+        self.app.workflow.mark_scan_finished(success=True)
+        self.app.workflow.mark_translation_finished(success=True, has_review=True)
+        self.app.translated_dir = Path("translated-output")
+        with (
+            mock.patch.object(Path, "is_file", return_value=True),
+            mock.patch.object(self.app, "_populate_preview_tree"),
+            mock.patch.object(
+                self.app,
+                "_count_report_statuses",
+                return_value={"needs_review": 1, "failed": 0},
+            ),
+        ):
+            self.app._finish_retry(0, [])
+
+        self.assertEqual(self.app.workflow.status(Stage.REVIEW).value, "warning")
+        self.assertTrue(self.app.workflow.can_open(Stage.APPLY))
+        self.assertEqual(self.app.activity_banner.kind, "warning")
+
+    def test_apply_success_uses_banner_without_routine_dialog(self):
+        self.app.workflow.mark_scan_finished(success=True)
+        self.app.workflow.mark_translation_finished(success=True, has_review=True)
+        self.app._preview_loaded = True
+
+        self.app._finish_apply(0, ["Aplicados: 1"], Path("applied_manifest.json"))
+
+        self.assertIs(self.app.workflow.status(Stage.APPLY), StageStatus.COMPLETE)
+        self.assertEqual(self.app.activity_banner.kind, "success")
+        self.messagebox_mocks["showinfo"].assert_not_called()
 
 
 if __name__ == "__main__":

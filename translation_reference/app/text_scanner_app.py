@@ -11,7 +11,7 @@ from pathlib import Path
 from tkinter import filedialog, font as tkfont, messagebox, ttk
 
 from ui_components import CollapsibleSection, ScrollableStep, StageNavigation, StatusBanner
-from ui_state import Stage, WorkflowState
+from ui_state import Stage, StageStatus, WorkflowState
 from ui_theme import SPACING, configure_fluent_night, mono_font
 
 
@@ -168,6 +168,10 @@ class TextScannerApp(tk.Tk):
         self._eta_history = []
         self.workflow = WorkflowState()
         self.active_stage = Stage.PREPARE
+        self.recommended_stage = None
+        self._retry_available = False
+        self._panel_command_running = False
+        self._panel_command_with_progress = False
 
         configure_fluent_night(self)
         self._build_layout()
@@ -425,9 +429,48 @@ class TextScannerApp(tk.Tk):
         )
 
     def _refresh_stage_navigation(self):
+        """Render workflow status and derive every workflow action state from it."""
         for stage in Stage:
             self.stage_navigation.set_status(stage, self.workflow.status(stage))
         self.stage_navigation.set_active(self.active_stage)
+
+        scan_running = self.workflow.status(Stage.PREPARE) is StageStatus.RUNNING
+        panel_running = self._panel_command_running
+        translation_status = self.workflow.status(Stage.TRANSLATE)
+        review_status = self.workflow.status(Stage.REVIEW)
+        apply_status = self.workflow.status(Stage.APPLY)
+
+        self.run_button.configure(state="disabled" if scan_running else "normal")
+        self.stop_button.configure(state="normal" if scan_running else "disabled")
+        self.translate_button.configure(
+            state="normal"
+            if translation_status not in (StageStatus.LOCKED, StageStatus.RUNNING) and not panel_running
+            else "disabled"
+        )
+        self.translate_stop_button.configure(
+            state="normal" if panel_running and self._panel_command_with_progress else "disabled"
+        )
+        self.retry_button.configure(
+            state="normal"
+            if review_status is not StageStatus.LOCKED and self._retry_available and not panel_running
+            else "disabled"
+        )
+        self.apply_button.configure(
+            state="normal"
+            if apply_status is not StageStatus.LOCKED and self._preview_loaded and not panel_running
+            else "disabled"
+        )
+        self.restore_button.configure(state="disabled" if panel_running else "normal")
+
+    def _set_stage_feedback(self, stage, kind, title, detail):
+        """Show a workflow message without changing the user's active stage."""
+        self._feedback_stage = stage
+        self.activity_banner.set_state(kind, title, detail)
+
+    def _recommend_next_stage(self, stage):
+        """Remember the next available step; navigation remains user initiated."""
+        self.recommended_stage = stage
+        return stage
 
     def show_stage(self, stage):
         if not self.workflow.can_open(stage):
@@ -508,9 +551,15 @@ class TextScannerApp(tk.Tk):
 
         self.clear_log()
         self.append_log("> " + " ".join(f'"{part}"' if " " in part else part for part in command))
+        self.workflow.mark_scan_started()
         self.status.set("Varredura em andamento...")
-        self.run_button.configure(state="disabled")
-        self.stop_button.configure(state="normal")
+        self._refresh_stage_navigation()
+        self._set_stage_feedback(
+            Stage.PREPARE,
+            "info",
+            "Varredura em andamento",
+            "A varredura é somente leitura. Aguarde a geração dos relatórios.",
+        )
 
         thread = threading.Thread(target=self._run_worker, args=(command,), daemon=True)
         thread.start()
@@ -541,15 +590,28 @@ class TextScannerApp(tk.Tk):
         self.last_csv = output.with_suffix(".csv")
         self.last_jsonl = output.with_suffix(".jsonl")
         self.last_summary = output.with_suffix(".summary.md")
-        success = code == 0 and self.last_jsonl.exists()
-        if success:
+        success = code == 0
+        self.workflow.mark_scan_finished(code == 0)
+        if self.last_jsonl.exists():
             self.translate_jsonl.set(str(self.last_jsonl))
         if success:
             self.status.set("Varredura concluida. Relatorios prontos para revisar.")
+            self._recommend_next_stage(Stage.TRANSLATE)
+            self._set_stage_feedback(
+                Stage.PREPARE,
+                "success",
+                "Varredura concluída",
+                "Os relatórios estão prontos. A etapa Traduzir está pronta quando você quiser continuar.",
+            )
         else:
             self.status.set(f"Varredura terminou com erro. Codigo: {code}")
-        self.run_button.configure(state="normal")
-        self.stop_button.configure(state="disabled")
+            self._set_stage_feedback(
+                Stage.PREPARE,
+                "error",
+                "Varredura não concluída",
+                "Verifique o log para os detalhes antes de tentar novamente.",
+            )
+        self._refresh_stage_navigation()
 
     def stop_scan(self):
         if self.process and self.process.poll() is None:
@@ -615,13 +677,21 @@ class TextScannerApp(tk.Tk):
             return
 
         self.translated_dir = None
+        self._retry_available = False
         self._refresh_apply_summary()
+        self.workflow.mark_translation_started()
         self.append_log("--- Traducao ---")
         self._start_panel_command(
             command,
             self._finish_translation,
             "Traducao em andamento...",
             with_progress=True,
+        )
+        self._set_stage_feedback(
+            Stage.TRANSLATE,
+            "info",
+            "Tradução em andamento",
+            "O progresso e o log estão sendo atualizados nesta janela.",
         )
 
     def _panel_busy(self):
@@ -630,11 +700,9 @@ class TextScannerApp(tk.Tk):
     def _start_panel_command(self, command, on_finish, busy_label, with_progress):
         self.append_log("> " + self._format_command(command))
         self.status.set(busy_label)
-        self.translate_button.configure(state="disabled")
-        self.apply_button.configure(state="disabled")
-        self.restore_button.configure(state="disabled")
-        self.retry_button.configure(state="disabled")
-        self.translate_stop_button.configure(state="normal" if with_progress else "disabled")
+        self._panel_command_running = True
+        self._panel_command_with_progress = with_progress
+        self._refresh_stage_navigation()
         self._progress_total = None
         self._preview_loaded = False
         self._eta_history = []
@@ -680,11 +748,9 @@ class TextScannerApp(tk.Tk):
         try:
             on_finish(code, output_lines)
         finally:
-            self.translate_button.configure(state="normal")
-            self.translate_stop_button.configure(state="disabled")
-            self.restore_button.configure(state="normal")
-            if self._preview_loaded:
-                self.apply_button.configure(state="normal")
+            self._panel_command_running = False
+            self._panel_command_with_progress = False
+            self._refresh_stage_navigation()
 
     def _observe_progress_line(self, text):
         match = PROGRESS_RE.match(text.strip())
@@ -705,16 +771,37 @@ class TextScannerApp(tk.Tk):
 
     def _finish_translation(self, code, output_lines):
         out_dir = self._translated_dir()
+        csv_path = out_dir / REPORT_CSV_NAME
+        has_review = csv_path.is_file()
+        self.workflow.mark_translation_finished(code == 0, has_review)
         if code != 0:
             message = "Traducao terminou com erro. Codigo: %s" % code
             self.translate_status_text.set(message)
             self.status.set(message + " Verifique o log.")
+            self._set_stage_feedback(
+                Stage.TRANSLATE,
+                "error",
+                "Tradução não concluída",
+                "Verifique o log para os detalhes antes de tentar novamente.",
+            )
+            self._refresh_stage_navigation()
+            return
+        if not has_review:
+            self.translate_status_text.set("Tradução concluída sem relatório de revisão.")
+            self.status.set("Tradução concluída, mas o relatório de revisão não foi encontrado.")
+            self._set_stage_feedback(
+                Stage.TRANSLATE,
+                "warning",
+                "Relatório de revisão ausente",
+                "Verifique o log e gere a tradução novamente para liberar a etapa Revisar.",
+            )
+            self._refresh_stage_navigation()
             return
         self.translated_dir = out_dir
         self._refresh_apply_summary()
         if self._progress_total is not None:
             self.progress.configure(value=self._progress_total)
-        self._populate_preview_tree(out_dir / REPORT_CSV_NAME)
+        self._populate_preview_tree(csv_path)
         model_name = self.engine_model.get().strip() or DEFAULT_ENGINE_MODEL
         total = self._progress_total or 0
         eta_str = estimate_eta(self._eta_history, total, total)
@@ -723,16 +810,17 @@ class TextScannerApp(tk.Tk):
             parts.append(eta_str)
         self.translate_status_text.set(" | ".join(parts))
         self.status.set("Traducao concluida. Revise o resumo e use Aplicar no jogo quando desejar.")
-        counts = count_report_statuses(out_dir / REPORT_CSV_NAME)
+        counts = self._count_report_statuses(csv_path)
         retryable = counts.get("needs_review", 0) + counts.get("failed", 0)
-        self.retry_button.configure(state="normal" if retryable > 0 else "disabled")
-        summary = "\n".join("- %s: %d" % (name, counts.get(name, 0)) for name in STATUS_ORDER)
-        messagebox.showinfo(
-            "Traducao concluida",
-            "Resumo por status:\n%s\n\nRelatorio: %s\n\nO botao \"Aplicar no jogo\" foi habilitado."
-            % (summary, out_dir / REPORT_CSV_NAME),
-            parent=self,
+        self._retry_available = retryable > 0
+        self._recommend_next_stage(Stage.REVIEW)
+        self._set_stage_feedback(
+            Stage.TRANSLATE,
+            "success",
+            "Tradução concluída",
+            "O relatório foi carregado. A etapa Revisar está pronta; use Aplicar apenas após a sua conferência.",
         )
+        self._refresh_stage_navigation()
 
     @staticmethod
     def _count_report_statuses(csv_path):
@@ -808,6 +896,12 @@ class TextScannerApp(tk.Tk):
             "Aplicando traducoes no jogo...",
             with_progress=False,
         )
+        self._set_stage_feedback(
+            Stage.APPLY,
+            "info",
+            "Aplicação em andamento",
+            "Os arquivos do jogo serão alterados somente após a confirmação já realizada.",
+        )
 
     @staticmethod
     def _count_translated_files(translated_dir):
@@ -826,12 +920,15 @@ class TextScannerApp(tk.Tk):
         outcome = classify_apply_result(code, applied_count)
         applied_line = next((line for line in output_lines if line.startswith("Aplicados:")), "")
         self.append_log("Manifesto de aplicacao: %s" % manifest_path)
+        self.workflow.mark_apply_finished(outcome == "success")
         if outcome == "success":
             self.status.set("Traducao aplicada no jogo. Backups .bak registrados no manifesto.")
-            messagebox.showinfo(
-                "Aplicacao concluida",
-                "%s\n\nManifesto: %s" % (applied_line or "Arquivos aplicados no jogo.", manifest_path),
-                parent=self,
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "success",
+                "Aplicação concluída",
+                "%s Manifesto: %s. A restauração de backups permanece disponível se necessário."
+                % (applied_line or "Arquivos aplicados no jogo.", manifest_path),
             )
         elif outcome == "warning":
             # Exit 0 nao garante escrita: com N==0 nada mudou no jogo
@@ -850,12 +947,24 @@ class TextScannerApp(tk.Tk):
                 % (detail, manifest_path),
                 parent=self,
             )
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "warning",
+                "Nenhum arquivo foi aplicado",
+                "Verifique o log e o manifesto antes de uma nova tentativa.",
+            )
         elif outcome == "no_approval":
             self.status.set("Aplicacao sem aprovacao. Nada foi gravado.")
             messagebox.showwarning(
                 "Aplicacao interrompida",
                 "O CLI saiu com codigo 3 (sem aprovacao). Nada foi gravado.",
                 parent=self,
+            )
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "warning",
+                "Aplicação interrompida",
+                "Nenhum arquivo foi gravado. Confirme a operação para tentar novamente.",
             )
         else:
             self.status.set("Aplicacao terminou com erro. Codigo: %s" % code)
@@ -864,6 +973,13 @@ class TextScannerApp(tk.Tk):
                 "%s\nCodigo de saida: %s\nVerifique o log para detalhes." % (applied_line, code),
                 parent=self,
             )
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "error",
+                "Falha na aplicação",
+                "Verifique o log para os detalhes antes de tentar novamente.",
+            )
+        self._refresh_stage_navigation()
 
     def _find_latest_manifest(self):
         base = TRANSLATED_BASE
@@ -1058,6 +1174,12 @@ class TextScannerApp(tk.Tk):
             "Retraduzindo %d item(s)..." % retryable,
             with_progress=True,
         )
+        self._set_stage_feedback(
+            Stage.REVIEW,
+            "info",
+            "Retradução em andamento",
+            "Os itens pendentes serão atualizados no relatório de revisão.",
+        )
 
     def _finish_retry(self, code, output_lines):
         """Callback ao termino do retry: atualiza preview e status."""
@@ -1065,14 +1187,47 @@ class TextScannerApp(tk.Tk):
         csv_path = out_dir / REPORT_CSV_NAME
         if code == 0 and csv_path.is_file():
             self._populate_preview_tree(csv_path)
-            counts = count_report_statuses(csv_path)
+            counts = self._count_report_statuses(csv_path)
             retryable = counts.get("needs_review", 0) + counts.get("failed", 0)
-            self.retry_button.configure(state="normal" if retryable > 0 else "disabled")
+            self._retry_available = retryable > 0
+            self.workflow.mark_retry_finished(success=True, has_remaining=retryable > 0)
             self.status.set("Retraducao concluida. %d item(s) restante(s)." % retryable)
+            if retryable:
+                self._recommend_next_stage(Stage.REVIEW)
+                self._set_stage_feedback(
+                    Stage.REVIEW,
+                    "warning",
+                    "Ainda há itens para revisar",
+                    "%d item(s) continuam pendentes. Revise o relatório ou execute outra retradução." % retryable,
+                )
+            else:
+                self._recommend_next_stage(Stage.APPLY)
+                self._set_stage_feedback(
+                    Stage.REVIEW,
+                    "success",
+                    "Retradução concluída",
+                    "Não há itens pendentes. A etapa Aplicar está pronta quando você quiser continuar.",
+                )
         elif code == 0:
             self.status.set("Retraducao concluida.")
+            self._retry_available = False
+            self.workflow.mark_retry_finished(success=True, has_remaining=True)
+            self._set_stage_feedback(
+                Stage.REVIEW,
+                "warning",
+                "Relatório de revisão ausente",
+                "Verifique o log antes de aplicar ou tentar uma nova retradução.",
+            )
         else:
             self.status.set("Retraducao terminou com erro. Codigo: %s" % code)
+            self.workflow.mark_retry_finished(success=False, has_remaining=True)
+            self._set_stage_feedback(
+                Stage.REVIEW,
+                "error",
+                "Retradução não concluída",
+                "Verifique o log para os detalhes antes de tentar novamente.",
+            )
+        self._refresh_stage_navigation()
 
 
 if __name__ == "__main__":

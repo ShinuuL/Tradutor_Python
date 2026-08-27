@@ -216,6 +216,7 @@ class EstimateEtaTests(unittest.TestCase):
 class RunTranslationSummaryTests(unittest.TestCase):
     def test_run_translation_clears_stale_apply_summary_before_starting(self):
         from text_scanner_app import TextScannerApp
+        from ui_state import Stage, StageStatus, WorkflowState
 
         class Value:
             def __init__(self, value=""):
@@ -240,12 +241,16 @@ class RunTranslationSummaryTests(unittest.TestCase):
         self.assertIn("Arquivos traduzidos: 8.", app.apply_summary.get())
 
         app.translate_process = None
+        app.workflow = WorkflowState()
+        app._refresh_stage_navigation = mock.Mock()
+        app._set_stage_feedback = mock.Mock()
         app.build_translation_command = mock.Mock(return_value=["translate"])
         app.append_log = mock.Mock()
         app._start_panel_command = mock.Mock()
         TextScannerApp.run_translation(app)
 
         self.assertIsNone(app.translated_dir)
+        self.assertIs(app.workflow.status(Stage.TRANSLATE), StageStatus.RUNNING)
         self.assertEqual(
             app.apply_summary.get(),
             "Destino: C:/jogos/exemplo\n"

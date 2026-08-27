@@ -60,3 +60,12 @@ class WorkflowState:
 
     def mark_apply_finished(self, success):
         self._statuses[Stage.APPLY] = StageStatus.COMPLETE if success else StageStatus.ERROR
+
+    def mark_retry_finished(self, success, has_remaining):
+        """Record a retry result without changing the already-valid apply stage."""
+        if not success:
+            self._statuses[Stage.REVIEW] = StageStatus.ERROR
+        elif has_remaining:
+            self._statuses[Stage.REVIEW] = StageStatus.WARNING
+        else:
+            self._statuses[Stage.REVIEW] = StageStatus.READY

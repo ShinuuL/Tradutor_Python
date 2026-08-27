@@ -65,6 +65,23 @@ class WorkflowStateTests(unittest.TestCase):
         state.mark_apply_finished(success=True)
         self.assertIs(state.status(Stage.APPLY), StageStatus.COMPLETE)
 
+    def test_retry_result_updates_review_without_relocking_apply(self):
+        state = WorkflowState()
+        state.mark_scan_finished(success=True)
+        state.mark_translation_finished(success=True, has_review=True)
+
+        state.mark_retry_finished(success=True, has_remaining=True)
+        self.assertIs(state.status(Stage.REVIEW), StageStatus.WARNING)
+        self.assertIs(state.status(Stage.APPLY), StageStatus.READY)
+
+        state.mark_retry_finished(success=True, has_remaining=False)
+        self.assertIs(state.status(Stage.REVIEW), StageStatus.READY)
+        self.assertIs(state.status(Stage.APPLY), StageStatus.READY)
+
+        state.mark_retry_finished(success=False, has_remaining=True)
+        self.assertIs(state.status(Stage.REVIEW), StageStatus.ERROR)
+        self.assertIs(state.status(Stage.APPLY), StageStatus.READY)
+
     def test_requirements_describe_locked_stages(self):
         state = WorkflowState()
         self.assertEqual(state.requirement(Stage.REVIEW), "Conclua uma tradução para revisar os resultados.")
