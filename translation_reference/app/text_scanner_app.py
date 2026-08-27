@@ -615,6 +615,7 @@ class TextScannerApp(tk.Tk):
             return
 
         self.translated_dir = None
+        self._refresh_apply_summary()
         self.append_log("--- Traducao ---")
         self._start_panel_command(
             command,

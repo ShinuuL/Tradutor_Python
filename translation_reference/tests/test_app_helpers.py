@@ -213,6 +213,48 @@ class EstimateEtaTests(unittest.TestCase):
         self.assertEqual(result, "ETA 01:20")
 
 
+class RunTranslationSummaryTests(unittest.TestCase):
+    def test_run_translation_clears_stale_apply_summary_before_starting(self):
+        from text_scanner_app import TextScannerApp
+
+        class Value:
+            def __init__(self, value=""):
+                self.value = value
+
+            def get(self):
+                return self.value
+
+            def set(self, value):
+                self.value = value
+
+        app = TextScannerApp.__new__(TextScannerApp)
+        app.game_path = Value("C:/jogos/exemplo")
+        app.apply_summary = Value()
+        previous_dir = mock.MagicMock()
+        previous_dir.is_dir.return_value = True
+        previous_dir.__str__.return_value = "C:/relatorios/anterior"
+        app.translated_dir = previous_dir
+        app._count_translated_files = mock.Mock(return_value=8)
+        app._refresh_apply_summary = TextScannerApp._refresh_apply_summary.__get__(app)
+        app._refresh_apply_summary()
+        self.assertIn("Arquivos traduzidos: 8.", app.apply_summary.get())
+
+        app.translate_process = None
+        app.build_translation_command = mock.Mock(return_value=["translate"])
+        app.append_log = mock.Mock()
+        app._start_panel_command = mock.Mock()
+        TextScannerApp.run_translation(app)
+
+        self.assertIsNone(app.translated_dir)
+        self.assertEqual(
+            app.apply_summary.get(),
+            "Destino: C:/jogos/exemplo\n"
+            "Origem: nenhuma tradução concluída.\n"
+            "Arquivos traduzidos: 0.",
+        )
+        app._start_panel_command.assert_called_once()
+
+
 class GuiSmokeTests(unittest.TestCase):
     """Smoke tests da GUI: instanciar, rodar mainloop curto, destruir.
 
@@ -390,6 +432,34 @@ class GuiSmokeTests(unittest.TestCase):
             "Arquivos traduzidos: 4.",
         )
         count_files.assert_called_once_with(translated_dir)
+        app.destroy()
+
+    def test_run_translation_clears_stale_apply_summary_before_starting(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        app.game_path.set("C:/jogos/exemplo")
+        previous_dir = mock.MagicMock()
+        previous_dir.is_dir.return_value = True
+        previous_dir.__str__.return_value = "C:/relatorios/anterior"
+        app.translated_dir = previous_dir
+        with mock.patch.object(app, "_count_translated_files", return_value=8):
+            app._refresh_apply_summary()
+        self.assertIn("Arquivos traduzidos: 8.", app.apply_summary.get())
+
+        with mock.patch.object(app, "build_translation_command", return_value=["translate"]), mock.patch.object(
+            app, "append_log"
+        ), mock.patch.object(app, "_start_panel_command") as start_command:
+            app.run_translation()
+
+        self.assertIsNone(app.translated_dir)
+        self.assertEqual(
+            app.apply_summary.get(),
+            "Destino: C:/jogos/exemplo\n"
+            "Origem: nenhuma tradução concluída.\n"
+            "Arquivos traduzidos: 0.",
+        )
+        start_command.assert_called_once()
         app.destroy()
 
     def test_review_control_callbacks_remain_connected(self):
