@@ -7,6 +7,24 @@ from ui_state import Stage, StageStatus
 from ui_theme import COLORS, RADII, SPACING
 
 
+def _windows_wheel_units(event):
+    """Return Tk scroll units for a valid Windows wheel event, else ``None``."""
+    delta = getattr(event, "delta", None)
+    if not isinstance(delta, (int, float)) or isinstance(delta, bool) or delta == 0:
+        return None
+    return -1 if delta > 0 else 1
+
+
+def _linux_wheel_units(event):
+    """Return Tk scroll units for a valid X11 button-wheel event, else ``None``."""
+    number = getattr(event, "num", None)
+    if number == 4:
+        return -1
+    if number == 5:
+        return 1
+    return None
+
+
 def bind_local_mousewheel(widget, yview_scroll):
     """Bind wheel scrolling without overriding widgets that already scroll themselves."""
     native_scroll_widgets = (
@@ -24,12 +42,16 @@ def bind_local_mousewheel(widget, yview_scroll):
     widget._local_mousewheel_yview = yview_scroll
     if not getattr(widget, "_has_local_mousewheel", False):
         def on_wheel(event, target=widget):
-            units = -1 if event.delta > 0 else 1
+            units = _windows_wheel_units(event)
+            if units is None:
+                return None
             target._local_mousewheel_yview(units, "units")
             return "break"
 
         def on_linux_wheel(event, target=widget):
-            units = -1 if event.num == 4 else 1
+            units = _linux_wheel_units(event)
+            if units is None:
+                return None
             target._local_mousewheel_yview(units, "units")
             return "break"
 

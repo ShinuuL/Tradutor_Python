@@ -383,6 +383,16 @@ class GuiSmokeTests(unittest.TestCase):
         app.workflow.mark_scan_finished(True)
         app.workflow.mark_translation_finished(True, True)
         app._refresh_stage_navigation()
+        app.update_idletasks()
+        app.update()
+        for widget in (
+            app.stage_navigation,
+            app.activity_banner,
+            app._activity_actions,
+            app.open_full_log_button,
+            app.clear_log_button,
+        ):
+            self._assert_within_app(app, widget)
         critical = {
             Stage.PREPARE: app.run_button,
             Stage.TRANSLATE: app.translate_button,

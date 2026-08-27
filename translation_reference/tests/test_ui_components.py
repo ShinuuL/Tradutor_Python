@@ -4,6 +4,7 @@ import sys
 import tkinter as tk
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 
 APP_DIR = Path(__file__).resolve().parents[1] / "app"
@@ -15,6 +16,8 @@ from ui_components import (
     ScrollableStep,
     StageNavigation,
     StatusBanner,
+    _linux_wheel_units,
+    _windows_wheel_units,
     bind_local_mousewheel,
 )
 from ui_state import Stage, StageStatus
@@ -162,6 +165,54 @@ class ComponentSmokeTests(unittest.TestCase):
         self.root.update()
 
         self.assertEqual(calls, [(-1, "units")])
+
+    def test_wheel_unit_helpers_validate_missing_zero_and_unrecognized_events(self):
+        """Malformed wheel events are ignored without being treated as downward scrolling."""
+        self.assertEqual(_windows_wheel_units(SimpleNamespace(delta=120)), -1)
+        self.assertEqual(_windows_wheel_units(SimpleNamespace(delta=-120)), 1)
+        self.assertIsNone(_windows_wheel_units(SimpleNamespace()))
+        self.assertIsNone(_windows_wheel_units(SimpleNamespace(delta=0)))
+        self.assertIsNone(_windows_wheel_units(SimpleNamespace(delta="-120")))
+
+        self.assertEqual(_linux_wheel_units(SimpleNamespace(num=4)), -1)
+        self.assertEqual(_linux_wheel_units(SimpleNamespace(num=5)), 1)
+        self.assertIsNone(_linux_wheel_units(SimpleNamespace()))
+        self.assertIsNone(_linux_wheel_units(SimpleNamespace(num=0)))
+        self.assertIsNone(_linux_wheel_units(SimpleNamespace(num=6)))
+
+    def test_zero_delta_mousewheel_does_not_move_a_real_scrollable_step(self):
+        self.root.geometry("420x260")
+        step = ScrollableStep(self.root)
+        step.pack(fill="both", expand=True)
+        body = tk.Label(step.content, text="linha\n" * 100)
+        body.pack(anchor="w")
+        self.root.update()
+        step.canvas.yview_moveto(0)
+        before = step.canvas.yview()[0]
+
+        body.event_generate("<MouseWheel>", delta=0)
+        self.root.update()
+
+        self.assertEqual(step.canvas.yview()[0], before)
+
+    def test_valid_local_wheel_events_scroll_and_stop_later_widget_bindings(self):
+        container = tk.Frame(self.root)
+        container.pack()
+        child = tk.Label(container, text="Rolável")
+        child.pack()
+        scrolls = []
+        later_bindings = []
+        bind_local_mousewheel(container, lambda units, mode: scrolls.append((units, mode)))
+        child.bind("<MouseWheel>", lambda _event: later_bindings.append("windows"), add="+")
+        child.bind("<Button-4>", lambda _event: later_bindings.append("linux"), add="+")
+        self.root.update()
+
+        child.event_generate("<MouseWheel>", delta=-120)
+        child.event_generate("<Button-4>")
+        self.root.update()
+
+        self.assertEqual(scrolls, [(1, "units"), (-1, "units")])
+        self.assertEqual(later_bindings, [])
 
     def test_scrollable_step_scrolls_only_its_content_for_windows_and_linux_wheel_events(self):
         """A generic descendant scrolls the step with either platform event."""
