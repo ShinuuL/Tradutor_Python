@@ -300,6 +300,98 @@ class GuiSmokeTests(unittest.TestCase):
         self.assertIsInstance(app.apply_summary, tk.StringVar)
         app.destroy()
 
+    def test_activity_actions_are_visible_initially_and_invoke_callbacks(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        from text_scanner_app import TextScannerApp
+        with mock.patch.object(TextScannerApp, "open_full_log") as open_full_log, mock.patch.object(
+            TextScannerApp, "clear_log"
+        ) as clear_log:
+            app = self._create_app_or_skip()
+            app.update()
+            self.assertTrue(app._activity_actions.winfo_ismapped())
+            self.assertTrue(app.open_full_log_button.winfo_ismapped())
+            self.assertTrue(app.clear_log_button.winfo_ismapped())
+            self.assertIs(app.open_full_log_button.master, app._activity_actions)
+            self.assertIs(app.clear_log_button.master, app._activity_actions)
+
+            def is_descendant(widget, ancestor):
+                while widget is not ancestor and getattr(widget, "master", None) is not None:
+                    widget = widget.master
+                return widget is ancestor
+
+            for report_button in (app.open_csv_button, app.open_jsonl_button, app.open_summary_button):
+                self.assertTrue(is_descendant(report_button, app.stage_frames[Stage.REVIEW].content))
+
+            app.workflow.mark_scan_finished(True)
+            app.workflow.mark_translation_finished(True, True)
+            app._refresh_stage_navigation()
+            for stage in Stage:
+                self.assertTrue(app.show_stage(stage))
+                app.update()
+                self.assertTrue(app._activity_actions.winfo_ismapped(), stage)
+                self.assertTrue(app.open_full_log_button.winfo_ismapped(), stage)
+                self.assertTrue(app.clear_log_button.winfo_ismapped(), stage)
+
+            app.open_full_log_button.invoke()
+            app.clear_log_button.invoke()
+        open_full_log.assert_called_once_with()
+        clear_log.assert_called_once_with()
+        app.destroy()
+
+    def test_apply_summary_has_safe_placeholders_and_real_translation_details(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        self.assertEqual(
+            app.apply_summary.get(),
+            "Destino: nenhuma pasta do jogo selecionada.\n"
+            "Origem: nenhuma tradução concluída.\n"
+            "Arquivos traduzidos: 0.",
+        )
+        app.game_path.set("C:/jogos/exemplo")
+        translated_dir = mock.MagicMock()
+        translated_dir.is_dir.return_value = True
+        translated_dir.__str__.return_value = "C:/relatorios/exemplo"
+        app.translated_dir = translated_dir
+        with mock.patch.object(app, "_count_translated_files", return_value=3) as count_files:
+            app._refresh_apply_summary()
+        count_files.assert_called_once_with(translated_dir)
+        self.assertEqual(
+            app.apply_summary.get(),
+            "Destino: C:/jogos/exemplo\n"
+            "Origem: C:/relatorios/exemplo\n"
+            "Arquivos traduzidos: 3.",
+        )
+        app.destroy()
+
+    def test_apply_summary_refreshes_after_folder_selection_and_translation_success(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        with mock.patch("text_scanner_app.filedialog.askdirectory", return_value="C:/jogos/exemplo"):
+            app.choose_game_folder()
+        self.assertIn("Destino: C:/jogos/exemplo", app.apply_summary.get())
+
+        translated_dir = mock.MagicMock()
+        translated_dir.is_dir.return_value = True
+        translated_dir.__str__.return_value = "C:/relatorios/exemplo"
+        translated_dir.__truediv__.return_value = translated_dir
+        with mock.patch.object(app, "_translated_dir", return_value=translated_dir), mock.patch.object(
+            app, "_count_translated_files", return_value=4
+        ) as count_files, mock.patch.object(app, "_populate_preview_tree"), mock.patch(
+            "text_scanner_app.count_report_statuses", return_value={}
+        ), mock.patch("text_scanner_app.messagebox.showinfo"):
+            app._finish_translation(0, [])
+        self.assertEqual(
+            app.apply_summary.get(),
+            "Destino: C:/jogos/exemplo\n"
+            "Origem: C:/relatorios/exemplo\n"
+            "Arquivos traduzidos: 4.",
+        )
+        count_files.assert_called_once_with(translated_dir)
+        app.destroy()
+
     def test_review_control_callbacks_remain_connected(self):
         if not self._has_display():
             self.skipTest("Sem display disponivel")

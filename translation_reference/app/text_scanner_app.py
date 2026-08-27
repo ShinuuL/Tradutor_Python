@@ -203,8 +203,27 @@ class TextScannerApp(tk.Tk):
             if stage is not self.active_stage:
                 frame.grid_remove()
 
-        self.activity_banner = StatusBanner(self)
-        self.activity_banner.grid(row=1, column=1, sticky="ew", padx=(0, SPACING["page"]), pady=(0, SPACING["page"]))
+        activity = ttk.Frame(self, style="Surface.TFrame")
+        activity.grid(row=1, column=1, sticky="ew", padx=(0, SPACING["page"]), pady=(0, SPACING["page"]))
+        activity.columnconfigure(0, weight=1)
+        self.activity_banner = StatusBanner(activity)
+        self.activity_banner.grid(row=0, column=0, sticky="ew")
+        self._activity_actions = ttk.Frame(activity, style="Surface.TFrame")
+        self._activity_actions.grid(row=0, column=1, sticky="e", padx=(SPACING["sm"], 0))
+        self.open_full_log_button = ttk.Button(
+            self._activity_actions,
+            text="Abrir log",
+            command=self.open_full_log,
+            cursor="hand2",
+        )
+        self.open_full_log_button.pack(side="left")
+        self.clear_log_button = ttk.Button(
+            self._activity_actions,
+            text="Limpar log",
+            command=self.clear_log,
+            cursor="hand2",
+        )
+        self.clear_log_button.pack(side="left", padx=(SPACING["sm"], 0))
 
         self._build_log_window()
         self._build_prepare_stage(self.stage_frames[Stage.PREPARE].content)
@@ -350,10 +369,6 @@ class TextScannerApp(tk.Tk):
         self.open_jsonl_button.pack(side="left", padx=(SPACING["sm"], 0))
         self.open_summary_button = ttk.Button(report_row, text="Abrir resumo", command=lambda: self.open_report(self.last_summary), cursor="hand2")
         self.open_summary_button.pack(side="left", padx=(SPACING["sm"], 0))
-        self.open_full_log_button = ttk.Button(report_row, text="Abrir log", command=self.open_full_log, cursor="hand2")
-        self.open_full_log_button.pack(side="right")
-        self.clear_log_button = ttk.Button(report_row, text="Limpar log", command=self.clear_log, cursor="hand2")
-        self.clear_log_button.pack(side="right", padx=(0, SPACING["sm"]))
         tree_frame = ttk.Frame(panel, style="Panel.TFrame")
         tree_frame.pack(fill="both", expand=True, pady=(SPACING["sm"], 0))
         tree_frame.columnconfigure(0, weight=1)
@@ -372,9 +387,9 @@ class TextScannerApp(tk.Tk):
         self._stage_title(parent, "Aplicar", "Confirme a gravação apenas depois de revisar a tradução.")
         panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
         panel.pack(fill="x")
-        self.apply_summary = tk.StringVar(
-            value="Destino: selecione uma pasta do jogo.\nOrigem: execute uma tradução para preparar os arquivos."
-        )
+        self.apply_summary = tk.StringVar()
+        self.game_path.trace_add("write", self._refresh_apply_summary)
+        self._refresh_apply_summary()
         ttk.Label(panel, textvariable=self.apply_summary, style="Muted.TLabel", justify="left", wraplength=620).pack(anchor="w")
         ttk.Label(
             panel,
@@ -389,6 +404,25 @@ class TextScannerApp(tk.Tk):
         self.apply_button.pack(side="left")
         self.restore_button = ttk.Button(actions, text="Restaurar backups", style="Danger.TButton", command=self.run_restore, cursor="hand2")
         self.restore_button.pack(side="left", padx=(SPACING["sm"], 0))
+
+    def _refresh_apply_summary(self, *_args):
+        """Show the currently selected game folder and translated output safely."""
+        destination = self.game_path.get().strip()
+        destination_text = destination or "nenhuma pasta do jogo selecionada."
+        translated_dir = self.translated_dir
+        source_text = "nenhuma tradução concluída."
+        file_count = 0
+        if translated_dir:
+            source_text = str(translated_dir)
+            try:
+                if translated_dir.is_dir():
+                    file_count = self._count_translated_files(translated_dir)
+            except (AttributeError, OSError, TypeError, ValueError):
+                pass
+        self.apply_summary.set(
+            "Destino: %s\nOrigem: %s\nArquivos traduzidos: %d."
+            % (destination_text, source_text, file_count)
+        )
 
     def _refresh_stage_navigation(self):
         for stage in Stage:
@@ -676,6 +710,7 @@ class TextScannerApp(tk.Tk):
             self.status.set(message + " Verifique o log.")
             return
         self.translated_dir = out_dir
+        self._refresh_apply_summary()
         if self._progress_total is not None:
             self.progress.configure(value=self._progress_total)
         self._populate_preview_tree(out_dir / REPORT_CSV_NAME)
