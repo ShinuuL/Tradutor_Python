@@ -61,6 +61,20 @@ class ComponentSmokeTests(unittest.TestCase):
 
         self.assertGreater(bounds[3], step.canvas.winfo_height())
 
+    def test_scrollable_step_hides_scrollbar_without_overflow_and_restores_it_when_needed(self):
+        self.root.geometry("420x260")
+        step = ScrollableStep(self.root)
+        step.pack(fill="both", expand=True)
+        tk.Label(step.content, text="Conteúdo curto").pack()
+        self.root.update()
+
+        self.assertFalse(step.scrollbar.winfo_ismapped())
+
+        tk.Label(step.content, text="linha\n" * 100).pack()
+        self.root.update()
+
+        self.assertTrue(step.scrollbar.winfo_ismapped())
+
     def test_rounded_panel_hosts_content_over_a_smoothed_background(self):
         panel = RoundedPanel(self.root)
         panel.pack(fill="both", expand=True)
@@ -88,6 +102,18 @@ class ComponentSmokeTests(unittest.TestCase):
         self.assertLess(width, panel.canvas.winfo_width())
         self.assertLess(height, panel.canvas.winfo_height())
 
+    def test_rounded_panel_grows_for_tall_content_without_forcing_a_clipped_window_height(self):
+        panel = RoundedPanel(self.root)
+        panel.pack(fill="x")
+        tk.Label(panel.content, text="linha\n" * 30).pack()
+        self.root.update()
+
+        self.assertGreaterEqual(panel.canvas.winfo_height(), panel.content.winfo_reqheight())
+        self.assertLess(
+            int(float(panel.canvas.itemcget(panel._content_window, "height"))),
+            panel.content.winfo_reqheight(),
+        )
+
     def test_status_banner_shows_textual_state_and_rejects_unknown_kind(self):
         banner = StatusBanner(self.root)
         banner.pack(fill="x")
@@ -111,6 +137,27 @@ class ComponentSmokeTests(unittest.TestCase):
         self.assertIs(navigation.active_stage, Stage.TRANSLATE)
         self.assertNotEqual(navigation.markers[Stage.PREPARE].cget("text"), "")
         self.assertNotEqual(navigation.labels[Stage.TRANSLATE].cget("text"), "")
+
+    def test_stage_navigation_makes_the_full_row_keyboard_and_pointer_activatable(self):
+        activated = []
+        navigation = StageNavigation(self.root, orientation="vertical", command=activated.append)
+        navigation.pack(fill="x")
+        row = navigation.rows[Stage.TRANSLATE]
+        self.root.update()
+
+        self.assertGreaterEqual(row.winfo_height(), 44)
+        row.event_generate("<Enter>")
+        self.assertEqual(navigation.hover_stage, Stage.TRANSLATE)
+        row.event_generate("<Button-1>")
+        self.assertEqual(activated, [Stage.TRANSLATE])
+        self.root.focus_force()
+        row.focus_set()
+        self.root.update()
+        self.assertIs(self.root.focus_get(), row)
+        row.event_generate("<Return>")
+
+        self.assertEqual(activated, [Stage.TRANSLATE, Stage.TRANSLATE])
+        self.assertTrue(bool(row.cget("takefocus")))
 
     def test_scrollable_step_binds_mousewheel_to_late_and_expanded_children(self):
         step = ScrollableStep(self.root)

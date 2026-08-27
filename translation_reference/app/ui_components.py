@@ -67,7 +67,7 @@ class CollapsibleSection(ttk.Frame):
     """A compact section whose optional content starts hidden."""
 
     def __init__(self, master, *, title):
-        super().__init__(master, style="Surface.TFrame")
+        super().__init__(master, style="Panel.TFrame")
         self.title = title
         self.expanded = False
         self.toggle_button = ttk.Button(
@@ -76,7 +76,7 @@ class CollapsibleSection(ttk.Frame):
             command=self.toggle,
         )
         self.toggle_button.pack(anchor="w")
-        self.content = ttk.Frame(self, style="Surface.TFrame")
+        self.content = ttk.Frame(self, style="Panel.TFrame")
 
     def toggle(self):
         """Show or hide the optional content."""
@@ -112,8 +112,8 @@ class ScrollableStep(ttk.Frame):
             takefocus=False,
         )
         self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.pack(side="right", fill="y")
+        self._scrollbar_visible = False
+        self.canvas.configure(yscrollcommand=self._set_scrollbar)
         self.canvas.pack(side="left", fill="both", expand=True)
 
         self.content = ttk.Frame(self.canvas, style="Surface.TFrame", padding=SPACING["panel"])
@@ -130,8 +130,27 @@ class ScrollableStep(ttk.Frame):
     def _update_scrollregion(self, _event=None):
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
+    def _set_scrollbar(self, first, last):
+        """Show the rail only when the stage can actually move vertically."""
+        self.scrollbar.set(first, last)
+        try:
+            visible = float(first) > 0.0 or float(last) < 1.0
+        except (TypeError, ValueError):
+            visible = False
+        if visible == self._scrollbar_visible:
+            return
+        self._scrollbar_visible = visible
+        if visible:
+            self.scrollbar.pack(side="right", fill="y")
+        else:
+            self.scrollbar.pack_forget()
+
     def _fit_content_width(self, event):
-        self.canvas.itemconfigure(self._content_window, width=event.width)
+        # A stage remains readable on wide screens instead of stretching every
+        # form control across the whole desktop.
+        width = min(event.width, 1040)
+        self.canvas.coords(self._content_window, max(0, (event.width - width) // 2), 0)
+        self.canvas.itemconfigure(self._content_window, width=width)
 
     def _refresh_local_mousewheel_bindings(self, _event=None):
         bind_local_mousewheel(self.content, self.canvas.yview_scroll)
@@ -153,27 +172,38 @@ class ScrollableStep(ttk.Frame):
             self._map_binding_id = None
 
 
-class RoundedPanel(ttk.Frame):
-    """A panel with a smooth Canvas background and a standard ttk content frame."""
+class RoundedPanel(tk.Frame):
+    """A real rounded surface with an unconstrained, dynamically-sized body."""
 
     def __init__(self, master, *, padding=SPACING["panel"]):
-        super().__init__(master, style="Panel.TFrame")
+        super().__init__(master, background=COLORS["surface"], highlightthickness=0, borderwidth=0)
+        self._padding = padding
+        self._inset = max(6, RADII["panel"])
         self.canvas = tk.Canvas(
             self,
-            background=COLORS["panel"],
+            background=COLORS["surface"],
             highlightthickness=0,
             borderwidth=0,
             takefocus=False,
         )
         self.canvas.pack(fill="both", expand=True)
-        self.content = ttk.Frame(self.canvas, style="Panel.TFrame", padding=padding)
-        self._content_window = self.canvas.create_window((0, 0), window=self.content, anchor="nw")
+        self.content = tk.Frame(self.canvas, background=COLORS["panel"], highlightthickness=0, borderwidth=0)
+        self._content_window = self.canvas.create_window(
+            (self._inset, self._inset), window=self.content, anchor="nw"
+        )
         self.canvas.bind("<Configure>", self._redraw, add="+")
+        self.content.bind("<Configure>", self._fit_height_to_content, add="+")
+
+    def _fit_height_to_content(self, _event=None):
+        """Let cards requested with ``fill='x'`` grow rather than clip children."""
+        required = self.content.winfo_reqheight() + self._inset * 2
+        if int(self.canvas.cget("height")) != required:
+            self.canvas.configure(height=required)
 
     def _redraw(self, event):
         width, height = event.width, event.height
         radius = min(RADII["panel"], width // 2, height // 2)
-        inset = max(1, radius)
+        inset = min(self._inset, max(1, radius))
         points = (
             radius, 0,
             width - radius, 0,
@@ -201,7 +231,6 @@ class RoundedPanel(ttk.Frame):
         self.canvas.itemconfigure(
             self._content_window,
             width=max(0, width - (inset * 2)),
-            height=max(0, height - (inset * 2)),
         )
 
 
@@ -251,7 +280,7 @@ class StatusBanner(tk.Frame):
         self.detail_label.configure(text=str(detail))
 
 
-class StageNavigation(ttk.Frame):
+class StageNavigation(tk.Frame):
     """A visual summary of workflow stages and their statuses."""
 
     _STAGE_NAMES = {
@@ -277,29 +306,83 @@ class StageNavigation(ttk.Frame):
         StageStatus.ERROR: ("×", COLORS["error"]),
     }
 
-    def __init__(self, master, *, orientation="horizontal"):
-        super().__init__(master, style="Surface.TFrame")
+    def __init__(self, master, *, orientation="horizontal", command=None):
+        super().__init__(master, background=COLORS["surface"], highlightthickness=0, borderwidth=0)
         if orientation not in {"horizontal", "vertical"}:
             raise ValueError("orientation deve ser 'horizontal' ou 'vertical'")
         self.orientation = orientation
+        self.command = command
         self.statuses = {stage: StageStatus.LOCKED for stage in Stage}
         self.active_stage = None
+        self.hover_stage = None
+        self.pressed_stage = None
         self.rows = {}
         self.markers = {}
         self.labels = {}
         for stage in Stage:
-            row = tk.Frame(self, background=COLORS["surface"])
+            row = tk.Frame(
+                self,
+                background=COLORS["surface"],
+                highlightthickness=1,
+                highlightbackground=COLORS["surface"],
+                cursor="hand2",
+                takefocus=True,
+                width=188,
+                height=48,
+            )
+            row.pack_propagate(False)
             if self.orientation == "vertical":
                 row.pack(fill="x", padx=SPACING["xs"], pady=(0, SPACING["xs"]))
             else:
                 row.pack(side="left", fill="x", expand=True, padx=(0, SPACING["xs"]))
-            marker = tk.Label(row, width=2, background=COLORS["surface"], foreground=COLORS["muted"])
+            marker = tk.Label(row, width=2, background=COLORS["surface"], foreground=COLORS["muted"], cursor="hand2")
             marker.pack(side="left", padx=(SPACING["sm"], SPACING["xs"]), pady=SPACING["sm"])
-            label = tk.Label(row, anchor="w", background=COLORS["surface"], foreground=COLORS["text"])
+            label = tk.Label(row, anchor="w", background=COLORS["surface"], foreground=COLORS["text"], cursor="hand2", takefocus=True)
             label.pack(side="left", fill="x", expand=True, pady=SPACING["sm"])
             self.rows[stage] = row
             self.markers[stage] = marker
             self.labels[stage] = label
+            for target in (row, marker, label):
+                target.bind("<Button-1>", lambda _event, current=stage: self._pointer_activate(current), add="+")
+                target.bind("<Return>", lambda _event, current=stage: self._keyboard_activate(current), add="+")
+                target.bind("<space>", lambda _event, current=stage: self._keyboard_activate(current), add="+")
+                target.bind("<Enter>", lambda _event, current=stage: self._set_hover(current), add="+")
+                target.bind("<Leave>", lambda _event, current=stage: self._clear_hover(current), add="+")
+                target.bind("<FocusIn>", lambda _event, current=stage: self._set_hover(current), add="+")
+                target.bind("<FocusOut>", lambda _event, current=stage: self._clear_hover(current), add="+")
+                target.bind("<ButtonRelease-1>", lambda _event, current=stage: self._clear_pressed(current), add="+")
+            self._render_stage(stage)
+
+    def activate(self, stage):
+        """Activate a full navigation row through pointer or keyboard input."""
+        if self.command:
+            return self.command(stage)
+        return stage
+
+    def _pointer_activate(self, stage):
+        self._set_pressed(stage)
+        return self.activate(stage)
+
+    def _keyboard_activate(self, stage):
+        self.activate(stage)
+        return "break"
+
+    def _set_hover(self, stage):
+        self.hover_stage = stage
+        self._render_stage(stage)
+
+    def _clear_hover(self, stage):
+        if self.hover_stage is stage:
+            self.hover_stage = None
+            self._render_stage(stage)
+
+    def _set_pressed(self, stage):
+        self.pressed_stage = stage
+        self._render_stage(stage)
+
+    def _clear_pressed(self, stage):
+        if self.pressed_stage is stage:
+            self.pressed_stage = None
             self._render_stage(stage)
 
     def set_status(self, stage, status):
@@ -318,7 +401,13 @@ class StageNavigation(ttk.Frame):
         marker, marker_color = self._STATUS_MARKERS[status]
         active = stage is self.active_stage
         background = COLORS["panel"] if active else COLORS["surface"]
+        if stage is self.hover_stage:
+            background = "#1A2B3B"
+        if stage is self.pressed_stage:
+            background = "#263E52"
+        border = COLORS["accent"] if stage is self.hover_stage or active else COLORS["surface"]
         self.rows[stage].configure(background=background)
+        self.rows[stage].configure(highlightbackground=border)
         self.markers[stage].configure(text=marker, foreground=marker_color, background=background)
         self.labels[stage].configure(
             text=f"{self._STAGE_NAMES[stage]} — {self._STATUS_NAMES[status]}",

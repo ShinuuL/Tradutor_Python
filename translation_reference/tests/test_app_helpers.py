@@ -323,7 +323,7 @@ class GuiSmokeTests(unittest.TestCase):
         self.assertEqual(app.active_stage, Stage.PREPARE)
         app.destroy()
 
-    def test_stage_navigation_button_blocks_locked_stage_until_workflow_unlocks_it(self):
+    def test_stage_navigation_opens_a_locked_stage_as_a_safe_preview(self):
         if not self._has_display():
             self.skipTest("Sem display disponivel")
         from ui_state import Stage
@@ -331,14 +331,31 @@ class GuiSmokeTests(unittest.TestCase):
         app.update()
         app.stage_navigation.labels[Stage.TRANSLATE].event_generate("<Button-1>")
         app.update()
-        self.assertEqual(app.active_stage, Stage.PREPARE)
+        self.assertEqual(app.active_stage, Stage.TRANSLATE)
         self.assertEqual(app.activity_banner.title_label.cget("text"), "Etapa ainda não disponível")
         self.assertEqual(app.activity_banner.detail_label.cget("text"), "Conclua uma varredura para continuar.")
+        self.assertEqual(str(app.translate_button.cget("state")), "disabled")
         app.workflow.mark_scan_finished(True)
         app._refresh_stage_navigation()
         app.stage_navigation.labels[Stage.TRANSLATE].event_generate("<Button-1>")
         app.update()
         self.assertEqual(app.active_stage, Stage.TRANSLATE)
+        app.destroy()
+
+    def test_all_workflow_surfaces_use_real_rounded_cards(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        app.update()
+        for card in (
+            app.prepare_card,
+            app.translate_card,
+            app.review_card,
+            app.apply_card,
+            app.activity_card,
+        ):
+            self.assertEqual(card.canvas.type(card.canvas.find_withtag("rounded_background")[0]), "polygon")
+            self.assertTrue(card.content.winfo_ismapped())
         app.destroy()
 
     def test_stage_navigation_uses_vertical_rows_in_the_shell(self):

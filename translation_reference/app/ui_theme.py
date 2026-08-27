@@ -8,8 +8,8 @@ COLORS = {
     "window": "#0B111B",
     "surface": "#101A27",
     "panel": "#182635",
-    "border": "#2A4055",
-    "field": "#0F1A26",
+    "border": "#38536A",
+    "field": "#0C1723",
     "text": "#EAF4FC",
     "muted": "#91A6B8",
     "accent": "#66D4FF",
@@ -60,6 +60,9 @@ def configure_fluent_night(root):
     style.configure("TLabel", background=c["surface"], foreground=c["text"])
     style.configure("Title.TLabel", background=c["surface"], foreground=c["text"], font=("Segoe UI Semibold", 16))
     style.configure("Muted.TLabel", background=c["surface"], foreground=c["muted"])
+    style.configure("Panel.TLabel", background=c["panel"], foreground=c["text"])
+    style.configure("PanelTitle.TLabel", background=c["panel"], foreground=c["text"], font=("Segoe UI Semibold", 18))
+    style.configure("PanelMuted.TLabel", background=c["panel"], foreground=c["muted"])
 
     style.configure(
         "TEntry",
@@ -69,10 +72,10 @@ def configure_fluent_night(root):
         bordercolor=c["border"],
         lightcolor=c["border"],
         darkcolor=c["border"],
-        padding=(SPACING["sm"], SPACING["xs"]),
+        padding=(SPACING["sm"], 7),
     )
     style.map("TEntry", bordercolor=[("focus", c["accent"]), ("disabled", c["border"])])
-    style.configure("TSpinbox", fieldbackground=c["field"], foreground=c["text"], arrowsize=14, padding=SPACING["xs"])
+    style.configure("TSpinbox", fieldbackground=c["field"], foreground=c["text"], arrowsize=14, padding=(SPACING["sm"], 6))
     style.map(
         "TSpinbox",
         fieldbackground=[("pressed", c["border"]), ("active", c["field"]), ("focus", c["field"]), ("disabled", c["surface"])],
@@ -85,7 +88,7 @@ def configure_fluent_night(root):
         "bordercolor": c["border"],
         "lightcolor": c["border"],
         "darkcolor": c["border"],
-        "padding": (SPACING["md"], 7),
+        "padding": (SPACING["md"], 8),
         "relief": "flat",
     }
     style.configure("TButton", **button_base)

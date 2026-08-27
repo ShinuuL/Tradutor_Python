@@ -10,7 +10,7 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, font as tkfont, messagebox, ttk
 
-from ui_components import CollapsibleSection, ScrollableStep, StageNavigation, StatusBanner
+from ui_components import CollapsibleSection, RoundedPanel, ScrollableStep, StageNavigation, StatusBanner
 from ui_state import Stage, StageStatus, WorkflowState
 from ui_theme import SPACING, configure_fluent_night, mono_font
 
@@ -184,18 +184,8 @@ class TextScannerApp(tk.Tk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        self.stage_navigation = StageNavigation(self, orientation="vertical")
+        self.stage_navigation = StageNavigation(self, orientation="vertical", command=self.show_stage)
         self.stage_navigation.grid(row=0, column=0, sticky="ns", padx=(SPACING["page"], SPACING["md"]), pady=SPACING["page"])
-        for stage in Stage:
-            for widget in (
-                self.stage_navigation.rows[stage],
-                self.stage_navigation.markers[stage],
-                self.stage_navigation.labels[stage],
-            ):
-                widget.configure(cursor="hand2", takefocus=True)
-                widget.bind("<Button-1>", lambda _event, target=stage: self.show_stage(target), add="+")
-                widget.bind("<Return>", lambda _event, target=stage: self._activate_stage_from_keyboard(target), add="+")
-                widget.bind("<space>", lambda _event, target=stage: self._activate_stage_from_keyboard(target), add="+")
 
         stage_host = ttk.Frame(self, style="Surface.TFrame")
         stage_host.grid(row=0, column=1, sticky="nsew", padx=(0, SPACING["page"]), pady=SPACING["page"])
@@ -209,12 +199,13 @@ class TextScannerApp(tk.Tk):
             if stage is not self.active_stage:
                 frame.grid_remove()
 
-        activity = ttk.Frame(self, style="Surface.TFrame")
-        activity.grid(row=1, column=1, sticky="ew", padx=(0, SPACING["page"]), pady=(0, SPACING["page"]))
+        self.activity_card = RoundedPanel(self)
+        self.activity_card.grid(row=1, column=1, sticky="ew", padx=(0, SPACING["page"]), pady=(0, SPACING["page"]))
+        activity = self.activity_card.content
         activity.columnconfigure(0, weight=1)
         self.activity_banner = StatusBanner(activity)
         self.activity_banner.grid(row=0, column=0, sticky="ew")
-        self._activity_actions = ttk.Frame(activity, style="Surface.TFrame")
+        self._activity_actions = ttk.Frame(activity, style="Panel.TFrame")
         self._activity_actions.grid(row=0, column=1, sticky="e", padx=(SPACING["sm"], 0))
         self.open_full_log_button = ttk.Button(
             self._activity_actions,
@@ -282,18 +273,32 @@ class TextScannerApp(tk.Tk):
 
     @staticmethod
     def _stage_title(parent, title, detail):
-        ttk.Label(parent, text=title, style="Title.TLabel").pack(anchor="w")
-        ttk.Label(parent, text=detail, style="Muted.TLabel").pack(anchor="w", pady=(SPACING["xs"], SPACING["panel"]))
+        ttk.Label(parent, text=title, style="PanelTitle.TLabel").pack(anchor="w")
+        ttk.Label(parent, text=detail, style="PanelMuted.TLabel").pack(anchor="w", pady=(SPACING["xs"], SPACING["panel"]))
+
+    @staticmethod
+    def _card(parent, name, title, detail, *, expand=False):
+        card = RoundedPanel(parent)
+        card.pack(fill="both" if expand else "x", expand=expand)
+        header = ttk.Frame(card.content, style="Panel.TFrame")
+        header.pack(fill="x", padx=SPACING["panel"], pady=(SPACING["panel"], 0))
+        TextScannerApp._stage_title(header, title, detail)
+        body = ttk.Frame(card.content, style="Panel.TFrame", padding=SPACING["panel"])
+        body.pack(fill="both", expand=True, padx=SPACING["panel"], pady=(0, SPACING["panel"]))
+        return card, body
 
     def _build_prepare_stage(self, parent):
-        self._stage_title(parent, "Preparar", "Escolha a pasta e configure a varredura somente leitura.")
-        form = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
+        self.prepare_card, form = self._card(
+            parent, "prepare", "Preparar", "Escolha a pasta e configure a varredura somente leitura."
+        )
+        form_body = form
+        form = ttk.Frame(form_body, style="Panel.TFrame")
         form.pack(fill="x")
         form.columnconfigure(1, weight=1)
-        ttk.Label(form, text="Pasta do jogo").grid(row=0, column=0, sticky="w", pady=(0, SPACING["xs"]))
+        ttk.Label(form, text="Pasta do jogo", style="Panel.TLabel").grid(row=0, column=0, sticky="w", pady=(0, SPACING["xs"]))
         ttk.Entry(form, textvariable=self.game_path).grid(row=1, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
         ttk.Button(form, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(row=1, column=2, sticky="ew")
-        ttk.Label(form, text="Saída do relatório").grid(row=2, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Label(form, text="Saída do relatório", style="Panel.TLabel").grid(row=2, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
         ttk.Entry(form, textvariable=self.output_path).grid(row=3, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
         ttk.Button(form, text="Salvar como", command=self.choose_output_file, cursor="hand2").grid(row=3, column=2, sticky="ew")
 
@@ -304,18 +309,18 @@ class TextScannerApp(tk.Tk):
         self.stop_button = ttk.Button(actions, text="Parar", style="Danger.TButton", command=self.stop_scan, state="disabled", cursor="hand2")
         self.stop_button.pack(side="left")
 
-        self.prepare_advanced = CollapsibleSection(parent, title="Opções avançadas")
+        self.prepare_advanced = CollapsibleSection(form_body, title="Opções avançadas")
         self.prepare_advanced.pack(fill="x", pady=(SPACING["panel"], 0))
         options = self.prepare_advanced.content
         for column in range(4):
             options.columnconfigure(column, weight=1)
-        ttk.Label(options, text="Extensões extras").grid(row=0, column=0, sticky="w")
+        ttk.Label(options, text="Extensões extras", style="Panel.TLabel").grid(row=0, column=0, sticky="w")
         ttk.Entry(options, textvariable=self.extra_ext).grid(row=1, column=0, sticky="ew", padx=(0, SPACING["sm"]))
-        ttk.Label(options, text="Max. MB por arquivo").grid(row=0, column=1, sticky="w")
+        ttk.Label(options, text="Max. MB por arquivo", style="Panel.TLabel").grid(row=0, column=1, sticky="w")
         ttk.Spinbox(options, from_=1, to=500, textvariable=self.max_file_mb, width=8).grid(row=1, column=1, sticky="w")
-        ttk.Label(options, text="Caracteres por trecho").grid(row=0, column=2, sticky="w")
+        ttk.Label(options, text="Caracteres por trecho", style="Panel.TLabel").grid(row=0, column=2, sticky="w")
         ttk.Spinbox(options, from_=60, to=1000, increment=20, textvariable=self.context_chars, width=8).grid(row=1, column=2, sticky="w")
-        ttk.Label(options, text="Linhas por lote").grid(row=0, column=3, sticky="w")
+        ttk.Label(options, text="Linhas por lote", style="Panel.TLabel").grid(row=0, column=3, sticky="w")
         ttk.Spinbox(options, from_=50, to=5000, increment=50, textvariable=self.batch_size, width=8).grid(row=1, column=3, sticky="w")
         checks = ttk.Frame(options, style="Panel.TFrame")
         checks.grid(row=2, column=0, columnspan=4, sticky="w", pady=(SPACING["sm"], 0))
@@ -323,17 +328,20 @@ class TextScannerApp(tk.Tk):
         ttk.Checkbutton(checks, text="Ignorar plugins JS", variable=self.skip_plugin_js).pack(side="left")
 
     def _build_translate_stage(self, parent):
-        self._stage_title(parent, "Traduzir", "Selecione a varredura e execute a tradução.")
-        panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
+        self.translate_card, panel = self._card(
+            parent, "translate", "Traduzir", "Selecione a varredura e execute a tradução."
+        )
+        panel_body = panel
+        panel = ttk.Frame(panel_body, style="Panel.TFrame")
         panel.pack(fill="x")
         panel.columnconfigure(1, weight=1)
-        ttk.Label(panel, text="Scan JSONL").grid(row=0, column=0, sticky="w")
+        ttk.Label(panel, text="Scan JSONL", style="Panel.TLabel").grid(row=0, column=0, sticky="w")
         ttk.Entry(panel, textvariable=self.translate_jsonl).grid(row=1, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
         ttk.Button(panel, text="Escolher", command=self.choose_scan_jsonl, cursor="hand2").grid(row=1, column=2, sticky="ew")
-        ttk.Label(panel, text="Pasta do jogo").grid(row=2, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Label(panel, text="Pasta do jogo", style="Panel.TLabel").grid(row=2, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
         ttk.Entry(panel, textvariable=self.game_path).grid(row=3, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
         ttk.Button(panel, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(row=3, column=2, sticky="ew")
-        ttk.Label(panel, text="Modelo").grid(row=4, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Label(panel, text="Modelo", style="Panel.TLabel").grid(row=4, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
         ttk.Entry(panel, textvariable=self.engine_model).grid(row=5, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
         ttk.Checkbutton(panel, text="Usar memória de tradução", variable=self.use_tm).grid(row=5, column=2, sticky="w")
         actions = ttk.Frame(panel, style="Panel.TFrame")
@@ -344,26 +352,26 @@ class TextScannerApp(tk.Tk):
         self.translate_stop_button.pack(side="left", padx=(SPACING["sm"], 0))
         self.progress = ttk.Progressbar(panel, orient="horizontal", mode="determinate", maximum=1, value=0)
         self.progress.grid(row=7, column=0, columnspan=3, sticky="ew", pady=(SPACING["panel"], SPACING["xs"]))
-        ttk.Label(panel, textvariable=self.translate_status_text, style="Muted.TLabel").grid(row=8, column=0, columnspan=3, sticky="w")
+        ttk.Label(panel, textvariable=self.translate_status_text, style="PanelMuted.TLabel").grid(row=8, column=0, columnspan=3, sticky="w")
 
-        self.translate_advanced = CollapsibleSection(parent, title="Opções avançadas")
+        self.translate_advanced = CollapsibleSection(panel_body, title="Opções avançadas")
         self.translate_advanced.pack(fill="x", pady=(SPACING["panel"], 0))
         options = self.translate_advanced.content
         options.columnconfigure(0, weight=1)
-        ttk.Label(options, text="URL do engine").grid(row=0, column=0, sticky="w")
+        ttk.Label(options, text="URL do engine", style="Panel.TLabel").grid(row=0, column=0, sticky="w")
         ttk.Entry(options, textvariable=self.engine_url).grid(row=1, column=0, sticky="ew")
 
     def _build_review_stage(self, parent):
-        self._stage_title(parent, "Revisar", "Confira os resultados e retraduza itens pendentes.")
-        panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
-        panel.pack(fill="both", expand=True)
+        self.review_card, panel = self._card(
+            parent, "review", "Revisar", "Confira os resultados e retraduza itens pendentes.", expand=True
+        )
         filter_row = ttk.Frame(panel, style="Panel.TFrame")
         filter_row.pack(fill="x")
         self._preview_filter = tk.StringVar(value="todos")
         self._filter_combo = ttk.Combobox(filter_row, textvariable=self._preview_filter, values=["todos", "tm_hit", "llm", "needs_review", "failed"], state="readonly", width=16)
         self._filter_combo.pack(side="left")
         self._filter_combo.bind("<<ComboboxSelected>>", self._on_filter_change)
-        self._tree_counter = ttk.Label(filter_row, text="", style="Muted.TLabel")
+        self._tree_counter = ttk.Label(filter_row, text="", style="PanelMuted.TLabel")
         self._tree_counter.pack(side="left", padx=(SPACING["md"], 0))
         self.retry_button = ttk.Button(filter_row, text="Retraduzir falhas", command=self._run_retry, state="disabled", cursor="hand2")
         self.retry_button.pack(side="right")
@@ -390,17 +398,17 @@ class TextScannerApp(tk.Tk):
         tree_scroll.grid(row=0, column=1, sticky="ns")
 
     def _build_apply_stage(self, parent):
-        self._stage_title(parent, "Aplicar", "Confirme a gravação apenas depois de revisar a tradução.")
-        panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
-        panel.pack(fill="x")
+        self.apply_card, panel = self._card(
+            parent, "apply", "Aplicar", "Confirme a gravação apenas depois de revisar a tradução."
+        )
         self.apply_summary = tk.StringVar()
         self.game_path.trace_add("write", self._refresh_apply_summary)
         self._refresh_apply_summary()
-        ttk.Label(panel, textvariable=self.apply_summary, style="Muted.TLabel", justify="left", wraplength=620).pack(anchor="w")
+        ttk.Label(panel, textvariable=self.apply_summary, style="PanelMuted.TLabel", justify="left", wraplength=620).pack(anchor="w")
         ttk.Label(
             panel,
             text="Aplicar e restaurar modificam arquivos do jogo e exigem confirmação.",
-            style="Muted.TLabel",
+            style="PanelMuted.TLabel",
             justify="left",
             wraplength=620,
         ).pack(anchor="w", pady=(SPACING["md"], 0))
@@ -476,14 +484,14 @@ class TextScannerApp(tk.Tk):
         return stage
 
     def show_stage(self, stage):
-        if not self.workflow.can_open(stage):
+        available = self.workflow.can_open(stage)
+        if not available:
             self.activity_banner.set_state("info", "Etapa ainda não disponível", self.workflow.requirement(stage))
-            return False
         self.stage_frames[self.active_stage].grid_remove()
         self.active_stage = stage
         self.stage_frames[stage].grid()
         self.stage_navigation.set_active(stage)
-        return True
+        return available
 
     def _activate_stage_from_keyboard(self, stage):
         """Open a stage from a focused navigation item without propagating the key."""
