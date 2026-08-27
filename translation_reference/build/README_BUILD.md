@@ -56,7 +56,17 @@ dist/
 
 ### App GUI
 
-Execute `TradutorDGames.exe`. A aplicacao Tkinter abre para varredura e traducao.
+Execute `TradutorDGames.exe`. A aplicacao Tkinter abre no fluxo em quatro
+etapas: Preparar, Traduzir, Revisar e Aplicar.
+
+### Smoke seguro do executavel
+
+Sem acionar **Aplicar** ou **Restaurar**, confirme que a janela inicia em
+**Preparar**, que as opcoes avancadas abrem e fecham, e que uma etapa bloqueada
+mostra seu requisito. Redimensione a janela ate 900 x 650 e verifique que nao
+ha rolagem global nem acoes cortadas. Verifique tambem a rolagem local da tabela
+de Revisar e do log completo, alem da navegacao por teclado com `Tab` e foco
+visivel.
 
 ### CLI worker
 
@@ -77,6 +87,8 @@ translate_game_text.exe --help
 - O CLI worker chama o Ollama via HTTP (compativel com API OpenAI).
 - Os executaveis precisam rodar no mesmo PC onde o Ollama esta instalado
   (ou acessivel na rede, se configurado).
+- Durante o smoke, use somente `translation_reference/tests/fixtures/game` e
+  grave relatorios em `reports/`; nunca aplique ou restaure arquivos de jogo.
 
 ## Customizacao do icone
 

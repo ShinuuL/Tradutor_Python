@@ -34,6 +34,10 @@ a = Analysis(
         "tkinter.filedialog",
         "tkinter.messagebox",
         "tkinter.font",
+        # Modulos da interface Fluent Night carregados pelo entry point
+        "ui_components",
+        "ui_state",
+        "ui_theme",
         # Modulos top-level do lib/
         "appliers",
         "global_tm",
