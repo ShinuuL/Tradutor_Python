@@ -192,8 +192,10 @@ class TextScannerApp(tk.Tk):
                 self.stage_navigation.markers[stage],
                 self.stage_navigation.labels[stage],
             ):
-                widget.configure(cursor="hand2")
+                widget.configure(cursor="hand2", takefocus=True)
                 widget.bind("<Button-1>", lambda _event, target=stage: self.show_stage(target), add="+")
+                widget.bind("<Return>", lambda _event, target=stage: self._activate_stage_from_keyboard(target), add="+")
+                widget.bind("<space>", lambda _event, target=stage: self._activate_stage_from_keyboard(target), add="+")
 
         stage_host = ttk.Frame(self, style="Surface.TFrame")
         stage_host.grid(row=0, column=1, sticky="nsew", padx=(0, SPACING["page"]), pady=SPACING["page"])
@@ -482,6 +484,11 @@ class TextScannerApp(tk.Tk):
         self.stage_frames[stage].grid()
         self.stage_navigation.set_active(stage)
         return True
+
+    def _activate_stage_from_keyboard(self, stage):
+        """Open a stage from a focused navigation item without propagating the key."""
+        self.show_stage(stage)
+        return "break"
 
     def _sync_activity_banner(self, *_args):
         if hasattr(self, "activity_banner"):

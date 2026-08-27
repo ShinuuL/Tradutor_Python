@@ -163,6 +163,53 @@ class ComponentSmokeTests(unittest.TestCase):
 
         self.assertEqual(calls, [(-1, "units")])
 
+    def test_scrollable_step_scrolls_only_its_content_for_windows_and_linux_wheel_events(self):
+        """A generic descendant scrolls the step with either platform event."""
+        self.root.geometry("420x260")
+        step = ScrollableStep(self.root)
+        step.pack(fill="both", expand=True)
+        body = tk.Label(step.content, text="linha\n" * 100)
+        body.pack(anchor="w")
+        self.root.update()
+        step.canvas.yview_moveto(0)
+
+        before_windows = step.canvas.yview()[0]
+        body.event_generate("<MouseWheel>", delta=-120)
+        self.root.update()
+        after_windows = step.canvas.yview()[0]
+
+        body.event_generate("<Button-4>")
+        self.root.update()
+        after_linux_up = step.canvas.yview()[0]
+        body.event_generate("<Button-5>")
+        self.root.update()
+        after_linux_down = step.canvas.yview()[0]
+
+        self.assertGreater(after_windows, before_windows)
+        self.assertLess(after_linux_up, after_windows)
+        self.assertGreater(after_linux_down, after_linux_up)
+
+    def test_scrollable_step_preserves_text_widget_native_wheel_scrolling(self):
+        """A scrollable child keeps its own class binding instead of scrolling the step."""
+        self.root.geometry("420x260")
+        step = ScrollableStep(self.root)
+        step.pack(fill="both", expand=True)
+        text = tk.Text(step.content, height=6)
+        text.insert("1.0", "linha\n" * 100)
+        text.pack(fill="x")
+        tk.Label(step.content, text="preenchimento\n" * 100).pack(anchor="w")
+        self.root.update()
+        step.canvas.yview_moveto(0)
+        text.yview_moveto(0)
+
+        step_before = step.canvas.yview()[0]
+        text_before = text.yview()[0]
+        text.event_generate("<MouseWheel>", delta=-120)
+        self.root.update()
+
+        self.assertEqual(step.canvas.yview()[0], step_before)
+        self.assertGreater(text.yview()[0], text_before)
+
     def test_scrollable_step_resize_synchronizes_content_width(self):
         step = ScrollableStep(self.root)
         step.pack(fill="both", expand=True)

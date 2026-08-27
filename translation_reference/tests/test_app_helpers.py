@@ -34,6 +34,15 @@ from text_scanner_app import (  # noqa: E402
 from ui_state import Stage  # noqa: E402
 
 
+class GlobalWheelBindingTests(unittest.TestCase):
+    def test_ui_sources_do_not_register_or_remove_global_wheel_bindings(self):
+        """Wheel handling must remain scoped to the widget receiving input."""
+        for source_name in ("text_scanner_app.py", "ui_components.py"):
+            source = (APP_DIR / source_name).read_text(encoding="utf-8")
+            self.assertNotIn("bind_all", source)
+            self.assertNotIn("unbind_all", source)
+
+
 def _write_csv(path, rows, fieldnames=None):
     """Escreve um CSV de teste no caminho indicado."""
     if fieldnames is None:
@@ -280,6 +289,22 @@ class GuiSmokeTests(unittest.TestCase):
         except tk.TclError:
             self.skipTest("Probe Tcl/Tk indisponivel")
 
+    @staticmethod
+    def _descendants(widget):
+        for child in widget.winfo_children():
+            yield child
+            yield from GuiSmokeTests._descendants(child)
+
+    def _first_widget(self, root, widget_type):
+        return next(widget for widget in self._descendants(root) if isinstance(widget, widget_type))
+
+    def _assert_within_app(self, app, widget):
+        self.assertTrue(widget.winfo_ismapped(), widget)
+        self.assertGreaterEqual(widget.winfo_rootx(), app.winfo_rootx(), widget)
+        self.assertGreaterEqual(widget.winfo_rooty(), app.winfo_rooty(), widget)
+        self.assertLessEqual(widget.winfo_rootx() + widget.winfo_width(), app.winfo_rootx() + app.winfo_width(), widget)
+        self.assertLessEqual(widget.winfo_rooty() + widget.winfo_height(), app.winfo_rooty() + app.winfo_height(), widget)
+
     def test_app_creates_and_destroys(self):
         if not self._has_display():
             self.skipTest("Sem display disponivel")
@@ -326,6 +351,106 @@ class GuiSmokeTests(unittest.TestCase):
         translate = app.stage_navigation.rows[Stage.TRANSLATE]
         self.assertEqual(prepare.winfo_x(), translate.winfo_x())
         self.assertGreater(translate.winfo_y(), prepare.winfo_y())
+        app.destroy()
+
+    def test_review_treeview_wheel_moves_only_the_treeview(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        app.workflow.mark_scan_finished(True)
+        app.workflow.mark_translation_finished(True, True)
+        app._refresh_stage_navigation()
+        app.show_stage(Stage.REVIEW)
+        for number in range(80):
+            app._preview_tree.insert("", "end", values=("llm", f"arquivo-{number}.txt", number, "origem", "tradução"))
+        app.update()
+        app._preview_tree.yview_moveto(0)
+        review_before = app.stage_frames[Stage.REVIEW].canvas.yview()[0]
+        tree_before = app._preview_tree.yview()[0]
+
+        app._preview_tree.event_generate("<MouseWheel>", delta=-120)
+        app.update()
+
+        self.assertGreater(app._preview_tree.yview()[0], tree_before)
+        self.assertEqual(app.stage_frames[Stage.REVIEW].canvas.yview()[0], review_before)
+        app.destroy()
+
+    def test_stages_reflow_critical_content_inside_a_900_by_650_window(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        app.geometry("900x650")
+        app.workflow.mark_scan_finished(True)
+        app.workflow.mark_translation_finished(True, True)
+        app._refresh_stage_navigation()
+        critical = {
+            Stage.PREPARE: app.run_button,
+            Stage.TRANSLATE: app.translate_button,
+            Stage.REVIEW: app.retry_button,
+            Stage.APPLY: app.apply_button,
+        }
+        for stage, action in critical.items():
+            self.assertTrue(app.show_stage(stage))
+            app.update_idletasks()
+            app.update()
+            self._assert_within_app(app, app.stage_frames[stage])
+            self._assert_within_app(app, action)
+        app.destroy()
+
+    def test_navigation_fields_and_primary_actions_are_focusable_but_step_canvas_is_not(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        app.update()
+        app.focus_force()
+        app.update()
+        navigation = app.stage_navigation.labels[Stage.PREPARE]
+        first_field = self._first_widget(app.stage_frames[Stage.PREPARE].content, ttk.Entry)
+
+        for widget in (navigation, first_field, app.run_button):
+            widget.focus_set()
+            app.update()
+            self.assertIs(app.focus_get(), widget)
+        self.assertTrue(bool(navigation.cget("takefocus")))
+        self.assertEqual(app.stage_frames[Stage.PREPARE].canvas.cget("takefocus"), "0")
+        app.destroy()
+
+    def test_focused_navigation_label_opens_an_available_stage_on_return(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        app.workflow.mark_scan_finished(True)
+        app._refresh_stage_navigation()
+        navigation = app.stage_navigation.labels[Stage.TRANSLATE]
+        app.update()
+        app.focus_force()
+        navigation.focus_set()
+        app.update()
+
+        navigation.event_generate("<Return>")
+        app.update()
+
+        self.assertEqual(app.active_stage, Stage.TRANSLATE)
+        app.destroy()
+
+    def test_full_log_keeps_wheel_and_focus_local_to_its_text_widget(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        for number in range(100):
+            app.append_log(f"registro {number}")
+        app.open_full_log()
+        app.update()
+        app._log_window.focus_force()
+        app.update()
+        app.log.yview_moveto(0)
+        before = app.log.yview()[0]
+        app.log.focus_set()
+        app.log.event_generate("<MouseWheel>", delta=-120)
+        app.update()
+
+        self.assertIs(app.focus_get(), app.log)
+        self.assertGreater(app.log.yview()[0], before)
         app.destroy()
 
     def test_functional_controls_survive_remodel(self):
@@ -426,8 +551,8 @@ class GuiSmokeTests(unittest.TestCase):
         translated_dir.__truediv__.return_value = translated_dir
         with mock.patch.object(app, "_translated_dir", return_value=translated_dir), mock.patch.object(
             app, "_count_translated_files", return_value=4
-        ) as count_files, mock.patch.object(app, "_populate_preview_tree"), mock.patch(
-            "text_scanner_app.count_report_statuses", return_value={}
+        ) as count_files, mock.patch.object(app, "_populate_preview_tree"), mock.patch.object(
+            app, "_count_report_statuses", return_value={}
         ), mock.patch("text_scanner_app.messagebox.showinfo"):
             app._finish_translation(0, [])
         self.assertEqual(

@@ -8,7 +8,19 @@ from ui_theme import COLORS, RADII, SPACING
 
 
 def bind_local_mousewheel(widget, yview_scroll):
-    """Bind mouse-wheel scrolling to *widget* and its current descendants."""
+    """Bind wheel scrolling without overriding widgets that already scroll themselves."""
+    native_scroll_widgets = (
+        tk.Canvas,
+        tk.Entry,
+        tk.Spinbox,
+        tk.Text,
+        ttk.Combobox,
+        ttk.Entry,
+        ttk.Spinbox,
+        ttk.Treeview,
+    )
+    if isinstance(widget, native_scroll_widgets):
+        return
     widget._local_mousewheel_yview = yview_scroll
     if not getattr(widget, "_has_local_mousewheel", False):
         def on_wheel(event, target=widget):
@@ -16,7 +28,14 @@ def bind_local_mousewheel(widget, yview_scroll):
             target._local_mousewheel_yview(units, "units")
             return "break"
 
+        def on_linux_wheel(event, target=widget):
+            units = -1 if event.num == 4 else 1
+            target._local_mousewheel_yview(units, "units")
+            return "break"
+
         widget.bind("<MouseWheel>", on_wheel, add="+")
+        widget.bind("<Button-4>", on_linux_wheel, add="+")
+        widget.bind("<Button-5>", on_linux_wheel, add="+")
         widget._has_local_mousewheel = True
     for child in widget.winfo_children():
         bind_local_mousewheel(child, yview_scroll)
@@ -68,6 +87,7 @@ class ScrollableStep(ttk.Frame):
             background=COLORS["surface"],
             highlightthickness=0,
             borderwidth=0,
+            takefocus=False,
         )
         self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
@@ -121,6 +141,7 @@ class RoundedPanel(ttk.Frame):
             background=COLORS["panel"],
             highlightthickness=0,
             borderwidth=0,
+            takefocus=False,
         )
         self.canvas.pack(fill="both", expand=True)
         self.content = ttk.Frame(self.canvas, style="Panel.TFrame", padding=padding)
