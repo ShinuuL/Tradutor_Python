@@ -206,11 +206,54 @@ class TextScannerApp(tk.Tk):
         self.activity_banner = StatusBanner(self)
         self.activity_banner.grid(row=1, column=1, sticky="ew", padx=(0, SPACING["page"]), pady=(0, SPACING["page"]))
 
+        self._build_log_window()
         self._build_prepare_stage(self.stage_frames[Stage.PREPARE].content)
         self._build_translate_stage(self.stage_frames[Stage.TRANSLATE].content)
         self._build_review_stage(self.stage_frames[Stage.REVIEW].content)
         self._build_apply_stage(self.stage_frames[Stage.APPLY].content)
         self._refresh_stage_navigation()
+
+    def _build_log_window(self):
+        """Create the persistent full-log window without showing it yet."""
+        self._log_window = tk.Toplevel(self)
+        self._log_window.title("Log completo — TradutorDGames")
+        self._log_window.geometry("820x560")
+        self._log_window.minsize(560, 320)
+        self._log_window.configure(bg="#0B111B")
+        self._log_window.columnconfigure(0, weight=1)
+        self._log_window.rowconfigure(0, weight=1)
+        log_frame = ttk.Frame(self._log_window, style="Panel.TFrame", padding=SPACING["panel"])
+        log_frame.grid(row=0, column=0, sticky="nsew")
+        log_frame.columnconfigure(0, weight=1)
+        log_frame.rowconfigure(0, weight=1)
+        self.log = tk.Text(
+            log_frame,
+            wrap="word",
+            bg="#0F1A26",
+            fg="#EAF4FC",
+            insertbackground="#EAF4FC",
+            relief="flat",
+            highlightthickness=0,
+            padx=12,
+            pady=12,
+            font=mono_font(self),
+        )
+        log_scroll = ttk.Scrollbar(log_frame, orient="vertical", command=self.log.yview)
+        self.log.configure(yscrollcommand=log_scroll.set)
+        self.log.grid(row=0, column=0, sticky="nsew")
+        log_scroll.grid(row=0, column=1, sticky="ns")
+        self._log_window.protocol("WM_DELETE_WINDOW", self._hide_full_log)
+        self._log_window.withdraw()
+
+    def _hide_full_log(self):
+        """Keep the log widget alive when its window is closed."""
+        self._log_window.withdraw()
+
+    def open_full_log(self):
+        """Show and focus the persistent full-log window."""
+        self._log_window.deiconify()
+        self._log_window.lift()
+        self._log_window.focus_set()
 
     @staticmethod
     def _stage_title(parent, title, detail):
@@ -253,18 +296,6 @@ class TextScannerApp(tk.Tk):
         checks.grid(row=2, column=0, columnspan=4, sticky="w", pady=(SPACING["sm"], 0))
         ttk.Checkbutton(checks, text="Remover repetidos", variable=self.dedupe).pack(side="left", padx=(0, SPACING["md"]))
         ttk.Checkbutton(checks, text="Ignorar plugins JS", variable=self.skip_plugin_js).pack(side="left")
-
-        log_panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
-        log_panel.pack(fill="both", expand=True, pady=(SPACING["panel"], 0))
-        ttk.Label(log_panel, text="Atividade").pack(anchor="w")
-        self.log = tk.Text(log_panel, wrap="word", height=12, bg="#0F1A26", fg="#EAF4FC", insertbackground="#EAF4FC", relief="flat", highlightthickness=0, padx=12, pady=12, font=mono_font(self))
-        self.log.pack(fill="both", expand=True, pady=(SPACING["sm"], 0))
-        footer = ttk.Frame(log_panel, style="Panel.TFrame")
-        footer.pack(fill="x", pady=(SPACING["sm"], 0))
-        ttk.Button(footer, text="Abrir CSV", command=lambda: self.open_report(self.last_csv), cursor="hand2").pack(side="left")
-        ttk.Button(footer, text="Abrir JSONL", command=lambda: self.open_report(self.last_jsonl), cursor="hand2").pack(side="left", padx=(SPACING["sm"], 0))
-        ttk.Button(footer, text="Abrir resumo", command=lambda: self.open_report(self.last_summary), cursor="hand2").pack(side="left", padx=(SPACING["sm"], 0))
-        ttk.Button(footer, text="Limpar log", command=self.clear_log, cursor="hand2").pack(side="right")
 
     def _build_translate_stage(self, parent):
         self._stage_title(parent, "Traduzir", "Selecione a varredura e execute a tradução.")
@@ -311,15 +342,27 @@ class TextScannerApp(tk.Tk):
         self._tree_counter.pack(side="left", padx=(SPACING["md"], 0))
         self.retry_button = ttk.Button(filter_row, text="Retraduzir falhas", command=self._run_retry, state="disabled", cursor="hand2")
         self.retry_button.pack(side="right")
+        report_row = ttk.Frame(panel, style="Panel.TFrame")
+        report_row.pack(fill="x", pady=(SPACING["sm"], 0))
+        self.open_csv_button = ttk.Button(report_row, text="Abrir CSV", command=lambda: self.open_report(self.last_csv), cursor="hand2")
+        self.open_csv_button.pack(side="left")
+        self.open_jsonl_button = ttk.Button(report_row, text="Abrir JSONL", command=lambda: self.open_report(self.last_jsonl), cursor="hand2")
+        self.open_jsonl_button.pack(side="left", padx=(SPACING["sm"], 0))
+        self.open_summary_button = ttk.Button(report_row, text="Abrir resumo", command=lambda: self.open_report(self.last_summary), cursor="hand2")
+        self.open_summary_button.pack(side="left", padx=(SPACING["sm"], 0))
+        self.open_full_log_button = ttk.Button(report_row, text="Abrir log", command=self.open_full_log, cursor="hand2")
+        self.open_full_log_button.pack(side="right")
+        self.clear_log_button = ttk.Button(report_row, text="Limpar log", command=self.clear_log, cursor="hand2")
+        self.clear_log_button.pack(side="right", padx=(0, SPACING["sm"]))
         tree_frame = ttk.Frame(panel, style="Panel.TFrame")
         tree_frame.pack(fill="both", expand=True, pady=(SPACING["sm"], 0))
         tree_frame.columnconfigure(0, weight=1)
         tree_frame.rowconfigure(0, weight=1)
-        columns = ("status", "arquivo", "linha", "original", "traducao")
+        columns = ("status", "file", "line", "source", "translated")
         self._preview_tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="browse")
-        for name, label, width in (("status", "Status", 90), ("arquivo", "Arquivo", 160), ("linha", "Linha", 50), ("original", "Original", 250), ("traducao", "Tradução", 250)):
+        for name, label, width in (("status", "Status", 90), ("file", "Arquivo", 160), ("line", "Linha", 50), ("source", "Original", 250), ("translated", "Tradução", 250)):
             self._preview_tree.heading(name, text=label)
-            self._preview_tree.column(name, width=width, minwidth=40, anchor="e" if name == "linha" else "w")
+            self._preview_tree.column(name, width=width, minwidth=40, anchor="e" if name == "line" else "w")
         tree_scroll = ttk.Scrollbar(tree_frame, orient="vertical", command=self._preview_tree.yview)
         self._preview_tree.configure(yscrollcommand=tree_scroll.set)
         self._preview_tree.grid(row=0, column=0, sticky="nsew")
@@ -329,9 +372,22 @@ class TextScannerApp(tk.Tk):
         self._stage_title(parent, "Aplicar", "Confirme a gravação apenas depois de revisar a tradução.")
         panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
         panel.pack(fill="x")
-        self.apply_button = ttk.Button(panel, text="Aplicar no jogo", style="Danger.TButton", command=self.run_apply, state="disabled", cursor="hand2")
+        self.apply_summary = tk.StringVar(
+            value="Destino: selecione uma pasta do jogo.\nOrigem: execute uma tradução para preparar os arquivos."
+        )
+        ttk.Label(panel, textvariable=self.apply_summary, style="Muted.TLabel", justify="left", wraplength=620).pack(anchor="w")
+        ttk.Label(
+            panel,
+            text="Aplicar e restaurar modificam arquivos do jogo e exigem confirmação.",
+            style="Muted.TLabel",
+            justify="left",
+            wraplength=620,
+        ).pack(anchor="w", pady=(SPACING["md"], 0))
+        actions = ttk.Frame(panel, style="Panel.TFrame")
+        actions.pack(anchor="w", pady=(SPACING["panel"], 0))
+        self.apply_button = ttk.Button(actions, text="Aplicar no jogo", style="Danger.TButton", command=self.run_apply, state="disabled", cursor="hand2")
         self.apply_button.pack(side="left")
-        self.restore_button = ttk.Button(panel, text="Restaurar backups", style="Danger.TButton", command=self.run_restore, cursor="hand2")
+        self.restore_button = ttk.Button(actions, text="Restaurar backups", style="Danger.TButton", command=self.run_restore, cursor="hand2")
         self.restore_button.pack(side="left", padx=(SPACING["sm"], 0))
 
     def _refresh_stage_navigation(self):

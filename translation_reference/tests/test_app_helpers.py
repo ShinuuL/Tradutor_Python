@@ -16,7 +16,9 @@ import tempfile
 import time
 import tkinter as tk
 import unittest
+from unittest import mock
 from pathlib import Path
+from tkinter import ttk
 
 HERE = Path(__file__).resolve().parent
 APP_DIR = HERE.parent / "app"
@@ -29,6 +31,7 @@ from text_scanner_app import (  # noqa: E402
     filter_preview_rows,
     load_preview_rows,
 )
+from ui_state import Stage  # noqa: E402
 
 
 def _write_csv(path, rows, fieldnames=None):
@@ -276,6 +279,111 @@ class GuiSmokeTests(unittest.TestCase):
         translate = app.stage_navigation.rows[Stage.TRANSLATE]
         self.assertEqual(prepare.winfo_x(), translate.winfo_x())
         self.assertGreater(translate.winfo_y(), prepare.winfo_y())
+        app.destroy()
+
+    def test_functional_controls_survive_remodel(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        expected = (
+            "retry_button", "apply_button", "restore_button", "_preview_tree",
+            "_filter_combo", "log", "open_csv_button", "open_jsonl_button",
+            "apply_summary",
+        )
+        for name in expected:
+            self.assertTrue(hasattr(app, name), name)
+        self.assertEqual(
+            tuple(app._preview_tree.cget("columns")),
+            ("status", "file", "line", "source", "translated"),
+        )
+        self.assertTrue(app._filter_combo.bind("<<ComboboxSelected>>"))
+        self.assertIsInstance(app.apply_summary, tk.StringVar)
+        app.destroy()
+
+    def test_review_control_callbacks_remain_connected(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        from text_scanner_app import TextScannerApp
+        with mock.patch.object(TextScannerApp, "_run_retry") as run_retry:
+            app = self._create_app_or_skip()
+            app.retry_button.configure(state="normal")
+            app.retry_button.invoke()
+        run_retry.assert_called_once_with()
+        app.destroy()
+
+    def test_full_log_is_created_hidden_and_can_receive_early_entries(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        self.assertIsInstance(app.log, tk.Text)
+        self.assertEqual(app._log_window.state(), "withdrawn")
+        app.append_log("registro antes de abrir")
+        self.assertIn("registro antes de abrir", app.log.get("1.0", "end"))
+        with mock.patch.object(app._log_window, "deiconify") as deiconify, mock.patch.object(
+            app._log_window, "lift"
+        ) as lift, mock.patch.object(app._log_window, "focus_set") as focus_set:
+            app.open_full_log()
+        deiconify.assert_called_once_with()
+        lift.assert_called_once_with()
+        focus_set.assert_called_once_with()
+        app.destroy()
+
+    def test_log_close_protocol_withdraws_without_destroying_widget(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        app._log_window.deiconify()
+        close_handler = app._log_window.protocol("WM_DELETE_WINDOW")
+        app._log_window.tk.call(close_handler)
+        self.assertTrue(app._log_window.winfo_exists())
+        self.assertEqual(app._log_window.state(), "withdrawn")
+        app.destroy()
+
+    def test_apply_stage_shows_permanent_safety_notice(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+
+        def labels(widget):
+            found = []
+            if isinstance(widget, (tk.Label, ttk.Label)):
+                found.append(widget.cget("text"))
+            for child in widget.winfo_children():
+                found.extend(labels(child))
+            return found
+
+        self.assertIn(
+            "Aplicar e restaurar modificam arquivos do jogo e exigem confirmação.",
+            labels(app.stage_frames[Stage.APPLY]),
+        )
+        app.destroy()
+
+    def test_apply_and_restore_keep_confirmation_dialogs_with_safe_mocks(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        app.game_path.set("C:/jogo-de-teste")
+        translated_dir = mock.MagicMock()
+        translated_dir.is_dir.return_value = True
+        app.translated_dir = translated_dir
+        with mock.patch("text_scanner_app.Path") as path_type, mock.patch.object(
+            app, "_count_translated_files", return_value=1
+        ), mock.patch("text_scanner_app.messagebox.showinfo"), mock.patch(
+            "text_scanner_app.messagebox.askyesno", return_value=False
+        ) as confirm_apply, mock.patch.object(app, "_start_panel_command") as start_apply:
+            path_type.return_value.is_dir.return_value = True
+            app.run_apply()
+        confirm_apply.assert_called_once()
+        start_apply.assert_not_called()
+
+        with mock.patch.object(app, "_find_latest_manifest", return_value=Path("manifest.json")), mock.patch.object(
+            app, "_manifest_entry_count", return_value=1
+        ), mock.patch("text_scanner_app.messagebox.askyesno", return_value=False) as confirm_restore, mock.patch.object(
+            app, "_start_panel_command"
+        ) as start_restore:
+            app.run_restore()
+        confirm_restore.assert_called_once()
+        start_restore.assert_not_called()
         app.destroy()
 
 
