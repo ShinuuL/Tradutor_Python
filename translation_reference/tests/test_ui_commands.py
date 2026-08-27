@@ -180,14 +180,16 @@ class UiCommandCharacterizationTests(unittest.TestCase):
             for variable in self._widget_variables(widget)
         }
 
-        self.assertTrue({
+        prepare_advanced_variables = {
             str(self.app.extra_ext),
             str(self.app.max_file_mb),
             str(self.app.context_chars),
             str(self.app.batch_size),
             str(self.app.dedupe),
             str(self.app.skip_plugin_js),
-        }.issubset(prepare_variables))
+        }
+        self.assertTrue(prepare_advanced_variables.issubset(prepare_variables))
+        self.assertTrue(prepare_advanced_variables.isdisjoint(prepare_visible_variables))
         self.assertIn(str(self.app.engine_url), translate_variables)
         self.assertNotIn(str(self.app.engine_model), translate_variables)
         self.assertNotIn(str(self.app.use_tm), translate_variables)
@@ -203,6 +205,11 @@ class UiCommandCharacterizationTests(unittest.TestCase):
             str(self.app.use_tm),
             str(self.app.translate_status_text),
         }.issubset(translate_visible_variables))
+        for control in (
+            self.app.run_button,
+            self.app.stop_button,
+        ):
+            self.assertFalse(self._is_descendant_of(control, self.app.prepare_advanced.content))
         for control in (
             self.app.translate_button,
             self.app.translate_stop_button,
