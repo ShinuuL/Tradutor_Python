@@ -51,11 +51,11 @@ def configure_fluent_night(root):
     style.configure(
         "Panel.TFrame",
         background=c["panel"],
-        bordercolor=c["border"],
-        lightcolor=c["border"],
-        darkcolor=c["border"],
-        relief="solid",
-        borderwidth=1,
+        bordercolor=c["panel"],
+        lightcolor=c["panel"],
+        darkcolor=c["panel"],
+        relief="flat",
+        borderwidth=0,
     )
     style.configure("TLabel", background=c["surface"], foreground=c["text"])
     style.configure("Title.TLabel", background=c["surface"], foreground=c["text"], font=("Segoe UI Semibold", 16))

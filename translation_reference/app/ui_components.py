@@ -124,6 +124,8 @@ class ScrollableStep(ttk.Frame):
         self.content._refresh_local_mousewheel = self._refresh_local_mousewheel_bindings
         self._toplevel = self.winfo_toplevel()
         self._map_binding_id = self._toplevel.bind("<Map>", self._on_descendant_map, add="+")
+        self._scrollregion_refresh_pending = False
+        self._scrollregion_after_id = None
         self.bind("<Destroy>", self._remove_toplevel_map_binding, add="+")
         self._refresh_local_mousewheel_bindings()
 
@@ -158,6 +160,29 @@ class ScrollableStep(ttk.Frame):
     def _on_descendant_map(self, event):
         if self._contains_widget(event.widget):
             self._refresh_local_mousewheel_bindings()
+            if not getattr(event.widget, "_scrollregion_destroy_watch", False):
+                event.widget.bind("<Destroy>", self._on_descendant_destroy, add="+")
+                event.widget._scrollregion_destroy_watch = True
+
+    def _on_descendant_destroy(self, _event):
+        """Re-measure after a dynamic child disappears from the stage."""
+        if self._scrollregion_refresh_pending or not self.winfo_exists():
+            return
+        self._scrollregion_refresh_pending = True
+        self._scrollregion_after_id = self.after_idle(self._refresh_after_descendant_destroy)
+
+    def _refresh_after_descendant_destroy(self):
+        self._scrollregion_refresh_pending = False
+        self._scrollregion_after_id = None
+        if not self.winfo_exists():
+            return
+        # Canvas keeps the last requested height of an embedded frame after its
+        # final child disappears. Resetting the frame's optional minimum lets
+        # Tk recompute the natural request before measuring the scrollregion.
+        self.content.configure(height=1)
+        self.content.update_idletasks()
+        self._update_scrollregion()
+        self._refresh_local_mousewheel_bindings()
 
     def _contains_widget(self, widget):
         while widget.winfo_parent():
@@ -170,6 +195,12 @@ class ScrollableStep(ttk.Frame):
         if event.widget is self and self._map_binding_id:
             self._toplevel.unbind("<Map>", self._map_binding_id)
             self._map_binding_id = None
+        if event.widget is self and self._scrollregion_after_id:
+            try:
+                self.after_cancel(self._scrollregion_after_id)
+            except tk.TclError:
+                pass
+            self._scrollregion_after_id = None
 
 
 class RoundedPanel(tk.Frame):

@@ -451,6 +451,8 @@ class TextScannerApp(tk.Tk):
         apply_status = self.workflow.status(Stage.APPLY)
 
         start_blocked = scan_running or panel_running
+        review_available = self.workflow.can_open(Stage.REVIEW) and not start_blocked
+        apply_available = self.workflow.can_open(Stage.APPLY) and not start_blocked
         self.run_button.configure(state="disabled" if start_blocked else "normal")
         self.stop_button.configure(state="normal" if scan_running else "disabled")
         self.translate_button.configure(
@@ -463,15 +465,17 @@ class TextScannerApp(tk.Tk):
         )
         self.retry_button.configure(
             state="normal"
-            if not start_blocked and review_status not in (StageStatus.LOCKED, StageStatus.RUNNING) and self._retry_available
+            if review_available and review_status is not StageStatus.RUNNING and self._retry_available
             else "disabled"
         )
+        for button in (self.open_csv_button, self.open_jsonl_button, self.open_summary_button):
+            button.configure(state="normal" if review_available else "disabled")
         self.apply_button.configure(
             state="normal"
-            if not start_blocked and apply_status not in (StageStatus.LOCKED, StageStatus.RUNNING) and self._preview_loaded
+            if apply_available and apply_status is not StageStatus.RUNNING and self._preview_loaded
             else "disabled"
         )
-        self.restore_button.configure(state="disabled" if start_blocked else "normal")
+        self.restore_button.configure(state="normal" if apply_available else "disabled")
 
     def _set_stage_feedback(self, stage, kind, title, detail):
         """Show a workflow message without changing the user's active stage."""

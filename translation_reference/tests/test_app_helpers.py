@@ -342,6 +342,26 @@ class GuiSmokeTests(unittest.TestCase):
         self.assertEqual(app.active_stage, Stage.TRANSLATE)
         app.destroy()
 
+    def test_locked_stage_previews_keep_every_stage_action_disabled(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        app = self._create_app_or_skip()
+        app.show_stage(Stage.REVIEW)
+        app.update()
+        for control in (
+            app.retry_button,
+            app.open_csv_button,
+            app.open_jsonl_button,
+            app.open_summary_button,
+        ):
+            self.assertEqual(str(control.cget("state")), "disabled", control)
+
+        app.show_stage(Stage.APPLY)
+        app.update()
+        for control in (app.apply_button, app.restore_button):
+            self.assertEqual(str(control.cget("state")), "disabled", control)
+        app.destroy()
+
     def test_all_workflow_surfaces_use_real_rounded_cards(self):
         if not self._has_display():
             self.skipTest("Sem display disponivel")

@@ -75,6 +75,23 @@ class ComponentSmokeTests(unittest.TestCase):
 
         self.assertTrue(step.scrollbar.winfo_ismapped())
 
+    def test_scrollable_step_hides_scrollbar_after_dynamic_content_is_destroyed(self):
+        self.root.geometry("420x260")
+        step = ScrollableStep(self.root)
+        step.pack(fill="both", expand=True)
+        long_content = tk.Label(step.content, text="linha\n" * 100)
+        long_content.pack()
+        self.root.update()
+        large_bounds = tuple(map(int, step.canvas.cget("scrollregion").split()))
+        self.assertTrue(step.scrollbar.winfo_ismapped())
+
+        long_content.destroy()
+        self.root.update()
+        small_bounds = tuple(map(int, step.canvas.cget("scrollregion").split()))
+
+        self.assertFalse(step.scrollbar.winfo_ismapped())
+        self.assertLess(small_bounds[3], large_bounds[3])
+
     def test_rounded_panel_hosts_content_over_a_smoothed_background(self):
         panel = RoundedPanel(self.root)
         panel.pack(fill="both", expand=True)
