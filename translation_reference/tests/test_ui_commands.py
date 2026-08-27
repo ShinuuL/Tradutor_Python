@@ -266,17 +266,6 @@ class WorkflowCallbackTests(unittest.TestCase):
     def setUp(self):
         if not self._has_display():
             self.skipTest("Sem display disponivel")
-        self.messageboxes = mock.patch.multiple(
-            "text_scanner_app.messagebox",
-            showinfo=mock.DEFAULT,
-            showwarning=mock.DEFAULT,
-            showerror=mock.DEFAULT,
-            askyesno=mock.DEFAULT,
-        )
-        self.messagebox_mocks = self.messageboxes.start()
-        self.addCleanup(self.messageboxes.stop)
-        self.subprocess_popen = mock.patch("text_scanner_app.subprocess.Popen").start()
-        self.addCleanup(self.subprocess_popen.stop)
         try:
             self.app = TextScannerApp()
         except tk.TclError:
@@ -304,13 +293,14 @@ class WorkflowCallbackTests(unittest.TestCase):
         output.with_suffix(".jsonl").write_text("{}\n", encoding="utf-8")
         self.app.output_path.set(str(output))
 
-        self.app._finish_run(0)
+        with mock.patch("text_scanner_app.messagebox.showinfo") as showinfo:
+            self.app._finish_run(0)
 
         self.assertTrue(self.app.workflow.can_open(Stage.TRANSLATE))
         self.assertEqual(self.app.recommended_stage, Stage.TRANSLATE)
         self.assertEqual(self.app.activity_banner.kind, "success")
         self.assertIn("Traduzir", self.app.activity_banner.detail_label.cget("text"))
-        self.messagebox_mocks["showinfo"].assert_not_called()
+        showinfo.assert_not_called()
 
     def test_scan_exit_zero_without_jsonl_keeps_translation_locked(self):
         self.app.output_path.set("missing-scan-output")
@@ -338,6 +328,7 @@ class WorkflowCallbackTests(unittest.TestCase):
             mock.patch.object(self.app, "_populate_preview_tree"),
             mock.patch.object(self.app, "_refresh_apply_summary"),
             mock.patch.object(self.app, "_count_report_statuses", return_value={}),
+            mock.patch("text_scanner_app.messagebox.showinfo") as showinfo,
         ):
             self.app._finish_translation(0, ["PROGRESS 1/1"])
 
@@ -345,7 +336,7 @@ class WorkflowCallbackTests(unittest.TestCase):
         self.assertEqual(self.app.recommended_stage, Stage.REVIEW)
         self.assertEqual(self.app.activity_banner.kind, "success")
         self.assertIn("Revisar", self.app.activity_banner.detail_label.cget("text"))
-        self.messagebox_mocks["showinfo"].assert_not_called()
+        showinfo.assert_not_called()
 
     def test_retry_warning_keeps_apply_available(self):
         review_dir = self._review_directory()
@@ -424,31 +415,49 @@ class WorkflowCallbackTests(unittest.TestCase):
         self.app.translated_dir = HERE / "fixtures" / "game"
         self.app._count_translated_files = mock.Mock(return_value=1)
         self.app._start_panel_command = mock.Mock()
-        self.messagebox_mocks["askyesno"].return_value = True
+        with (
+            mock.patch("text_scanner_app.messagebox.showinfo"),
+            mock.patch("text_scanner_app.messagebox.askyesno", return_value=True),
+            mock.patch("text_scanner_app.messagebox.showwarning"),
+        ):
+            self.app.run_apply()
 
-        self.app.run_apply()
-
-        self.assertIs(self.app.workflow.status(Stage.APPLY), StageStatus.RUNNING)
-        self.assertTrue(self.app._preview_loaded)
-        self.app._finish_apply(0, ["Aplicados: 0"], Path("applied_manifest.json"))
+            self.assertIs(self.app.workflow.status(Stage.APPLY), StageStatus.RUNNING)
+            self.assertTrue(self.app._preview_loaded)
+            self.app._finish_apply(0, ["Aplicados: 0"], Path("applied_manifest.json"))
         self.assertIs(self.app.workflow.status(Stage.APPLY), StageStatus.WARNING)
 
     def test_restore_success_uses_banner_without_routine_dialog(self):
-        self.app._finish_restore(0, ["Restaurados: 1"], Path("applied_manifest.json"))
+        with mock.patch("text_scanner_app.messagebox.showinfo") as showinfo:
+            self.app._finish_restore(0, ["Restaurados: 1"], Path("applied_manifest.json"))
 
         self.assertEqual(self.app.activity_banner.kind, "success")
-        self.messagebox_mocks["showinfo"].assert_not_called()
+        showinfo.assert_not_called()
 
     def test_apply_success_uses_banner_without_routine_dialog(self):
         self.app.workflow.mark_scan_finished(success=True)
         self.app.workflow.mark_translation_finished(success=True, has_review=True)
         self.app._preview_loaded = True
 
-        self.app._finish_apply(0, ["Aplicados: 1"], Path("applied_manifest.json"))
+        with mock.patch("text_scanner_app.messagebox.showinfo") as showinfo:
+            self.app._finish_apply(0, ["Aplicados: 1"], Path("applied_manifest.json"))
 
         self.assertIs(self.app.workflow.status(Stage.APPLY), StageStatus.COMPLETE)
         self.assertEqual(self.app.activity_banner.kind, "success")
-        self.messagebox_mocks["showinfo"].assert_not_called()
+        showinfo.assert_not_called()
+
+    def test_apply_without_approval_warns_without_showing_success_dialog(self):
+        self._make_panel_actions_available()
+        with (
+            mock.patch("text_scanner_app.messagebox.showwarning") as showwarning,
+            mock.patch("text_scanner_app.messagebox.showinfo") as showinfo,
+        ):
+            self.app._finish_apply(3, [], Path("applied_manifest.json"))
+
+        self.assertIs(self.app.workflow.status(Stage.APPLY), StageStatus.WARNING)
+        self.assertEqual(self.app.activity_banner.kind, "warning")
+        showwarning.assert_called_once()
+        showinfo.assert_not_called()
 
 
 if __name__ == "__main__":
