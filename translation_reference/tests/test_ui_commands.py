@@ -20,14 +20,151 @@ if str(APP_DIR) not in sys.path:
 from text_scanner_app import (  # noqa: E402
     DEFAULT_ENGINE_MODEL,
     DEFAULT_ENGINE_URL,
+    MANIFEST_NAME,
     REPORT_CSV_NAME,
     SCRIPT_PATH,
     TM_DIR,
     TRANSLATED_BASE,
     TRANSLATE_SCRIPT_PATH,
     TextScannerApp,
+    build_worker_command,
 )
 from ui_state import Stage, StageStatus  # noqa: E402
+
+
+class _Value:
+    """Minimal ``tk.Variable`` substitute for command construction tests."""
+
+    def __init__(self, value):
+        self.value = value
+
+    def get(self):
+        return self.value
+
+
+class FrozenWorkerCommandTests(unittest.TestCase):
+    """Frozen GUI commands must target their sibling CLI executables."""
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory(dir=HERE)
+        self.addCleanup(self.temporary.cleanup)
+        self.dist = Path(self.temporary.name) / "dist"
+        self.gui_executable = self.dist / "TradutorDGames" / "TradutorDGames.exe"
+        self.gui_executable.parent.mkdir(parents=True)
+        self.gui_executable.write_bytes(b"gui")
+        for worker in ("extract_non_english_text", "translate_game_text"):
+            executable = self.dist / worker / (worker + ".exe")
+            executable.parent.mkdir(parents=True)
+            executable.write_bytes(b"worker")
+
+    def _frozen_python(self):
+        return mock.patch.multiple(
+            sys,
+            frozen=True,
+            executable=str(self.gui_executable),
+            create=True,
+        )
+
+    def _command_app(self):
+        app = TextScannerApp.__new__(TextScannerApp)
+        app.game_path = _Value(str(HERE / "fixtures" / "game"))
+        app.output_path = _Value(str(HERE / "fixtures" / "frozen_scan"))
+        app.extra_ext = _Value("")
+        app.max_file_mb = _Value(25)
+        app.context_chars = _Value(180)
+        app.batch_size = _Value(500)
+        app.dedupe = _Value(True)
+        app.skip_plugin_js = _Value(True)
+        app.translate_jsonl = _Value(str(SCRIPT_PATH))
+        app.engine_url = _Value(DEFAULT_ENGINE_URL)
+        app.engine_model = _Value(DEFAULT_ENGINE_MODEL)
+        app.use_tm = _Value(False)
+        return app
+
+    def test_frozen_scan_and_translation_commands_use_sibling_workers(self):
+        app = self._command_app()
+        with self._frozen_python():
+            scan = app.build_command()
+            translation = app.build_translation_command()
+
+        self.assertEqual(
+            scan[0],
+            str(self.dist / "extract_non_english_text" / "extract_non_english_text.exe"),
+        )
+        self.assertEqual(
+            translation[0],
+            str(self.dist / "translate_game_text" / "translate_game_text.exe"),
+        )
+        self.assertNotIn(str(self.gui_executable), scan)
+        self.assertNotIn(str(self.gui_executable), translation)
+
+    def test_frozen_worker_command_fails_actionably_when_worker_is_missing(self):
+        missing = self.dist / "extract_non_english_text" / "extract_non_english_text.exe"
+        missing.unlink()
+
+        with self._frozen_python():
+            with self.assertRaisesRegex(ValueError, "extract_non_english_text"):
+                build_worker_command("extract_non_english_text", SCRIPT_PATH)
+
+    def test_scan_and_translation_do_not_start_popen_when_frozen_worker_is_missing(self):
+        for worker in ("extract_non_english_text", "translate_game_text"):
+            (self.dist / worker / (worker + ".exe")).unlink()
+        app = self._command_app()
+        app._panel_busy = lambda: False
+
+        with (
+            self._frozen_python(),
+            mock.patch("text_scanner_app.messagebox.showwarning") as warning,
+            mock.patch("text_scanner_app.subprocess.Popen") as popen,
+        ):
+            app.run_scan()
+            app.run_translation()
+
+        self.assertEqual(warning.call_count, 2)
+        popen.assert_not_called()
+
+    def test_frozen_apply_retry_and_restore_use_translation_worker(self):
+        worker = str(self.dist / "translate_game_text" / "translate_game_text.exe")
+        game_root = HERE / "fixtures" / "game"
+        translated = Path(self.temporary.name) / "translated"
+        translated.mkdir()
+        (translated / "translated.txt").write_text("translated", encoding="utf-8")
+        (translated / REPORT_CSV_NAME).write_text(
+            "status,file,line,source,translated\nfailed,a.txt,1,a,b\n",
+            encoding="utf-8",
+        )
+        manifest = translated / MANIFEST_NAME
+        manifest.write_text('{"entries": [{"file": "a.txt"}]}', encoding="utf-8")
+        commands = []
+
+        app = self._command_app()
+        app.translated_dir = translated
+        app._panel_busy = lambda: False
+        app._translated_dir = lambda: translated
+        app._count_translated_files = lambda _directory: 1
+        app._find_latest_manifest = lambda: manifest
+        app._manifest_entry_count = lambda _manifest: 1
+        app.append_log = lambda _message: None
+        app._set_stage_feedback = lambda *_args: None
+        app._start_panel_command = lambda command, *_args, **_kwargs: commands.append(command)
+        app.workflow = mock.Mock()
+        app.recommended_stage = None
+
+        with (
+            self._frozen_python(),
+            mock.patch("text_scanner_app.messagebox.showinfo"),
+            mock.patch("text_scanner_app.messagebox.showwarning"),
+            mock.patch("text_scanner_app.messagebox.askyesno", return_value=True),
+        ):
+            app.run_apply()
+            app._run_retry()
+            app.run_restore()
+
+        self.assertEqual(len(commands), 3)
+        self.assertTrue(all(command[0] == worker for command in commands))
+        self.assertEqual(commands[0][1], "apply")
+        self.assertEqual(commands[1][1], "retry")
+        self.assertEqual(commands[2][1], "restore")
 
 
 class UiCommandCharacterizationTests(unittest.TestCase):

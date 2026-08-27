@@ -170,6 +170,8 @@ python translation_reference/build/build.py --target all
 ```
 
 Os executaveis ficam em `dist/`. O Ollama NAO e embutido no .exe -- o usuario deve instalar e rodar o Ollama separadamente.
+Para distribuir a GUI, copie a arvore `dist/` inteira: `TradutorDGames/` usa
+os workers irmaos `extract_non_english_text/` e `translate_game_text/`.
 
 ## Status
 

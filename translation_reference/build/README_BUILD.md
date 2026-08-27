@@ -14,13 +14,13 @@ Instrucoes para gerar executaveis Windows do TradutorDGames usando PyInstaller.
 Na pasta raiz do projeto (`TradutorDGames/`):
 
 ```bash
-# Construir apenas a app GUI (TradutorDGames.exe)
+# Construir a app GUI e os dois workers necessarios
 python translation_reference/build/build.py --target app
 
 # Construir apenas o CLI worker (translate_game_text.exe)
 python translation_reference/build/build.py --target cli
 
-# Construir ambos
+# Construir a distribuicao completa (equivale a --target app)
 python translation_reference/build/build.py --target all
 ```
 
@@ -37,6 +37,8 @@ dist/
   TradutorDGames/           # App GUI (onedir)
     TradutorDGames.exe
     ... (dependencias do Tkinter)
+  extract_non_english_text/ # Worker de varredura (onedir)
+    extract_non_english_text.exe
   translate_game_text/      # CLI worker (onedir)
     translate_game_text.exe
     lib/                    # Biblioteca interna do projeto
@@ -57,7 +59,9 @@ dist/
 ### App GUI
 
 Execute `TradutorDGames.exe`. A aplicacao Tkinter abre no fluxo em quatro
-etapas: Preparar, Traduzir, Revisar e Aplicar.
+etapas: Preparar, Traduzir, Revisar e Aplicar. Distribua a arvore `dist/`
+inteira: a GUI usa os executaveis irmaos de varredura e traducao e nao funciona
+corretamente se apenas a pasta `TradutorDGames/` for copiada.
 
 ### Smoke seguro do executavel
 
@@ -87,6 +91,9 @@ translate_game_text.exe --help
 - O CLI worker chama o Ollama via HTTP (compativel com API OpenAI).
 - Os executaveis precisam rodar no mesmo PC onde o Ollama esta instalado
   (ou acessivel na rede, se configurado).
+- A GUI congelada exige que `extract_non_english_text/` e
+  `translate_game_text/` permaneçam ao lado de `TradutorDGames/` dentro de
+  `dist/`.
 - Durante o smoke, use somente `translation_reference/tests/fixtures/game` e
   grave relatorios em `reports/`; nunca aplique ou restaure arquivos de jogo.
 

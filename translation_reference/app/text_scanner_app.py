@@ -31,6 +31,27 @@ PROGRESS_RE = re.compile(r"^PROGRESS\s+(\d+)\s*/\s*(\d+)\s*$")
 APPLIED_COUNT_RE = re.compile(r"^Aplicados:\s*(\d+)")
 
 
+def build_worker_command(worker_name, script_path, *arguments):
+    """Return a worker command for development or a frozen GUI installation.
+
+    PyInstaller's GUI executable is not a Python interpreter.  In a frozen
+    distribution, the CLI workers live beside the GUI's directory under the
+    common ``dist`` root.  Keeping this decision in one pure helper makes a
+    missing worker actionable before any subprocess is started.
+    """
+    if not getattr(sys, "frozen", False):
+        return [sys.executable, str(script_path), *map(str, arguments)]
+
+    gui_executable = Path(sys.executable).resolve()
+    worker_executable = gui_executable.parent.parent / worker_name / (worker_name + ".exe")
+    if not worker_executable.is_file():
+        raise ValueError(
+            "Worker congelado nao encontrado: %s. Reinstale a distribuicao completa, incluindo a pasta %s."
+            % (worker_executable, worker_name)
+        )
+    return [str(worker_executable), *map(str, arguments)]
+
+
 def parse_applied_count(output_lines):
     """Extrai N da linha "Aplicados: N ..." do stdout do apply; None se ausente."""
     for line in output_lines or []:
@@ -533,9 +554,9 @@ class TextScannerApp(tk.Tk):
         if not output:
             raise ValueError("Escolha um caminho de saida para o relatorio.")
 
-        command = [
-            sys.executable,
-            str(SCRIPT_PATH),
+        command = build_worker_command(
+            "extract_non_english_text",
+            SCRIPT_PATH,
             game,
             "--out",
             output,
@@ -545,7 +566,7 @@ class TextScannerApp(tk.Tk):
             str(self.context_chars.get()),
             "--batch-size",
             str(self.batch_size.get()),
-        ]
+        )
 
         for ext in self.extra_ext.get().replace(";", ",").split(","):
             ext = ext.strip()
@@ -673,9 +694,9 @@ class TextScannerApp(tk.Tk):
         if not game:
             raise ValueError("Escolha a pasta do jogo antes de traduzir.")
 
-        command = [
-            sys.executable,
-            str(TRANSLATE_SCRIPT_PATH),
+        command = build_worker_command(
+            "translate_game_text",
+            TRANSLATE_SCRIPT_PATH,
             scan,
             "--out-dir",
             str(self._translated_dir()),
@@ -683,7 +704,7 @@ class TextScannerApp(tk.Tk):
             self.engine_url.get().strip() or DEFAULT_ENGINE_URL,
             "--engine-model",
             self.engine_model.get().strip() or DEFAULT_ENGINE_MODEL,
-        ]
+        )
         if self.use_tm.get():
             command.extend(["--tm", str(TM_DIR / ("%s.jsonl" % self._game_name()))])
         return command
@@ -887,6 +908,21 @@ class TextScannerApp(tk.Tk):
             )
             return
 
+        try:
+            command = build_worker_command(
+                "translate_game_text",
+                TRANSLATE_SCRIPT_PATH,
+                "apply",
+                "--translated-dir",
+                str(translated_dir),
+                "--game-root",
+                game_root,
+                "--i-approve-write-game-files",
+            )
+        except ValueError as exc:
+            messagebox.showwarning("Worker indisponivel", str(exc), parent=self)
+            return
+
         messagebox.showinfo(
             "Aplicar traducoes",
             "Destino: %s\nOrigem: %s\nArquivos que serao substituidos: %d"
@@ -902,16 +938,6 @@ class TextScannerApp(tk.Tk):
             return
 
         manifest_path = translated_dir / MANIFEST_NAME
-        command = [
-            sys.executable,
-            str(TRANSLATE_SCRIPT_PATH),
-            "apply",
-            "--translated-dir",
-            str(translated_dir),
-            "--game-root",
-            game_root,
-            "--i-approve-write-game-files",
-        ]
         self.recommended_stage = None
         self.workflow.mark_apply_started()
         self.append_log("--- Aplicar no jogo ---")
@@ -1063,13 +1089,17 @@ class TextScannerApp(tk.Tk):
             self.append_log("Restauracao cancelada pelo usuario.")
             return
 
-        command = [
-            sys.executable,
-            str(TRANSLATE_SCRIPT_PATH),
-            "restore",
-            "--manifest",
-            str(manifest_path),
-        ]
+        try:
+            command = build_worker_command(
+                "translate_game_text",
+                TRANSLATE_SCRIPT_PATH,
+                "restore",
+                "--manifest",
+                str(manifest_path),
+            )
+        except ValueError as exc:
+            messagebox.showwarning("Worker indisponivel", str(exc), parent=self)
+            return
         self.append_log("--- Restaurar backups ---")
         self._start_panel_command(
             command,
@@ -1178,22 +1208,26 @@ class TextScannerApp(tk.Tk):
             messagebox.showinfo("Nada para retraduzir", "Nenhum item com status needs_review ou failed.", parent=self)
             return
 
-        command = [
-            sys.executable,
-            str(TRANSLATE_SCRIPT_PATH),
-            "retry",
-            "--scan",
-            scan,
-            "--out-dir",
-            str(out_dir),
-            "--statuses",
-            "needs_review,failed",
-            "--force-engine",
-            "--engine-url",
-            self.engine_url.get().strip() or DEFAULT_ENGINE_URL,
-            "--engine-model",
-            self.engine_model.get().strip() or DEFAULT_ENGINE_MODEL,
-        ]
+        try:
+            command = build_worker_command(
+                "translate_game_text",
+                TRANSLATE_SCRIPT_PATH,
+                "retry",
+                "--scan",
+                scan,
+                "--out-dir",
+                str(out_dir),
+                "--statuses",
+                "needs_review,failed",
+                "--force-engine",
+                "--engine-url",
+                self.engine_url.get().strip() or DEFAULT_ENGINE_URL,
+                "--engine-model",
+                self.engine_model.get().strip() or DEFAULT_ENGINE_MODEL,
+            )
+        except ValueError as exc:
+            messagebox.showwarning("Worker indisponivel", str(exc), parent=self)
+            return
         if self.use_tm.get():
             command.extend(["--tm", str(TM_DIR / ("%s.jsonl" % self._game_name()))])
         self.recommended_stage = None
