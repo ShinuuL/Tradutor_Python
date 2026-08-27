@@ -10,7 +10,7 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, font as tkfont, messagebox, ttk
 
-from ui_components import ScrollableStep, StageNavigation, StatusBanner
+from ui_components import CollapsibleSection, ScrollableStep, StageNavigation, StatusBanner
 from ui_state import Stage, WorkflowState
 from ui_theme import SPACING, configure_fluent_night, mono_font
 
@@ -229,9 +229,17 @@ class TextScannerApp(tk.Tk):
         ttk.Entry(form, textvariable=self.output_path).grid(row=3, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
         ttk.Button(form, text="Salvar como", command=self.choose_output_file, cursor="hand2").grid(row=3, column=2, sticky="ew")
 
-        options = ttk.Frame(form, style="Panel.TFrame")
-        options.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(SPACING["panel"], 0))
-        for column in range(5):
+        actions = ttk.Frame(form, style="Panel.TFrame")
+        actions.grid(row=4, column=0, columnspan=3, sticky="e", pady=(SPACING["panel"], 0))
+        self.run_button = ttk.Button(actions, text="Executar varredura", style="Primary.TButton", command=self.run_scan, cursor="hand2")
+        self.run_button.pack(side="left", padx=(0, SPACING["sm"]))
+        self.stop_button = ttk.Button(actions, text="Parar", style="Danger.TButton", command=self.stop_scan, state="disabled", cursor="hand2")
+        self.stop_button.pack(side="left")
+
+        self.prepare_advanced = CollapsibleSection(parent, title="Opções avançadas")
+        self.prepare_advanced.pack(fill="x", pady=(SPACING["panel"], 0))
+        options = self.prepare_advanced.content
+        for column in range(4):
             options.columnconfigure(column, weight=1)
         ttk.Label(options, text="Extensões extras").grid(row=0, column=0, sticky="w")
         ttk.Entry(options, textvariable=self.extra_ext).grid(row=1, column=0, sticky="ew", padx=(0, SPACING["sm"]))
@@ -245,12 +253,6 @@ class TextScannerApp(tk.Tk):
         checks.grid(row=2, column=0, columnspan=4, sticky="w", pady=(SPACING["sm"], 0))
         ttk.Checkbutton(checks, text="Remover repetidos", variable=self.dedupe).pack(side="left", padx=(0, SPACING["md"]))
         ttk.Checkbutton(checks, text="Ignorar plugins JS", variable=self.skip_plugin_js).pack(side="left")
-        actions = ttk.Frame(options, style="Panel.TFrame")
-        actions.grid(row=1, column=4, sticky="e")
-        self.run_button = ttk.Button(actions, text="Executar varredura", style="Primary.TButton", command=self.run_scan, cursor="hand2")
-        self.run_button.pack(side="left", padx=(0, SPACING["sm"]))
-        self.stop_button = ttk.Button(actions, text="Parar", style="Danger.TButton", command=self.stop_scan, state="disabled", cursor="hand2")
-        self.stop_button.pack(side="left")
 
         log_panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
         log_panel.pack(fill="both", expand=True, pady=(SPACING["panel"], 0))
@@ -275,10 +277,8 @@ class TextScannerApp(tk.Tk):
         ttk.Label(panel, text="Pasta do jogo").grid(row=2, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
         ttk.Entry(panel, textvariable=self.game_path).grid(row=3, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
         ttk.Button(panel, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(row=3, column=2, sticky="ew")
-        ttk.Label(panel, text="URL do engine").grid(row=4, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
-        ttk.Entry(panel, textvariable=self.engine_url).grid(row=5, column=0, sticky="ew", padx=(0, SPACING["sm"]))
-        ttk.Label(panel, text="Modelo").grid(row=4, column=1, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
-        ttk.Entry(panel, textvariable=self.engine_model).grid(row=5, column=1, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Label(panel, text="Modelo").grid(row=4, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Entry(panel, textvariable=self.engine_model).grid(row=5, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
         ttk.Checkbutton(panel, text="Usar memória de tradução", variable=self.use_tm).grid(row=5, column=2, sticky="w")
         actions = ttk.Frame(panel, style="Panel.TFrame")
         actions.grid(row=6, column=0, columnspan=3, sticky="e", pady=(SPACING["panel"], 0))
@@ -289,6 +289,13 @@ class TextScannerApp(tk.Tk):
         self.progress = ttk.Progressbar(panel, orient="horizontal", mode="determinate", maximum=1, value=0)
         self.progress.grid(row=7, column=0, columnspan=3, sticky="ew", pady=(SPACING["panel"], SPACING["xs"]))
         ttk.Label(panel, textvariable=self.translate_status_text, style="Muted.TLabel").grid(row=8, column=0, columnspan=3, sticky="w")
+
+        self.translate_advanced = CollapsibleSection(parent, title="Opções avançadas")
+        self.translate_advanced.pack(fill="x", pady=(SPACING["panel"], 0))
+        options = self.translate_advanced.content
+        options.columnconfigure(0, weight=1)
+        ttk.Label(options, text="URL do engine").grid(row=0, column=0, sticky="w")
+        ttk.Entry(options, textvariable=self.engine_url).grid(row=1, column=0, sticky="ew")
 
     def _build_review_stage(self, parent):
         self._stage_title(parent, "Revisar", "Confira os resultados e retraduza itens pendentes.")
