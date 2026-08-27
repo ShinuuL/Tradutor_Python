@@ -14,6 +14,7 @@ import os
 import sys
 import tempfile
 import time
+import tkinter as tk
 import unittest
 from pathlib import Path
 
@@ -222,26 +223,44 @@ class GuiSmokeTests(unittest.TestCase):
             return True
         return os.environ.get("DISPLAY") is not None
 
+    def _create_app_or_skip(self):
+        from text_scanner_app import TextScannerApp
+        try:
+            return TextScannerApp()
+        except tk.TclError:
+            self.skipTest("Probe Tcl/Tk indisponivel")
+
     def test_app_creates_and_destroys(self):
         if not self._has_display():
             self.skipTest("Sem display disponivel")
-        from text_scanner_app import TextScannerApp
-        app = TextScannerApp()
+        app = self._create_app_or_skip()
         app.after(1500, app.destroy)
         app.mainloop()
         # Se chegou aqui sem excecao, o smoke passou
 
-    def test_canvas_and_scrollbar_exist(self):
+    def test_staged_shell_exists_without_global_scroll_canvas(self):
         if not self._has_display():
             self.skipTest("Sem display disponivel")
-        from text_scanner_app import TextScannerApp
-        app = TextScannerApp()
-        # Verificar que canvas e scrollbar foram criados
-        self.assertTrue(hasattr(app, "_canvas"))
-        self.assertTrue(hasattr(app, "_vscroll"))
-        self.assertTrue(hasattr(app, "_canvas_window"))
-        app.after(500, app.destroy)
-        app.mainloop()
+        from ui_state import Stage
+        app = self._create_app_or_skip()
+        self.assertFalse(hasattr(app, "_canvas"))
+        self.assertEqual(set(app.stage_frames), set(Stage))
+        self.assertEqual(app.active_stage, Stage.PREPARE)
+        app.destroy()
+
+    def test_stage_navigation_blocks_locked_stage_until_workflow_unlocks_it(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        from ui_state import Stage
+        app = self._create_app_or_skip()
+        self.assertFalse(app.show_stage(Stage.TRANSLATE))
+        self.assertEqual(app.active_stage, Stage.PREPARE)
+        self.assertEqual(app.activity_banner.title_label.cget("text"), "Etapa ainda não disponível")
+        app.workflow.mark_scan_finished(True)
+        app._refresh_stage_navigation()
+        self.assertTrue(app.show_stage(Stage.TRANSLATE))
+        self.assertEqual(app.active_stage, Stage.TRANSLATE)
+        app.destroy()
 
 
 if __name__ == "__main__":

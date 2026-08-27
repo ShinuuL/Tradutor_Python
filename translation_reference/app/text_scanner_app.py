@@ -10,6 +10,10 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, font as tkfont, messagebox, ttk
 
+from ui_components import ScrollableStep, StageNavigation, StatusBanner
+from ui_state import Stage, WorkflowState
+from ui_theme import SPACING, configure_fluent_night, mono_font
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = PROJECT_ROOT / "translation_reference" / "scripts" / "extract_non_english_text.py"
@@ -162,479 +166,185 @@ class TextScannerApp(tk.Tk):
         self._preview_rows = []
         self._preview_loaded = False
         self._eta_history = []
+        self.workflow = WorkflowState()
+        self.active_stage = Stage.PREPARE
 
-        self._configure_style()
+        configure_fluent_night(self)
         self._build_layout()
-
-    def _configure_style(self):
-        # Tema "Bancada Slate" (direcao B): tokens WCAG-verificados, botoes chapados.
-        self.configure(bg="#0F172A")
-        style = ttk.Style(self)
-        style.theme_use("clam")
-
-        style.configure("Root.TFrame", background="#0F172A")
-        style.configure("Panel.TFrame", background="#1B2336")
-        # Moldura de 1px dos paineis: frame externo na cor da borda (#334155).
-        style.configure("PanelEdge.TFrame", background="#334155")
-        style.configure("Header.TLabel", background="#0F172A", foreground="#F1F5F9", font=("Segoe UI Semibold", 18))
-        style.configure("Sub.TLabel", background="#0F172A", foreground="#94A3B8", font=("Segoe UI", 10))
-        style.configure("PanelTitle.TLabel", background="#1B2336", foreground="#F1F5F9", font=("Segoe UI Semibold", 11))
-        style.configure("TLabel", background="#1B2336", foreground="#F1F5F9", font=("Segoe UI", 10))
-        style.configure("Muted.TLabel", background="#1B2336", foreground="#94A3B8", font=("Segoe UI", 9))
-        style.configure("Status.TLabel", background="#1C2740", foreground="#DBEAFE", font=("Segoe UI Semibold", 10))
-
-        style.configure(
-            "TEntry",
-            fieldbackground="#111A2E",
-            foreground="#F1F5F9",
-            bordercolor="#5B7089",
-            lightcolor="#111A2E",
-            darkcolor="#111A2E",
-        )
-        style.map(
-            "TEntry",
-            bordercolor=[("focus", "#93C5FD"), ("disabled", "#334155")],
-            lightcolor=[("focus", "#93C5FD"), ("disabled", "#1E293B")],
-            darkcolor=[("focus", "#93C5FD"), ("disabled", "#1E293B")],
-            fieldbackground=[("disabled", "#1E293B")],
-            foreground=[("disabled", "#64748B")],
-        )
-
-        style.configure(
-            "TSpinbox",
-            fieldbackground="#111A2E",
-            foreground="#F1F5F9",
-            background="#111A2E",
-            bordercolor="#5B7089",
-            lightcolor="#111A2E",
-            darkcolor="#111A2E",
-            arrowcolor="#94A3B8",
-        )
-        style.map(
-            "TSpinbox",
-            bordercolor=[("focus", "#93C5FD"), ("disabled", "#334155")],
-            fieldbackground=[("disabled", "#1E293B")],
-            foreground=[("disabled", "#64748B")],
-            arrowcolor=[("disabled", "#475569")],
-        )
-
-        style.configure(
-            "Horizontal.TProgressbar",
-            background="#22C55E",
-            lightcolor="#22C55E",
-            darkcolor="#22C55E",
-            bordercolor="#1A2334",
-            troughcolor="#1A2334",
-            thickness=10,
-        )
-
-        style.configure(
-            "TCheckbutton",
-            background="#1B2336",
-            foreground="#F1F5F9",
-            indicatorbackground="#111A2E",
-            indicatorforeground="#F1F5F9",
-            font=("Segoe UI", 10),
-        )
-        style.map(
-            "TCheckbutton",
-            background=[("active", "#1B2336")],
-            foreground=[("disabled", "#64748B")],
-            indicatorbackground=[
-                ("selected", "#22C55E"),
-                ("pressed", "#16A34A"),
-                ("disabled", "#334155"),
-            ],
-            indicatorforeground=[
-                ("selected", "#0F172A"),
-                ("pressed", "#0F172A"),
-                ("disabled", "#64748B"),
-            ],
-        )
-
-        # Botoes: bisel 3D do clam eliminado (lightcolor/darkcolor = proprio bg),
-        # padding generico, hover/pressed distintos e focus ring sutil (focuscolor).
-        style.configure(
-            "Primary.TButton",
-            background="#2563EB",
-            foreground="#FFFFFF",
-            font=("Segoe UI Semibold", 10),
-            padding=(16, 10),
-            borderwidth=0,
-            relief="flat",
-            focuscolor="#93C5FD",
-            lightcolor="#2563EB",
-            darkcolor="#2563EB",
-        )
-        style.map(
-            "Primary.TButton",
-            background=[("disabled", "#1E293B"), ("pressed", "#1E40AF"), ("active", "#1D4ED8")],
-            foreground=[("disabled", "#93A6BE")],
-            lightcolor=[("disabled", "#1E293B"), ("pressed", "#1E40AF"), ("active", "#1D4ED8")],
-            darkcolor=[("disabled", "#1E293B"), ("pressed", "#1E40AF"), ("active", "#1D4ED8")],
-            bordercolor=[("disabled", "#1E293B"), ("pressed", "#1E40AF"), ("active", "#1D4ED8")],
-        )
-
-        style.configure(
-            "TButton",
-            background="#232E47",
-            foreground="#F1F5F9",
-            font=("Segoe UI", 10),
-            padding=(12, 8),
-            borderwidth=0,
-            relief="flat",
-            focuscolor="#5B7089",
-            lightcolor="#232E47",
-            darkcolor="#232E47",
-        )
-        style.map(
-            "TButton",
-            background=[("disabled", "#1E293B"), ("pressed", "#1A2338"), ("active", "#2B3856")],
-            foreground=[("disabled", "#64748B")],
-            lightcolor=[("disabled", "#1E293B"), ("pressed", "#1A2338"), ("active", "#2B3856")],
-            darkcolor=[("disabled", "#1E293B"), ("pressed", "#1A2338"), ("active", "#2B3856")],
-            bordercolor=[("disabled", "#1E293B"), ("pressed", "#1A2338"), ("active", "#2B3856")],
-        )
-
-        style.configure(
-            "Danger.TButton",
-            background="#B91C1C",
-            foreground="#FFE9E9",
-            font=("Segoe UI Semibold", 10),
-            padding=(16, 10),
-            borderwidth=0,
-            relief="flat",
-            focuscolor="#FCA5A5",
-            lightcolor="#B91C1C",
-            darkcolor="#B91C1C",
-        )
-        style.map(
-            "Danger.TButton",
-            background=[("disabled", "#2A1515"), ("pressed", "#7F1D1D"), ("active", "#9F1D1D")],
-            foreground=[("disabled", "#8F6E6E")],
-            lightcolor=[("disabled", "#2A1515"), ("pressed", "#7F1D1D"), ("active", "#9F1D1D")],
-            darkcolor=[("disabled", "#2A1515"), ("pressed", "#7F1D1D"), ("active", "#9F1D1D")],
-            bordercolor=[("disabled", "#2A1515"), ("pressed", "#7F1D1D"), ("active", "#9F1D1D")],
-        )
-
-        # Treeview - Bancada Slate
-        style.configure(
-            "Treeview",
-            background="#0B1222",
-            foreground="#CBD5E1",
-            fieldbackground="#0B1222",
-            font=("Segoe UI", 9),
-            rowheight=24,
-        )
-        style.configure(
-            "Treeview.Heading",
-            background="#1E293B",
-            foreground="#F1F5F9",
-            font=("Segoe UI Semibold", 9),
-            relief="flat",
-        )
-        style.map(
-            "Treeview",
-            background=[("selected", "#2563EB")],
-            foreground=[("selected", "#F1F5F9")],
-        )
+        self.status.trace_add("write", self._sync_activity_banner)
+        self._sync_activity_banner()
 
     def _build_layout(self):
-        # Canvas + Scrollbar wrapper para responsividade total
-        self._canvas = tk.Canvas(self, bg="#0F172A", highlightthickness=0)
-        self._vscroll = ttk.Scrollbar(self, orient="vertical", command=self._canvas.yview)
-        self._canvas.configure(yscrollcommand=self._vscroll.set)
+        """Build the fixed workflow shell and place existing controls by stage."""
+        self.configure(bg="#0B111B")
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
-        self._vscroll.pack(side="right", fill="y")
-        self._canvas.pack(side="left", fill="both", expand=True)
+        self.stage_navigation = StageNavigation(self)
+        self.stage_navigation.grid(row=0, column=0, sticky="ns", padx=(SPACING["page"], SPACING["md"]), pady=SPACING["page"])
+        for stage in Stage:
+            for widget in (
+                self.stage_navigation.rows[stage],
+                self.stage_navigation.markers[stage],
+                self.stage_navigation.labels[stage],
+            ):
+                widget.configure(cursor="hand2")
+                widget.bind("<Button-1>", lambda _event, target=stage: self.show_stage(target), add="+")
 
-        # Frame interno que recebe todo o conteudo
-        root = ttk.Frame(self._canvas, style="Root.TFrame", padding=20)
-        self._canvas_window = self._canvas.create_window((0, 0), window=root, anchor="nw")
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(1, weight=0)  # form nao expande
-        root.rowconfigure(2, weight=1)  # translate_panel EXPANDE
-        root.rowconfigure(3, weight=1)  # body EXPANDE
+        stage_host = ttk.Frame(self, style="Surface.TFrame")
+        stage_host.grid(row=0, column=1, sticky="nsew", padx=(0, SPACING["page"]), pady=SPACING["page"])
+        stage_host.grid_rowconfigure(0, weight=1)
+        stage_host.grid_columnconfigure(0, weight=1)
+        self.stage_frames = {}
+        for stage in Stage:
+            frame = ScrollableStep(stage_host)
+            frame.grid(row=0, column=0, sticky="nsew")
+            self.stage_frames[stage] = frame
+            if stage is not self.active_stage:
+                frame.grid_remove()
 
-        # Largura do canvas acompanha o redimensionamento da janela
-        self._canvas.bind("<Configure>", self._on_canvas_configure)
-        # Scroll com mousewheel (Windows)
-        self.bind_all("<MouseWheel>", self._on_mousewheel)
+        self.activity_banner = StatusBanner(self)
+        self.activity_banner.grid(row=1, column=1, sticky="ew", padx=(0, SPACING["page"]), pady=(0, SPACING["page"]))
 
-        # --- Header ---
-        header = ttk.Frame(root, style="Root.TFrame")
-        header.grid(row=0, column=0, sticky="ew", pady=(0, 16))
-        header.columnconfigure(0, weight=1)
+        self._build_prepare_stage(self.stage_frames[Stage.PREPARE].content)
+        self._build_translate_stage(self.stage_frames[Stage.TRANSLATE].content)
+        self._build_review_stage(self.stage_frames[Stage.REVIEW].content)
+        self._build_apply_stage(self.stage_frames[Stage.APPLY].content)
+        self._refresh_stage_navigation()
 
-        ttk.Label(header, text="TradutorDGames Scanner", style="Header.TLabel").grid(row=0, column=0, sticky="w")
-        ttk.Label(
-            header,
-            text="Varra pastas de jogos e gere CSV/JSONL com textos candidatos a traducao.",
-            style="Sub.TLabel",
-        ).grid(row=1, column=0, sticky="w", pady=(4, 0))
+    @staticmethod
+    def _stage_title(parent, title, detail):
+        ttk.Label(parent, text=title, style="Title.TLabel").pack(anchor="w")
+        ttk.Label(parent, text=detail, style="Muted.TLabel").pack(anchor="w", pady=(SPACING["xs"], SPACING["panel"]))
 
-        # --- Form (Entrada) ---
-        form_edge = ttk.Frame(root, style="PanelEdge.TFrame")
-        form_edge.grid(row=1, column=0, sticky="ew", pady=(0, 16))
-        form_edge.columnconfigure(0, weight=1)
-        form = ttk.Frame(form_edge, style="Panel.TFrame", padding=16)
-        form.grid(row=0, column=0, sticky="ew")
+    def _build_prepare_stage(self, parent):
+        self._stage_title(parent, "Preparar", "Escolha a pasta e configure a varredura somente leitura.")
+        form = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
+        form.pack(fill="x")
         form.columnconfigure(1, weight=1)
-
-        ttk.Label(form, text="Entrada", style="PanelTitle.TLabel").grid(row=0, column=0, columnspan=3, sticky="w")
-
-        ttk.Label(form, text="Pasta do jogo").grid(row=1, column=0, sticky="w", pady=(12, 4))
-        ttk.Entry(form, textvariable=self.game_path).grid(row=2, column=0, columnspan=2, sticky="ew", padx=(0, 10))
-        ttk.Button(form, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(
-            row=2, column=2, sticky="ew"
-        )
-
-        ttk.Label(form, text="Saida do relatorio").grid(row=3, column=0, sticky="w", pady=(12, 4))
-        ttk.Entry(form, textvariable=self.output_path).grid(row=4, column=0, columnspan=2, sticky="ew", padx=(0, 10))
-        ttk.Button(form, text="Salvar como", command=self.choose_output_file, cursor="hand2").grid(
-            row=4, column=2, sticky="ew"
-        )
+        ttk.Label(form, text="Pasta do jogo").grid(row=0, column=0, sticky="w", pady=(0, SPACING["xs"]))
+        ttk.Entry(form, textvariable=self.game_path).grid(row=1, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Button(form, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(row=1, column=2, sticky="ew")
+        ttk.Label(form, text="Saída do relatório").grid(row=2, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Entry(form, textvariable=self.output_path).grid(row=3, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Button(form, text="Salvar como", command=self.choose_output_file, cursor="hand2").grid(row=3, column=2, sticky="ew")
 
         options = ttk.Frame(form, style="Panel.TFrame")
-        options.grid(row=5, column=0, columnspan=3, sticky="ew", pady=(16, 0))
-        for col in range(6):
-            options.columnconfigure(col, weight=1)
-
-        ttk.Label(options, text="Extensoes extras").grid(row=0, column=0, sticky="w")
-        ttk.Entry(options, textvariable=self.extra_ext).grid(row=1, column=0, columnspan=2, sticky="ew", padx=(0, 12))
-        ttk.Label(options, text="Ex.: .dat, .bytes", style="Muted.TLabel").grid(row=2, column=0, columnspan=2, sticky="w")
-
-        ttk.Label(options, text="Max MB por arquivo").grid(row=0, column=2, sticky="w")
-        ttk.Spinbox(options, from_=1, to=500, textvariable=self.max_file_mb, width=8).grid(row=1, column=2, sticky="w")
-
-        ttk.Label(options, text="Caracteres por trecho").grid(row=0, column=3, sticky="w")
-        ttk.Spinbox(
-            options,
-            from_=60,
-            to=1000,
-            increment=20,
-            textvariable=self.context_chars,
-            width=8,
-        ).grid(row=1, column=3, sticky="w")
-
+        options.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(SPACING["panel"], 0))
+        for column in range(5):
+            options.columnconfigure(column, weight=1)
+        ttk.Label(options, text="Extensões extras").grid(row=0, column=0, sticky="w")
+        ttk.Entry(options, textvariable=self.extra_ext).grid(row=1, column=0, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Label(options, text="Max. MB por arquivo").grid(row=0, column=1, sticky="w")
+        ttk.Spinbox(options, from_=1, to=500, textvariable=self.max_file_mb, width=8).grid(row=1, column=1, sticky="w")
+        ttk.Label(options, text="Caracteres por trecho").grid(row=0, column=2, sticky="w")
+        ttk.Spinbox(options, from_=60, to=1000, increment=20, textvariable=self.context_chars, width=8).grid(row=1, column=2, sticky="w")
+        ttk.Label(options, text="Linhas por lote").grid(row=0, column=3, sticky="w")
+        ttk.Spinbox(options, from_=50, to=5000, increment=50, textvariable=self.batch_size, width=8).grid(row=1, column=3, sticky="w")
         checks = ttk.Frame(options, style="Panel.TFrame")
-        checks.grid(row=2, column=2, columnspan=2, sticky="w", pady=(8, 0))
-        ttk.Checkbutton(checks, text="Remover repetidos", variable=self.dedupe).pack(side="left", padx=(0, 12))
+        checks.grid(row=2, column=0, columnspan=4, sticky="w", pady=(SPACING["sm"], 0))
+        ttk.Checkbutton(checks, text="Remover repetidos", variable=self.dedupe).pack(side="left", padx=(0, SPACING["md"]))
         ttk.Checkbutton(checks, text="Ignorar plugins JS", variable=self.skip_plugin_js).pack(side="left")
-
-        ttk.Label(options, text="Linhas por lote").grid(row=0, column=4, sticky="w")
-        ttk.Spinbox(
-            options,
-            from_=50,
-            to=5000,
-            increment=50,
-            textvariable=self.batch_size,
-            width=8,
-        ).grid(row=1, column=4, sticky="w")
-
         actions = ttk.Frame(options, style="Panel.TFrame")
-        actions.grid(row=1, column=5, sticky="e")
-        self.run_button = ttk.Button(
-            actions, text="Executar varredura", style="Primary.TButton", command=self.run_scan, cursor="hand2"
-        )
-        self.run_button.pack(side="left", padx=(0, 8))
-        self.stop_button = ttk.Button(
-            actions, text="Parar", style="Danger.TButton", command=self.stop_scan, state="disabled", cursor="hand2"
-        )
+        actions.grid(row=1, column=4, sticky="e")
+        self.run_button = ttk.Button(actions, text="Executar varredura", style="Primary.TButton", command=self.run_scan, cursor="hand2")
+        self.run_button.pack(side="left", padx=(0, SPACING["sm"]))
+        self.stop_button = ttk.Button(actions, text="Parar", style="Danger.TButton", command=self.stop_scan, state="disabled", cursor="hand2")
         self.stop_button.pack(side="left")
 
-        # --- Translate panel (Traduzir) ---
-        translate_edge = ttk.Frame(root, style="PanelEdge.TFrame")
-        translate_edge.grid(row=2, column=0, sticky="nsew", pady=(0, 16))
-        translate_edge.columnconfigure(0, weight=1)
-        translate_edge.rowconfigure(0, weight=1)
-        translate_panel = ttk.Frame(translate_edge, style="Panel.TFrame", padding=16)
-        translate_panel.grid(row=0, column=0, sticky="nsew")
-        translate_panel.columnconfigure(1, weight=1)
-        translate_panel.rowconfigure(10, weight=1)  # Treeview expande
+        log_panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
+        log_panel.pack(fill="both", expand=True, pady=(SPACING["panel"], 0))
+        ttk.Label(log_panel, text="Atividade").pack(anchor="w")
+        self.log = tk.Text(log_panel, wrap="word", height=12, bg="#0F1A26", fg="#EAF4FC", insertbackground="#EAF4FC", relief="flat", highlightthickness=0, padx=12, pady=12, font=mono_font(self))
+        self.log.pack(fill="both", expand=True, pady=(SPACING["sm"], 0))
+        footer = ttk.Frame(log_panel, style="Panel.TFrame")
+        footer.pack(fill="x", pady=(SPACING["sm"], 0))
+        ttk.Button(footer, text="Abrir CSV", command=lambda: self.open_report(self.last_csv), cursor="hand2").pack(side="left")
+        ttk.Button(footer, text="Abrir JSONL", command=lambda: self.open_report(self.last_jsonl), cursor="hand2").pack(side="left", padx=(SPACING["sm"], 0))
+        ttk.Button(footer, text="Abrir resumo", command=lambda: self.open_report(self.last_summary), cursor="hand2").pack(side="left", padx=(SPACING["sm"], 0))
+        ttk.Button(footer, text="Limpar log", command=self.clear_log, cursor="hand2").pack(side="right")
 
-        ttk.Label(translate_panel, text="Traduzir", style="PanelTitle.TLabel").grid(
-            row=0, column=0, columnspan=3, sticky="w"
-        )
-
-        ttk.Label(translate_panel, text="Scan JSONL").grid(row=1, column=0, sticky="w", pady=(12, 4))
-        ttk.Entry(translate_panel, textvariable=self.translate_jsonl).grid(
-            row=2, column=0, columnspan=2, sticky="ew", padx=(0, 10)
-        )
-        ttk.Button(translate_panel, text="Escolher", command=self.choose_scan_jsonl, cursor="hand2").grid(
-            row=2, column=2, sticky="ew"
-        )
-
-        ttk.Label(translate_panel, text="Pasta do jogo").grid(row=3, column=0, sticky="w", pady=(8, 4))
-        ttk.Entry(translate_panel, textvariable=self.game_path).grid(
-            row=4, column=0, columnspan=2, sticky="ew", padx=(0, 10)
-        )
-        ttk.Button(translate_panel, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(
-            row=4, column=2, sticky="ew"
-        )
-
-        engine_row = ttk.Frame(translate_panel, style="Panel.TFrame")
-        engine_row.grid(row=5, column=0, columnspan=3, sticky="ew", pady=(12, 0))
-        engine_row.columnconfigure(1, weight=3)
-        engine_row.columnconfigure(3, weight=2)
-        ttk.Label(engine_row, text="URL do engine").grid(row=0, column=0, sticky="w")
-        ttk.Entry(engine_row, textvariable=self.engine_url).grid(
-            row=1, column=0, columnspan=2, sticky="ew", padx=(0, 10)
-        )
-        ttk.Label(engine_row, text="Modelo").grid(row=0, column=2, sticky="w")
-        ttk.Entry(engine_row, textvariable=self.engine_model).grid(
-            row=1, column=2, columnspan=2, sticky="ew", padx=(0, 12)
-        )
-        ttk.Checkbutton(engine_row, text="Usar memoria de traducao", variable=self.use_tm).grid(
-            row=1, column=4, sticky="w"
-        )
-
-        translate_actions = ttk.Frame(translate_panel, style="Panel.TFrame")
-        translate_actions.grid(row=6, column=0, columnspan=3, sticky="e", pady=(12, 0))
-        self.translate_button = ttk.Button(
-            translate_actions, text="Traduzir", style="Primary.TButton", command=self.run_translation, cursor="hand2"
-        )
+    def _build_translate_stage(self, parent):
+        self._stage_title(parent, "Traduzir", "Selecione a varredura e execute a tradução.")
+        panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
+        panel.pack(fill="x")
+        panel.columnconfigure(1, weight=1)
+        ttk.Label(panel, text="Scan JSONL").grid(row=0, column=0, sticky="w")
+        ttk.Entry(panel, textvariable=self.translate_jsonl).grid(row=1, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Button(panel, text="Escolher", command=self.choose_scan_jsonl, cursor="hand2").grid(row=1, column=2, sticky="ew")
+        ttk.Label(panel, text="Pasta do jogo").grid(row=2, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Entry(panel, textvariable=self.game_path).grid(row=3, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Button(panel, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(row=3, column=2, sticky="ew")
+        ttk.Label(panel, text="URL do engine").grid(row=4, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Entry(panel, textvariable=self.engine_url).grid(row=5, column=0, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Label(panel, text="Modelo").grid(row=4, column=1, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Entry(panel, textvariable=self.engine_model).grid(row=5, column=1, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Checkbutton(panel, text="Usar memória de tradução", variable=self.use_tm).grid(row=5, column=2, sticky="w")
+        actions = ttk.Frame(panel, style="Panel.TFrame")
+        actions.grid(row=6, column=0, columnspan=3, sticky="e", pady=(SPACING["panel"], 0))
+        self.translate_button = ttk.Button(actions, text="Traduzir", style="Primary.TButton", command=self.run_translation, cursor="hand2")
         self.translate_button.pack(side="left")
-        self.translate_stop_button = ttk.Button(
-            translate_actions,
-            text="Parar",
-            style="Danger.TButton",
-            command=self.stop_translation,
-            state="disabled",
-            cursor="hand2",
-        )
-        self.translate_stop_button.pack(side="left", padx=(8, 0))
-        self.apply_button = ttk.Button(
-            translate_actions,
-            text="Aplicar no jogo",
-            style="Danger.TButton",
-            command=self.run_apply,
-            state="disabled",
-            cursor="hand2",
-        )
-        self.apply_button.pack(side="left", padx=(8, 0))
-        self.restore_button = ttk.Button(
-            translate_actions, text="Restaurar backups", style="Danger.TButton", command=self.run_restore, cursor="hand2"
-        )
-        self.restore_button.pack(side="left")
-        self.retry_button = ttk.Button(
-            translate_actions,
-            text="Retraduzir falhas",
-            style="TButton",
-            command=self._run_retry,
-            state="disabled",
-            cursor="hand2",
-        )
-        self.retry_button.pack(side="left", padx=(8, 0))
+        self.translate_stop_button = ttk.Button(actions, text="Parar", style="Danger.TButton", command=self.stop_translation, state="disabled", cursor="hand2")
+        self.translate_stop_button.pack(side="left", padx=(SPACING["sm"], 0))
+        self.progress = ttk.Progressbar(panel, orient="horizontal", mode="determinate", maximum=1, value=0)
+        self.progress.grid(row=7, column=0, columnspan=3, sticky="ew", pady=(SPACING["panel"], SPACING["xs"]))
+        ttk.Label(panel, textvariable=self.translate_status_text, style="Muted.TLabel").grid(row=8, column=0, columnspan=3, sticky="w")
 
-        self.progress = ttk.Progressbar(translate_panel, orient="horizontal", mode="determinate", maximum=1, value=0)
-        self.progress.grid(row=7, column=0, columnspan=3, sticky="ew", pady=(12, 4))
-        ttk.Label(translate_panel, textvariable=self.translate_status_text, style="Muted.TLabel").grid(
-            row=8, column=0, columnspan=3, sticky="w"
-        )
-
-        # Filtro de preview (B3a)
-        filter_row = ttk.Frame(translate_panel, style="Panel.TFrame")
-        filter_row.grid(row=9, column=0, columnspan=3, sticky="ew", pady=(8, 4))
+    def _build_review_stage(self, parent):
+        self._stage_title(parent, "Revisar", "Confira os resultados e retraduza itens pendentes.")
+        panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
+        panel.pack(fill="both", expand=True)
+        filter_row = ttk.Frame(panel, style="Panel.TFrame")
+        filter_row.pack(fill="x")
         self._preview_filter = tk.StringVar(value="todos")
-        self._filter_combo = ttk.Combobox(
-            filter_row,
-            textvariable=self._preview_filter,
-            values=["todos", "tm_hit", "llm", "needs_review", "failed"],
-            state="readonly",
-            width=16,
-        )
+        self._filter_combo = ttk.Combobox(filter_row, textvariable=self._preview_filter, values=["todos", "tm_hit", "llm", "needs_review", "failed"], state="readonly", width=16)
         self._filter_combo.pack(side="left")
         self._filter_combo.bind("<<ComboboxSelected>>", self._on_filter_change)
         self._tree_counter = ttk.Label(filter_row, text="", style="Muted.TLabel")
-        self._tree_counter.pack(side="left", padx=(12, 0))
-
-        # Treeview de preview (B3a)
-        tree_frame = ttk.Frame(translate_panel, style="Panel.TFrame")
-        tree_frame.grid(row=10, column=0, columnspan=3, sticky="nsew", pady=(0, 4))
+        self._tree_counter.pack(side="left", padx=(SPACING["md"], 0))
+        self.retry_button = ttk.Button(filter_row, text="Retraduzir falhas", command=self._run_retry, state="disabled", cursor="hand2")
+        self.retry_button.pack(side="right")
+        tree_frame = ttk.Frame(panel, style="Panel.TFrame")
+        tree_frame.pack(fill="both", expand=True, pady=(SPACING["sm"], 0))
         tree_frame.columnconfigure(0, weight=1)
         tree_frame.rowconfigure(0, weight=1)
-
-        tree_columns = ("status", "arquivo", "linha", "original", "traducao")
-        self._preview_tree = ttk.Treeview(
-            tree_frame,
-            columns=tree_columns,
-            show="headings",
-            selectmode="browse",
-        )
-        self._preview_tree.heading("status", text="Status")
-        self._preview_tree.heading("arquivo", text="Arquivo")
-        self._preview_tree.heading("linha", text="Linha")
-        self._preview_tree.heading("original", text="Original")
-        self._preview_tree.heading("traducao", text="Traducao")
-
-        self._preview_tree.column("status", width=90, minwidth=70)
-        self._preview_tree.column("arquivo", width=160, minwidth=80)
-        self._preview_tree.column("linha", width=50, minwidth=40, anchor="e")
-        self._preview_tree.column("original", width=250, minwidth=100)
-        self._preview_tree.column("traducao", width=250, minwidth=100)
-
+        columns = ("status", "arquivo", "linha", "original", "traducao")
+        self._preview_tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="browse")
+        for name, label, width in (("status", "Status", 90), ("arquivo", "Arquivo", 160), ("linha", "Linha", 50), ("original", "Original", 250), ("traducao", "Tradução", 250)):
+            self._preview_tree.heading(name, text=label)
+            self._preview_tree.column(name, width=width, minwidth=40, anchor="e" if name == "linha" else "w")
         tree_scroll = ttk.Scrollbar(tree_frame, orient="vertical", command=self._preview_tree.yview)
         self._preview_tree.configure(yscrollcommand=tree_scroll.set)
         self._preview_tree.grid(row=0, column=0, sticky="nsew")
         tree_scroll.grid(row=0, column=1, sticky="ns")
 
-        # --- Body (Execucao / Log) ---
-        body_edge = ttk.Frame(root, style="PanelEdge.TFrame")
-        body_edge.grid(row=3, column=0, sticky="nsew")
-        body_edge.columnconfigure(0, weight=1)
-        body_edge.rowconfigure(0, weight=1)
-        body = ttk.Frame(body_edge, style="Panel.TFrame", padding=16)
-        body.grid(row=0, column=0, sticky="nsew")
-        body.columnconfigure(0, weight=1)
-        body.rowconfigure(2, weight=1)
+    def _build_apply_stage(self, parent):
+        self._stage_title(parent, "Aplicar", "Confirme a gravação apenas depois de revisar a tradução.")
+        panel = ttk.Frame(parent, style="Panel.TFrame", padding=SPACING["panel"])
+        panel.pack(fill="x")
+        self.apply_button = ttk.Button(panel, text="Aplicar no jogo", style="Danger.TButton", command=self.run_apply, state="disabled", cursor="hand2")
+        self.apply_button.pack(side="left")
+        self.restore_button = ttk.Button(panel, text="Restaurar backups", style="Danger.TButton", command=self.run_restore, cursor="hand2")
+        self.restore_button.pack(side="left", padx=(SPACING["sm"], 0))
 
-        ttk.Label(body, text="Execucao", style="PanelTitle.TLabel").grid(row=0, column=0, sticky="w")
-        ttk.Label(body, textvariable=self.status, style="Status.TLabel", padding=(10, 8)).grid(
-            row=1,
-            column=0,
-            sticky="ew",
-            pady=(12, 8),
-        )
+    def _refresh_stage_navigation(self):
+        for stage in Stage:
+            self.stage_navigation.set_status(stage, self.workflow.status(stage))
+        self.stage_navigation.set_active(self.active_stage)
 
-        log_font_family = "Cascadia Code" if "Cascadia Code" in tkfont.families(self) else "Consolas"
-        self.log = tk.Text(
-            body,
-            wrap="word",
-            height=12,
-            bg="#0B1222",
-            fg="#CBD5E1",
-            insertbackground="#CBD5E1",
-            selectbackground="#2563EB",
-            selectforeground="#F1F5F9",
-            relief="flat",
-            highlightthickness=0,
-            padx=12,
-            pady=12,
-            font=(log_font_family, 10),
-        )
-        self.log.grid(row=2, column=0, sticky="nsew")
+    def show_stage(self, stage):
+        if not self.workflow.can_open(stage):
+            self.activity_banner.set_state("info", "Etapa ainda não disponível", self.workflow.requirement(stage))
+            return False
+        self.stage_frames[self.active_stage].grid_remove()
+        self.active_stage = stage
+        self.stage_frames[stage].grid()
+        self.stage_navigation.set_active(stage)
+        return True
 
-        footer = ttk.Frame(body, style="Panel.TFrame")
-        footer.grid(row=3, column=0, sticky="ew", pady=(12, 0))
-        ttk.Button(
-            footer, text="Abrir CSV", command=lambda: self.open_report(self.last_csv), cursor="hand2"
-        ).pack(side="left")
-        ttk.Button(
-            footer, text="Abrir JSONL", command=lambda: self.open_report(self.last_jsonl), cursor="hand2"
-        ).pack(side="left", padx=(8, 0))
-        ttk.Button(
-            footer, text="Abrir resumo", command=lambda: self.open_report(self.last_summary), cursor="hand2"
-        ).pack(side="left", padx=(8, 0))
-        ttk.Button(footer, text="Limpar log", command=self.clear_log, cursor="hand2").pack(side="right")
-
-    def _on_canvas_configure(self, _event):
-        """Atualiza a largura do frame interno do Canvas para acompanhar a janela."""
-        self._canvas.itemconfigure(self._canvas_window, width=self._canvas.winfo_width())
-
-    def _on_mousewheel(self, event):
-        """Rola o Canvas com a roda do mouse (Windows: delta)."""
-        self._canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+    def _sync_activity_banner(self, *_args):
+        if hasattr(self, "activity_banner"):
+            self.activity_banner.set_state("info", "Atividade", self.status.get())
 
     def choose_game_folder(self):
         selected = filedialog.askdirectory(title="Escolha a pasta do jogo", mustexist=True)
@@ -702,6 +412,8 @@ class TextScannerApp(tk.Tk):
         self.clear_log()
         self.append_log("> " + " ".join(f'"{part}"' if " " in part else part for part in command))
         self.status.set("Varredura em andamento...")
+        self.workflow.mark_scan_started()
+        self._refresh_stage_navigation()
         self.run_button.configure(state="disabled")
         self.stop_button.configure(state="normal")
 
@@ -734,12 +446,16 @@ class TextScannerApp(tk.Tk):
         self.last_csv = output.with_suffix(".csv")
         self.last_jsonl = output.with_suffix(".jsonl")
         self.last_summary = output.with_suffix(".summary.md")
-        if code == 0 and self.last_jsonl.exists():
+        success = code == 0 and self.last_jsonl.exists()
+        if success:
             self.translate_jsonl.set(str(self.last_jsonl))
-        if code == 0:
+        if success:
             self.status.set("Varredura concluida. Relatorios prontos para revisar.")
+            self.workflow.mark_scan_finished(True)
         else:
             self.status.set(f"Varredura terminou com erro. Codigo: {code}")
+            self.workflow.mark_scan_finished(False)
+        self._refresh_stage_navigation()
         self.run_button.configure(state="normal")
         self.stop_button.configure(state="disabled")
 
@@ -808,6 +524,8 @@ class TextScannerApp(tk.Tk):
 
         self.translated_dir = None
         self.append_log("--- Traducao ---")
+        self.workflow.mark_translation_started()
+        self._refresh_stage_navigation()
         self._start_panel_command(
             command,
             self._finish_translation,
@@ -900,6 +618,8 @@ class TextScannerApp(tk.Tk):
             message = "Traducao terminou com erro. Codigo: %s" % code
             self.translate_status_text.set(message)
             self.status.set(message + " Verifique o log.")
+            self.workflow.mark_translation_finished(False, has_review=False)
+            self._refresh_stage_navigation()
             return
         self.translated_dir = out_dir
         if self._progress_total is not None:
@@ -913,6 +633,9 @@ class TextScannerApp(tk.Tk):
             parts.append(eta_str)
         self.translate_status_text.set(" | ".join(parts))
         self.status.set("Traducao concluida. Revise o resumo e use Aplicar no jogo quando desejar.")
+        self.workflow.mark_translation_finished(True, has_review=True)
+        self._refresh_stage_navigation()
+        self.show_stage(Stage.REVIEW)
         counts = count_report_statuses(out_dir / REPORT_CSV_NAME)
         retryable = counts.get("needs_review", 0) + counts.get("failed", 0)
         self.retry_button.configure(state="normal" if retryable > 0 else "disabled")
@@ -1014,6 +737,8 @@ class TextScannerApp(tk.Tk):
     def _finish_apply(self, code, output_lines, manifest_path):
         applied_count = parse_applied_count(output_lines)
         outcome = classify_apply_result(code, applied_count)
+        self.workflow.mark_apply_finished(outcome == "success")
+        self._refresh_stage_navigation()
         applied_line = next((line for line in output_lines if line.startswith("Aplicados:")), "")
         self.append_log("Manifesto de aplicacao: %s" % manifest_path)
         if outcome == "success":
