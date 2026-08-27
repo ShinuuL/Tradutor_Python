@@ -209,7 +209,7 @@ class StatusBanner(tk.Frame):
 
 
 class StageNavigation(ttk.Frame):
-    """A passive visual summary of workflow stages and their statuses."""
+    """A visual summary of workflow stages and their statuses."""
 
     _STAGE_NAMES = {
         Stage.PREPARE: "Preparar",
@@ -234,8 +234,11 @@ class StageNavigation(ttk.Frame):
         StageStatus.ERROR: ("×", COLORS["error"]),
     }
 
-    def __init__(self, master):
+    def __init__(self, master, *, orientation="horizontal"):
         super().__init__(master, style="Surface.TFrame")
+        if orientation not in {"horizontal", "vertical"}:
+            raise ValueError("orientation deve ser 'horizontal' ou 'vertical'")
+        self.orientation = orientation
         self.statuses = {stage: StageStatus.LOCKED for stage in Stage}
         self.active_stage = None
         self.rows = {}
@@ -243,7 +246,10 @@ class StageNavigation(ttk.Frame):
         self.labels = {}
         for stage in Stage:
             row = tk.Frame(self, background=COLORS["surface"])
-            row.pack(side="left", fill="x", expand=True, padx=(0, SPACING["xs"]))
+            if self.orientation == "vertical":
+                row.pack(fill="x", padx=SPACING["xs"], pady=(0, SPACING["xs"]))
+            else:
+                row.pack(side="left", fill="x", expand=True, padx=(0, SPACING["xs"]))
             marker = tk.Label(row, width=2, background=COLORS["surface"], foreground=COLORS["muted"])
             marker.pack(side="left", padx=(SPACING["sm"], SPACING["xs"]), pady=SPACING["sm"])
             label = tk.Label(row, anchor="w", background=COLORS["surface"], foreground=COLORS["text"])

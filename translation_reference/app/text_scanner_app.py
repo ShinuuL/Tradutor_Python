@@ -180,7 +180,7 @@ class TextScannerApp(tk.Tk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        self.stage_navigation = StageNavigation(self)
+        self.stage_navigation = StageNavigation(self, orientation="vertical")
         self.stage_navigation.grid(row=0, column=0, sticky="ns", padx=(SPACING["page"], SPACING["md"]), pady=SPACING["page"])
         for stage in Stage:
             for widget in (
@@ -412,8 +412,6 @@ class TextScannerApp(tk.Tk):
         self.clear_log()
         self.append_log("> " + " ".join(f'"{part}"' if " " in part else part for part in command))
         self.status.set("Varredura em andamento...")
-        self.workflow.mark_scan_started()
-        self._refresh_stage_navigation()
         self.run_button.configure(state="disabled")
         self.stop_button.configure(state="normal")
 
@@ -451,11 +449,8 @@ class TextScannerApp(tk.Tk):
             self.translate_jsonl.set(str(self.last_jsonl))
         if success:
             self.status.set("Varredura concluida. Relatorios prontos para revisar.")
-            self.workflow.mark_scan_finished(True)
         else:
             self.status.set(f"Varredura terminou com erro. Codigo: {code}")
-            self.workflow.mark_scan_finished(False)
-        self._refresh_stage_navigation()
         self.run_button.configure(state="normal")
         self.stop_button.configure(state="disabled")
 
@@ -524,8 +519,6 @@ class TextScannerApp(tk.Tk):
 
         self.translated_dir = None
         self.append_log("--- Traducao ---")
-        self.workflow.mark_translation_started()
-        self._refresh_stage_navigation()
         self._start_panel_command(
             command,
             self._finish_translation,
@@ -618,8 +611,6 @@ class TextScannerApp(tk.Tk):
             message = "Traducao terminou com erro. Codigo: %s" % code
             self.translate_status_text.set(message)
             self.status.set(message + " Verifique o log.")
-            self.workflow.mark_translation_finished(False, has_review=False)
-            self._refresh_stage_navigation()
             return
         self.translated_dir = out_dir
         if self._progress_total is not None:
@@ -633,9 +624,6 @@ class TextScannerApp(tk.Tk):
             parts.append(eta_str)
         self.translate_status_text.set(" | ".join(parts))
         self.status.set("Traducao concluida. Revise o resumo e use Aplicar no jogo quando desejar.")
-        self.workflow.mark_translation_finished(True, has_review=True)
-        self._refresh_stage_navigation()
-        self.show_stage(Stage.REVIEW)
         counts = count_report_statuses(out_dir / REPORT_CSV_NAME)
         retryable = counts.get("needs_review", 0) + counts.get("failed", 0)
         self.retry_button.configure(state="normal" if retryable > 0 else "disabled")
@@ -737,8 +725,6 @@ class TextScannerApp(tk.Tk):
     def _finish_apply(self, code, output_lines, manifest_path):
         applied_count = parse_applied_count(output_lines)
         outcome = classify_apply_result(code, applied_count)
-        self.workflow.mark_apply_finished(outcome == "success")
-        self._refresh_stage_navigation()
         applied_line = next((line for line in output_lines if line.startswith("Aplicados:")), "")
         self.append_log("Manifesto de aplicacao: %s" % manifest_path)
         if outcome == "success":

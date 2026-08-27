@@ -248,18 +248,34 @@ class GuiSmokeTests(unittest.TestCase):
         self.assertEqual(app.active_stage, Stage.PREPARE)
         app.destroy()
 
-    def test_stage_navigation_blocks_locked_stage_until_workflow_unlocks_it(self):
+    def test_stage_navigation_button_blocks_locked_stage_until_workflow_unlocks_it(self):
         if not self._has_display():
             self.skipTest("Sem display disponivel")
         from ui_state import Stage
         app = self._create_app_or_skip()
-        self.assertFalse(app.show_stage(Stage.TRANSLATE))
+        app.update()
+        app.stage_navigation.labels[Stage.TRANSLATE].event_generate("<Button-1>")
+        app.update()
         self.assertEqual(app.active_stage, Stage.PREPARE)
         self.assertEqual(app.activity_banner.title_label.cget("text"), "Etapa ainda não disponível")
+        self.assertEqual(app.activity_banner.detail_label.cget("text"), "Conclua uma varredura para continuar.")
         app.workflow.mark_scan_finished(True)
         app._refresh_stage_navigation()
-        self.assertTrue(app.show_stage(Stage.TRANSLATE))
+        app.stage_navigation.labels[Stage.TRANSLATE].event_generate("<Button-1>")
+        app.update()
         self.assertEqual(app.active_stage, Stage.TRANSLATE)
+        app.destroy()
+
+    def test_stage_navigation_uses_vertical_rows_in_the_shell(self):
+        if not self._has_display():
+            self.skipTest("Sem display disponivel")
+        from ui_state import Stage
+        app = self._create_app_or_skip()
+        app.update()
+        prepare = app.stage_navigation.rows[Stage.PREPARE]
+        translate = app.stage_navigation.rows[Stage.TRANSLATE]
+        self.assertEqual(prepare.winfo_x(), translate.winfo_x())
+        self.assertGreater(translate.winfo_y(), prepare.winfo_y())
         app.destroy()
 
 
