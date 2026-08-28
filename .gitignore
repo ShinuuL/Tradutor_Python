@@ -38,6 +38,10 @@ coverage.xml
 .DS_Store
 Thumbs.db
 
+# === Workspaces de agentes ===
+.worktrees/
+.superpowers/
+
 # === PyInstaller intermediarios ===
 *.manifest
 *.spec

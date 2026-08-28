@@ -11,6 +11,7 @@ Cobertura exigida pelo design F1/F4:
 """
 import hashlib
 import json
+import re
 import shutil
 import sys
 import unittest
@@ -138,10 +139,16 @@ class LineApplierTests(AppliersCase):
         self.assert_originals_intact()
         self.assertTrue(all(r["status"] == "applied" for r in results))
         copy = (OUT / "txt" / "demo_cp932.txt").read_bytes()
-        expected = (
-            "Ola, mundo.".encode("cp932") + b"\n"
-            + "剣を手に入れた。".encode("cp932") + b"\n"
-            + "Boa noite.".encode("cp932") + b"\n"
+        source_bytes = (FIXTURES / "txt" / "demo_cp932.txt").read_bytes()
+        terminators = re.findall(rb"\r\n|\r|\n", source_bytes)
+        self.assertEqual(len(terminators), 3)
+        expected_lines = [
+            "Ola, mundo.".encode("cp932"),
+            "剣を手に入れた。".encode("cp932"),
+            "Boa noite.".encode("cp932"),
+        ]
+        expected = b"".join(
+            line + terminator for line, terminator in zip(expected_lines, terminators)
         )
         self.assertEqual(copy, expected)
         self.assertEqual(copy.decode("cp932").splitlines()[1], "剣を手に入れた。")

@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import json
 import os
 import re
@@ -9,6 +10,10 @@ import time
 import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, font as tkfont, messagebox, ttk
+
+from ui_components import CollapsibleSection, RoundedPanel, ScrollableStep, StageNavigation, StatusBanner
+from ui_state import Stage, StageStatus, WorkflowState
+from ui_theme import SPACING, configure_fluent_night, mono_font
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -25,6 +30,83 @@ NON_GAME_FILES = frozenset({"translation_report.csv", "translation_report.md", M
 STATUS_ORDER = ("tm_hit", "llm", "needs_review", "failed")
 PROGRESS_RE = re.compile(r"^PROGRESS\s+(\d+)\s*/\s*(\d+)\s*$")
 APPLIED_COUNT_RE = re.compile(r"^Aplicados:\s*(\d+)")
+
+
+def canonical_game_root(game_root):
+    """Return the stable Windows-safe identity used for a selected game."""
+    try:
+        return os.path.normcase(str(Path(game_root).resolve()))
+    except OSError:
+        return os.path.normcase(os.path.abspath(str(game_root)))
+
+
+def game_workspace_name(game_root):
+    """Give each game path a collision-free, readable reports directory."""
+    canonical = canonical_game_root(game_root)
+    label = Path(canonical).name or "jogo"
+    digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:12]
+    return "%s--%s" % (label, digest)
+
+
+def _is_path_within(path, root):
+    try:
+        Path(path).resolve().relative_to(Path(root).resolve())
+        return True
+    except (OSError, ValueError):
+        return False
+
+
+def manifest_matches_game_root(manifest_path, game_root):
+    """Return whether a manifest is safe for the selected game root.
+
+    New manifests explicitly bind ``game_root``.  Legacy manifests have no
+    such field, so they are accepted only when every backup path resolves
+    inside the selected game.  This makes the migration conservative.
+    """
+    try:
+        doc = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeDecodeError):
+        return False
+    if not isinstance(doc, dict):
+        return False
+    declared_root = doc.get("game_root")
+    if declared_root:
+        return canonical_game_root(declared_root) == canonical_game_root(game_root)
+    entries = doc.get("entries") or []
+    backups = [str(entry.get("bak") or "") for entry in entries if isinstance(entry, dict)]
+    return bool(backups) and all(
+        backup.lower().endswith(".bak")
+        and _is_path_within(backup[: -len(".bak")], game_root)
+        for backup in backups
+    )
+
+
+def build_worker_command(worker_name, script_path, *arguments):
+    """Return a worker command for development or a frozen GUI installation.
+
+    PyInstaller's GUI executable is not a Python interpreter.  In a frozen
+    distribution, the CLI workers live beside the GUI's directory under the
+    common ``dist`` root.  Keeping this decision in one pure helper makes a
+    missing worker actionable before any subprocess is started.
+    """
+    if not getattr(sys, "frozen", False):
+        return [sys.executable, str(script_path), *map(str, arguments)]
+
+    gui_executable = Path(sys.executable).resolve()
+    worker_executable = gui_executable.parent.parent / worker_name / (worker_name + ".exe")
+    if not worker_executable.is_file():
+        raise ValueError(
+            "Worker congelado nao encontrado: %s. Reinstale a distribuicao completa, incluindo a pasta %s."
+            % (worker_executable, worker_name)
+        )
+    return [str(worker_executable), *map(str, arguments)]
+
+
+def worker_popen_kwargs():
+    """Return Windows-only process flags for workers launched by the GUI."""
+    if os.name == "nt" and hasattr(subprocess, "CREATE_NO_WINDOW"):
+        return {"creationflags": subprocess.CREATE_NO_WINDOW}
+    return {}
 
 
 def parse_applied_count(output_lines):
@@ -162,479 +244,345 @@ class TextScannerApp(tk.Tk):
         self._preview_rows = []
         self._preview_loaded = False
         self._eta_history = []
+        self.workflow = WorkflowState()
+        self.active_stage = Stage.PREPARE
+        self.recommended_stage = None
+        self._retry_available = False
+        self._panel_command_running = False
+        self._panel_command_with_progress = False
 
-        self._configure_style()
+        configure_fluent_night(self)
         self._build_layout()
-
-    def _configure_style(self):
-        # Tema "Bancada Slate" (direcao B): tokens WCAG-verificados, botoes chapados.
-        self.configure(bg="#0F172A")
-        style = ttk.Style(self)
-        style.theme_use("clam")
-
-        style.configure("Root.TFrame", background="#0F172A")
-        style.configure("Panel.TFrame", background="#1B2336")
-        # Moldura de 1px dos paineis: frame externo na cor da borda (#334155).
-        style.configure("PanelEdge.TFrame", background="#334155")
-        style.configure("Header.TLabel", background="#0F172A", foreground="#F1F5F9", font=("Segoe UI Semibold", 18))
-        style.configure("Sub.TLabel", background="#0F172A", foreground="#94A3B8", font=("Segoe UI", 10))
-        style.configure("PanelTitle.TLabel", background="#1B2336", foreground="#F1F5F9", font=("Segoe UI Semibold", 11))
-        style.configure("TLabel", background="#1B2336", foreground="#F1F5F9", font=("Segoe UI", 10))
-        style.configure("Muted.TLabel", background="#1B2336", foreground="#94A3B8", font=("Segoe UI", 9))
-        style.configure("Status.TLabel", background="#1C2740", foreground="#DBEAFE", font=("Segoe UI Semibold", 10))
-
-        style.configure(
-            "TEntry",
-            fieldbackground="#111A2E",
-            foreground="#F1F5F9",
-            bordercolor="#5B7089",
-            lightcolor="#111A2E",
-            darkcolor="#111A2E",
-        )
-        style.map(
-            "TEntry",
-            bordercolor=[("focus", "#93C5FD"), ("disabled", "#334155")],
-            lightcolor=[("focus", "#93C5FD"), ("disabled", "#1E293B")],
-            darkcolor=[("focus", "#93C5FD"), ("disabled", "#1E293B")],
-            fieldbackground=[("disabled", "#1E293B")],
-            foreground=[("disabled", "#64748B")],
-        )
-
-        style.configure(
-            "TSpinbox",
-            fieldbackground="#111A2E",
-            foreground="#F1F5F9",
-            background="#111A2E",
-            bordercolor="#5B7089",
-            lightcolor="#111A2E",
-            darkcolor="#111A2E",
-            arrowcolor="#94A3B8",
-        )
-        style.map(
-            "TSpinbox",
-            bordercolor=[("focus", "#93C5FD"), ("disabled", "#334155")],
-            fieldbackground=[("disabled", "#1E293B")],
-            foreground=[("disabled", "#64748B")],
-            arrowcolor=[("disabled", "#475569")],
-        )
-
-        style.configure(
-            "Horizontal.TProgressbar",
-            background="#22C55E",
-            lightcolor="#22C55E",
-            darkcolor="#22C55E",
-            bordercolor="#1A2334",
-            troughcolor="#1A2334",
-            thickness=10,
-        )
-
-        style.configure(
-            "TCheckbutton",
-            background="#1B2336",
-            foreground="#F1F5F9",
-            indicatorbackground="#111A2E",
-            indicatorforeground="#F1F5F9",
-            font=("Segoe UI", 10),
-        )
-        style.map(
-            "TCheckbutton",
-            background=[("active", "#1B2336")],
-            foreground=[("disabled", "#64748B")],
-            indicatorbackground=[
-                ("selected", "#22C55E"),
-                ("pressed", "#16A34A"),
-                ("disabled", "#334155"),
-            ],
-            indicatorforeground=[
-                ("selected", "#0F172A"),
-                ("pressed", "#0F172A"),
-                ("disabled", "#64748B"),
-            ],
-        )
-
-        # Botoes: bisel 3D do clam eliminado (lightcolor/darkcolor = proprio bg),
-        # padding generico, hover/pressed distintos e focus ring sutil (focuscolor).
-        style.configure(
-            "Primary.TButton",
-            background="#2563EB",
-            foreground="#FFFFFF",
-            font=("Segoe UI Semibold", 10),
-            padding=(16, 10),
-            borderwidth=0,
-            relief="flat",
-            focuscolor="#93C5FD",
-            lightcolor="#2563EB",
-            darkcolor="#2563EB",
-        )
-        style.map(
-            "Primary.TButton",
-            background=[("disabled", "#1E293B"), ("pressed", "#1E40AF"), ("active", "#1D4ED8")],
-            foreground=[("disabled", "#93A6BE")],
-            lightcolor=[("disabled", "#1E293B"), ("pressed", "#1E40AF"), ("active", "#1D4ED8")],
-            darkcolor=[("disabled", "#1E293B"), ("pressed", "#1E40AF"), ("active", "#1D4ED8")],
-            bordercolor=[("disabled", "#1E293B"), ("pressed", "#1E40AF"), ("active", "#1D4ED8")],
-        )
-
-        style.configure(
-            "TButton",
-            background="#232E47",
-            foreground="#F1F5F9",
-            font=("Segoe UI", 10),
-            padding=(12, 8),
-            borderwidth=0,
-            relief="flat",
-            focuscolor="#5B7089",
-            lightcolor="#232E47",
-            darkcolor="#232E47",
-        )
-        style.map(
-            "TButton",
-            background=[("disabled", "#1E293B"), ("pressed", "#1A2338"), ("active", "#2B3856")],
-            foreground=[("disabled", "#64748B")],
-            lightcolor=[("disabled", "#1E293B"), ("pressed", "#1A2338"), ("active", "#2B3856")],
-            darkcolor=[("disabled", "#1E293B"), ("pressed", "#1A2338"), ("active", "#2B3856")],
-            bordercolor=[("disabled", "#1E293B"), ("pressed", "#1A2338"), ("active", "#2B3856")],
-        )
-
-        style.configure(
-            "Danger.TButton",
-            background="#B91C1C",
-            foreground="#FFE9E9",
-            font=("Segoe UI Semibold", 10),
-            padding=(16, 10),
-            borderwidth=0,
-            relief="flat",
-            focuscolor="#FCA5A5",
-            lightcolor="#B91C1C",
-            darkcolor="#B91C1C",
-        )
-        style.map(
-            "Danger.TButton",
-            background=[("disabled", "#2A1515"), ("pressed", "#7F1D1D"), ("active", "#9F1D1D")],
-            foreground=[("disabled", "#8F6E6E")],
-            lightcolor=[("disabled", "#2A1515"), ("pressed", "#7F1D1D"), ("active", "#9F1D1D")],
-            darkcolor=[("disabled", "#2A1515"), ("pressed", "#7F1D1D"), ("active", "#9F1D1D")],
-            bordercolor=[("disabled", "#2A1515"), ("pressed", "#7F1D1D"), ("active", "#9F1D1D")],
-        )
-
-        # Treeview - Bancada Slate
-        style.configure(
-            "Treeview",
-            background="#0B1222",
-            foreground="#CBD5E1",
-            fieldbackground="#0B1222",
-            font=("Segoe UI", 9),
-            rowheight=24,
-        )
-        style.configure(
-            "Treeview.Heading",
-            background="#1E293B",
-            foreground="#F1F5F9",
-            font=("Segoe UI Semibold", 9),
-            relief="flat",
-        )
-        style.map(
-            "Treeview",
-            background=[("selected", "#2563EB")],
-            foreground=[("selected", "#F1F5F9")],
-        )
+        self.status.trace_add("write", self._sync_activity_banner)
+        self._sync_activity_banner()
 
     def _build_layout(self):
-        # Canvas + Scrollbar wrapper para responsividade total
-        self._canvas = tk.Canvas(self, bg="#0F172A", highlightthickness=0)
-        self._vscroll = ttk.Scrollbar(self, orient="vertical", command=self._canvas.yview)
-        self._canvas.configure(yscrollcommand=self._vscroll.set)
+        """Build the fixed workflow shell and place existing controls by stage."""
+        self.configure(bg="#0B111B")
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
-        self._vscroll.pack(side="right", fill="y")
-        self._canvas.pack(side="left", fill="both", expand=True)
+        self.stage_navigation = StageNavigation(self, orientation="vertical", command=self.show_stage)
+        self.stage_navigation.grid(row=0, column=0, sticky="ns", padx=(SPACING["page"], SPACING["md"]), pady=SPACING["page"])
 
-        # Frame interno que recebe todo o conteudo
-        root = ttk.Frame(self._canvas, style="Root.TFrame", padding=20)
-        self._canvas_window = self._canvas.create_window((0, 0), window=root, anchor="nw")
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(1, weight=0)  # form nao expande
-        root.rowconfigure(2, weight=1)  # translate_panel EXPANDE
-        root.rowconfigure(3, weight=1)  # body EXPANDE
+        stage_host = ttk.Frame(self, style="Surface.TFrame")
+        stage_host.grid(row=0, column=1, sticky="nsew", padx=(0, SPACING["page"]), pady=SPACING["page"])
+        stage_host.grid_rowconfigure(0, weight=1)
+        stage_host.grid_columnconfigure(0, weight=1)
+        self.stage_frames = {}
+        for stage in Stage:
+            frame = ScrollableStep(stage_host)
+            frame.grid(row=0, column=0, sticky="nsew")
+            self.stage_frames[stage] = frame
+            if stage is not self.active_stage:
+                frame.grid_remove()
 
-        # Largura do canvas acompanha o redimensionamento da janela
-        self._canvas.bind("<Configure>", self._on_canvas_configure)
-        # Scroll com mousewheel (Windows)
-        self.bind_all("<MouseWheel>", self._on_mousewheel)
+        self.activity_card = RoundedPanel(self)
+        self.activity_card.grid(row=1, column=1, sticky="ew", padx=(0, SPACING["page"]), pady=(0, SPACING["page"]))
+        activity = self.activity_card.content
+        activity.columnconfigure(0, weight=1)
+        self.activity_banner = StatusBanner(activity)
+        self.activity_banner.grid(row=0, column=0, sticky="ew")
+        self._activity_actions = ttk.Frame(activity, style="Panel.TFrame")
+        self._activity_actions.grid(row=0, column=1, sticky="e", padx=(SPACING["sm"], 0))
+        self.open_full_log_button = ttk.Button(
+            self._activity_actions,
+            text="Abrir log",
+            command=self.open_full_log,
+            cursor="hand2",
+        )
+        self.open_full_log_button.pack(side="left")
+        self.clear_log_button = ttk.Button(
+            self._activity_actions,
+            text="Limpar log",
+            command=self.clear_log,
+            cursor="hand2",
+        )
+        self.clear_log_button.pack(side="left", padx=(SPACING["sm"], 0))
 
-        # --- Header ---
-        header = ttk.Frame(root, style="Root.TFrame")
-        header.grid(row=0, column=0, sticky="ew", pady=(0, 16))
-        header.columnconfigure(0, weight=1)
+        self._build_log_window()
+        self._build_prepare_stage(self.stage_frames[Stage.PREPARE].content)
+        self._build_translate_stage(self.stage_frames[Stage.TRANSLATE].content)
+        self._build_review_stage(self.stage_frames[Stage.REVIEW].content)
+        self._build_apply_stage(self.stage_frames[Stage.APPLY].content)
+        self._refresh_stage_navigation()
 
-        ttk.Label(header, text="TradutorDGames Scanner", style="Header.TLabel").grid(row=0, column=0, sticky="w")
-        ttk.Label(
-            header,
-            text="Varra pastas de jogos e gere CSV/JSONL com textos candidatos a traducao.",
-            style="Sub.TLabel",
-        ).grid(row=1, column=0, sticky="w", pady=(4, 0))
+    def _build_log_window(self):
+        """Create the persistent full-log window without showing it yet."""
+        self._log_window = tk.Toplevel(self)
+        self._log_window.title("Log completo — TradutorDGames")
+        self._log_window.geometry("820x560")
+        self._log_window.minsize(560, 320)
+        self._log_window.configure(bg="#0B111B")
+        self._log_window.columnconfigure(0, weight=1)
+        self._log_window.rowconfigure(0, weight=1)
+        log_frame = ttk.Frame(self._log_window, style="Panel.TFrame", padding=SPACING["panel"])
+        log_frame.grid(row=0, column=0, sticky="nsew")
+        log_frame.columnconfigure(0, weight=1)
+        log_frame.rowconfigure(0, weight=1)
+        self.log = tk.Text(
+            log_frame,
+            wrap="word",
+            bg="#0F1A26",
+            fg="#EAF4FC",
+            insertbackground="#EAF4FC",
+            relief="flat",
+            highlightthickness=0,
+            padx=12,
+            pady=12,
+            font=mono_font(self),
+        )
+        log_scroll = ttk.Scrollbar(log_frame, orient="vertical", command=self.log.yview)
+        self.log.configure(yscrollcommand=log_scroll.set)
+        self.log.grid(row=0, column=0, sticky="nsew")
+        log_scroll.grid(row=0, column=1, sticky="ns")
+        self._log_window.protocol("WM_DELETE_WINDOW", self._hide_full_log)
+        self._log_window.withdraw()
 
-        # --- Form (Entrada) ---
-        form_edge = ttk.Frame(root, style="PanelEdge.TFrame")
-        form_edge.grid(row=1, column=0, sticky="ew", pady=(0, 16))
-        form_edge.columnconfigure(0, weight=1)
-        form = ttk.Frame(form_edge, style="Panel.TFrame", padding=16)
-        form.grid(row=0, column=0, sticky="ew")
+    def _hide_full_log(self):
+        """Keep the log widget alive when its window is closed."""
+        self._log_window.withdraw()
+
+    def open_full_log(self):
+        """Show and focus the persistent full-log window."""
+        self._log_window.deiconify()
+        self._log_window.lift()
+        self._log_window.focus_set()
+
+    @staticmethod
+    def _stage_title(parent, title, detail):
+        ttk.Label(parent, text=title, style="PanelTitle.TLabel").pack(anchor="w")
+        ttk.Label(parent, text=detail, style="PanelMuted.TLabel").pack(anchor="w", pady=(SPACING["xs"], SPACING["panel"]))
+
+    @staticmethod
+    def _card(parent, name, title, detail, *, expand=False):
+        card = RoundedPanel(parent)
+        card.pack(fill="both" if expand else "x", expand=expand)
+        header = ttk.Frame(card.content, style="Panel.TFrame")
+        header.pack(fill="x", padx=SPACING["panel"], pady=(SPACING["panel"], 0))
+        TextScannerApp._stage_title(header, title, detail)
+        body = ttk.Frame(card.content, style="Panel.TFrame", padding=SPACING["panel"])
+        body.pack(fill="both", expand=True, padx=SPACING["panel"], pady=(0, SPACING["panel"]))
+        return card, body
+
+    def _build_prepare_stage(self, parent):
+        self.prepare_card, form = self._card(
+            parent, "prepare", "Preparar", "Escolha a pasta e configure a varredura somente leitura."
+        )
+        form_body = form
+        form = ttk.Frame(form_body, style="Panel.TFrame")
+        form.pack(fill="x")
         form.columnconfigure(1, weight=1)
+        ttk.Label(form, text="Pasta do jogo", style="Panel.TLabel").grid(row=0, column=0, sticky="w", pady=(0, SPACING["xs"]))
+        ttk.Entry(form, textvariable=self.game_path).grid(row=1, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Button(form, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(row=1, column=2, sticky="ew")
+        ttk.Label(form, text="Saída do relatório", style="Panel.TLabel").grid(row=2, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Entry(form, textvariable=self.output_path).grid(row=3, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Button(form, text="Salvar como", command=self.choose_output_file, cursor="hand2").grid(row=3, column=2, sticky="ew")
 
-        ttk.Label(form, text="Entrada", style="PanelTitle.TLabel").grid(row=0, column=0, columnspan=3, sticky="w")
-
-        ttk.Label(form, text="Pasta do jogo").grid(row=1, column=0, sticky="w", pady=(12, 4))
-        ttk.Entry(form, textvariable=self.game_path).grid(row=2, column=0, columnspan=2, sticky="ew", padx=(0, 10))
-        ttk.Button(form, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(
-            row=2, column=2, sticky="ew"
-        )
-
-        ttk.Label(form, text="Saida do relatorio").grid(row=3, column=0, sticky="w", pady=(12, 4))
-        ttk.Entry(form, textvariable=self.output_path).grid(row=4, column=0, columnspan=2, sticky="ew", padx=(0, 10))
-        ttk.Button(form, text="Salvar como", command=self.choose_output_file, cursor="hand2").grid(
-            row=4, column=2, sticky="ew"
-        )
-
-        options = ttk.Frame(form, style="Panel.TFrame")
-        options.grid(row=5, column=0, columnspan=3, sticky="ew", pady=(16, 0))
-        for col in range(6):
-            options.columnconfigure(col, weight=1)
-
-        ttk.Label(options, text="Extensoes extras").grid(row=0, column=0, sticky="w")
-        ttk.Entry(options, textvariable=self.extra_ext).grid(row=1, column=0, columnspan=2, sticky="ew", padx=(0, 12))
-        ttk.Label(options, text="Ex.: .dat, .bytes", style="Muted.TLabel").grid(row=2, column=0, columnspan=2, sticky="w")
-
-        ttk.Label(options, text="Max MB por arquivo").grid(row=0, column=2, sticky="w")
-        ttk.Spinbox(options, from_=1, to=500, textvariable=self.max_file_mb, width=8).grid(row=1, column=2, sticky="w")
-
-        ttk.Label(options, text="Caracteres por trecho").grid(row=0, column=3, sticky="w")
-        ttk.Spinbox(
-            options,
-            from_=60,
-            to=1000,
-            increment=20,
-            textvariable=self.context_chars,
-            width=8,
-        ).grid(row=1, column=3, sticky="w")
-
-        checks = ttk.Frame(options, style="Panel.TFrame")
-        checks.grid(row=2, column=2, columnspan=2, sticky="w", pady=(8, 0))
-        ttk.Checkbutton(checks, text="Remover repetidos", variable=self.dedupe).pack(side="left", padx=(0, 12))
-        ttk.Checkbutton(checks, text="Ignorar plugins JS", variable=self.skip_plugin_js).pack(side="left")
-
-        ttk.Label(options, text="Linhas por lote").grid(row=0, column=4, sticky="w")
-        ttk.Spinbox(
-            options,
-            from_=50,
-            to=5000,
-            increment=50,
-            textvariable=self.batch_size,
-            width=8,
-        ).grid(row=1, column=4, sticky="w")
-
-        actions = ttk.Frame(options, style="Panel.TFrame")
-        actions.grid(row=1, column=5, sticky="e")
-        self.run_button = ttk.Button(
-            actions, text="Executar varredura", style="Primary.TButton", command=self.run_scan, cursor="hand2"
-        )
-        self.run_button.pack(side="left", padx=(0, 8))
-        self.stop_button = ttk.Button(
-            actions, text="Parar", style="Danger.TButton", command=self.stop_scan, state="disabled", cursor="hand2"
-        )
+        actions = ttk.Frame(form, style="Panel.TFrame")
+        actions.grid(row=4, column=0, columnspan=3, sticky="e", pady=(SPACING["panel"], 0))
+        self.run_button = ttk.Button(actions, text="Executar varredura", style="Primary.TButton", command=self.run_scan, cursor="hand2")
+        self.run_button.pack(side="left", padx=(0, SPACING["sm"]))
+        self.stop_button = ttk.Button(actions, text="Parar", style="Danger.TButton", command=self.stop_scan, state="disabled", cursor="hand2")
         self.stop_button.pack(side="left")
 
-        # --- Translate panel (Traduzir) ---
-        translate_edge = ttk.Frame(root, style="PanelEdge.TFrame")
-        translate_edge.grid(row=2, column=0, sticky="nsew", pady=(0, 16))
-        translate_edge.columnconfigure(0, weight=1)
-        translate_edge.rowconfigure(0, weight=1)
-        translate_panel = ttk.Frame(translate_edge, style="Panel.TFrame", padding=16)
-        translate_panel.grid(row=0, column=0, sticky="nsew")
-        translate_panel.columnconfigure(1, weight=1)
-        translate_panel.rowconfigure(10, weight=1)  # Treeview expande
+        self.prepare_advanced = CollapsibleSection(form_body, title="Opções avançadas")
+        self.prepare_advanced.pack(fill="x", pady=(SPACING["panel"], 0))
+        options = self.prepare_advanced.content
+        for column in range(4):
+            options.columnconfigure(column, weight=1)
+        ttk.Label(options, text="Extensões extras", style="Panel.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Entry(options, textvariable=self.extra_ext).grid(row=1, column=0, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Label(options, text="Max. MB por arquivo", style="Panel.TLabel").grid(row=0, column=1, sticky="w")
+        ttk.Spinbox(options, from_=1, to=500, textvariable=self.max_file_mb, width=8).grid(row=1, column=1, sticky="w")
+        ttk.Label(options, text="Caracteres por trecho", style="Panel.TLabel").grid(row=0, column=2, sticky="w")
+        ttk.Spinbox(options, from_=60, to=1000, increment=20, textvariable=self.context_chars, width=8).grid(row=1, column=2, sticky="w")
+        ttk.Label(options, text="Linhas por lote", style="Panel.TLabel").grid(row=0, column=3, sticky="w")
+        ttk.Spinbox(options, from_=50, to=5000, increment=50, textvariable=self.batch_size, width=8).grid(row=1, column=3, sticky="w")
+        checks = ttk.Frame(options, style="Panel.TFrame")
+        checks.grid(row=2, column=0, columnspan=4, sticky="w", pady=(SPACING["sm"], 0))
+        ttk.Checkbutton(checks, text="Remover repetidos", variable=self.dedupe).pack(side="left", padx=(0, SPACING["md"]))
+        ttk.Checkbutton(checks, text="Ignorar plugins JS", variable=self.skip_plugin_js).pack(side="left")
 
-        ttk.Label(translate_panel, text="Traduzir", style="PanelTitle.TLabel").grid(
-            row=0, column=0, columnspan=3, sticky="w"
+    def _build_translate_stage(self, parent):
+        self.translate_card, panel = self._card(
+            parent, "translate", "Traduzir", "Selecione a varredura e execute a tradução."
         )
-
-        ttk.Label(translate_panel, text="Scan JSONL").grid(row=1, column=0, sticky="w", pady=(12, 4))
-        ttk.Entry(translate_panel, textvariable=self.translate_jsonl).grid(
-            row=2, column=0, columnspan=2, sticky="ew", padx=(0, 10)
-        )
-        ttk.Button(translate_panel, text="Escolher", command=self.choose_scan_jsonl, cursor="hand2").grid(
-            row=2, column=2, sticky="ew"
-        )
-
-        ttk.Label(translate_panel, text="Pasta do jogo").grid(row=3, column=0, sticky="w", pady=(8, 4))
-        ttk.Entry(translate_panel, textvariable=self.game_path).grid(
-            row=4, column=0, columnspan=2, sticky="ew", padx=(0, 10)
-        )
-        ttk.Button(translate_panel, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(
-            row=4, column=2, sticky="ew"
-        )
-
-        engine_row = ttk.Frame(translate_panel, style="Panel.TFrame")
-        engine_row.grid(row=5, column=0, columnspan=3, sticky="ew", pady=(12, 0))
-        engine_row.columnconfigure(1, weight=3)
-        engine_row.columnconfigure(3, weight=2)
-        ttk.Label(engine_row, text="URL do engine").grid(row=0, column=0, sticky="w")
-        ttk.Entry(engine_row, textvariable=self.engine_url).grid(
-            row=1, column=0, columnspan=2, sticky="ew", padx=(0, 10)
-        )
-        ttk.Label(engine_row, text="Modelo").grid(row=0, column=2, sticky="w")
-        ttk.Entry(engine_row, textvariable=self.engine_model).grid(
-            row=1, column=2, columnspan=2, sticky="ew", padx=(0, 12)
-        )
-        ttk.Checkbutton(engine_row, text="Usar memoria de traducao", variable=self.use_tm).grid(
-            row=1, column=4, sticky="w"
-        )
-
-        translate_actions = ttk.Frame(translate_panel, style="Panel.TFrame")
-        translate_actions.grid(row=6, column=0, columnspan=3, sticky="e", pady=(12, 0))
-        self.translate_button = ttk.Button(
-            translate_actions, text="Traduzir", style="Primary.TButton", command=self.run_translation, cursor="hand2"
-        )
+        panel_body = panel
+        panel = ttk.Frame(panel_body, style="Panel.TFrame")
+        panel.pack(fill="x")
+        panel.columnconfigure(1, weight=1)
+        ttk.Label(panel, text="Scan JSONL", style="Panel.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Entry(panel, textvariable=self.translate_jsonl).grid(row=1, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Button(panel, text="Escolher", command=self.choose_scan_jsonl, cursor="hand2").grid(row=1, column=2, sticky="ew")
+        ttk.Label(panel, text="Pasta do jogo", style="Panel.TLabel").grid(row=2, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Entry(panel, textvariable=self.game_path).grid(row=3, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Button(panel, text="Escolher", command=self.choose_game_folder, cursor="hand2").grid(row=3, column=2, sticky="ew")
+        ttk.Label(panel, text="Modelo", style="Panel.TLabel").grid(row=4, column=0, sticky="w", pady=(SPACING["md"], SPACING["xs"]))
+        ttk.Entry(panel, textvariable=self.engine_model).grid(row=5, column=0, columnspan=2, sticky="ew", padx=(0, SPACING["sm"]))
+        ttk.Checkbutton(panel, text="Usar memória de tradução", variable=self.use_tm).grid(row=5, column=2, sticky="w")
+        actions = ttk.Frame(panel, style="Panel.TFrame")
+        actions.grid(row=6, column=0, columnspan=3, sticky="e", pady=(SPACING["panel"], 0))
+        self.translate_button = ttk.Button(actions, text="Traduzir", style="Primary.TButton", command=self.run_translation, cursor="hand2")
         self.translate_button.pack(side="left")
-        self.translate_stop_button = ttk.Button(
-            translate_actions,
-            text="Parar",
-            style="Danger.TButton",
-            command=self.stop_translation,
-            state="disabled",
-            cursor="hand2",
-        )
-        self.translate_stop_button.pack(side="left", padx=(8, 0))
-        self.apply_button = ttk.Button(
-            translate_actions,
-            text="Aplicar no jogo",
-            style="Danger.TButton",
-            command=self.run_apply,
-            state="disabled",
-            cursor="hand2",
-        )
-        self.apply_button.pack(side="left", padx=(8, 0))
-        self.restore_button = ttk.Button(
-            translate_actions, text="Restaurar backups", style="Danger.TButton", command=self.run_restore, cursor="hand2"
-        )
-        self.restore_button.pack(side="left")
-        self.retry_button = ttk.Button(
-            translate_actions,
-            text="Retraduzir falhas",
-            style="TButton",
-            command=self._run_retry,
-            state="disabled",
-            cursor="hand2",
-        )
-        self.retry_button.pack(side="left", padx=(8, 0))
+        self.translate_stop_button = ttk.Button(actions, text="Parar", style="Danger.TButton", command=self.stop_translation, state="disabled", cursor="hand2")
+        self.translate_stop_button.pack(side="left", padx=(SPACING["sm"], 0))
+        self.progress = ttk.Progressbar(panel, orient="horizontal", mode="determinate", maximum=1, value=0)
+        self.progress.grid(row=7, column=0, columnspan=3, sticky="ew", pady=(SPACING["panel"], SPACING["xs"]))
+        ttk.Label(panel, textvariable=self.translate_status_text, style="PanelMuted.TLabel").grid(row=8, column=0, columnspan=3, sticky="w")
 
-        self.progress = ttk.Progressbar(translate_panel, orient="horizontal", mode="determinate", maximum=1, value=0)
-        self.progress.grid(row=7, column=0, columnspan=3, sticky="ew", pady=(12, 4))
-        ttk.Label(translate_panel, textvariable=self.translate_status_text, style="Muted.TLabel").grid(
-            row=8, column=0, columnspan=3, sticky="w"
-        )
+        self.translate_advanced = CollapsibleSection(panel_body, title="Opções avançadas")
+        self.translate_advanced.pack(fill="x", pady=(SPACING["panel"], 0))
+        options = self.translate_advanced.content
+        options.columnconfigure(0, weight=1)
+        ttk.Label(options, text="URL do engine", style="Panel.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Entry(options, textvariable=self.engine_url).grid(row=1, column=0, sticky="ew")
 
-        # Filtro de preview (B3a)
-        filter_row = ttk.Frame(translate_panel, style="Panel.TFrame")
-        filter_row.grid(row=9, column=0, columnspan=3, sticky="ew", pady=(8, 4))
+    def _build_review_stage(self, parent):
+        self.review_card, panel = self._card(
+            parent, "review", "Revisar", "Confira os resultados e retraduza itens pendentes.", expand=True
+        )
+        filter_row = ttk.Frame(panel, style="Panel.TFrame")
+        filter_row.pack(fill="x")
         self._preview_filter = tk.StringVar(value="todos")
-        self._filter_combo = ttk.Combobox(
-            filter_row,
-            textvariable=self._preview_filter,
-            values=["todos", "tm_hit", "llm", "needs_review", "failed"],
-            state="readonly",
-            width=16,
-        )
+        self._filter_combo = ttk.Combobox(filter_row, textvariable=self._preview_filter, values=["todos", "tm_hit", "llm", "needs_review", "failed"], state="readonly", width=16)
         self._filter_combo.pack(side="left")
         self._filter_combo.bind("<<ComboboxSelected>>", self._on_filter_change)
-        self._tree_counter = ttk.Label(filter_row, text="", style="Muted.TLabel")
-        self._tree_counter.pack(side="left", padx=(12, 0))
-
-        # Treeview de preview (B3a)
-        tree_frame = ttk.Frame(translate_panel, style="Panel.TFrame")
-        tree_frame.grid(row=10, column=0, columnspan=3, sticky="nsew", pady=(0, 4))
+        self._tree_counter = ttk.Label(filter_row, text="", style="PanelMuted.TLabel")
+        self._tree_counter.pack(side="left", padx=(SPACING["md"], 0))
+        self.retry_button = ttk.Button(filter_row, text="Retraduzir falhas", command=self._run_retry, state="disabled", cursor="hand2")
+        self.retry_button.pack(side="right")
+        report_row = ttk.Frame(panel, style="Panel.TFrame")
+        report_row.pack(fill="x", pady=(SPACING["sm"], 0))
+        self.open_csv_button = ttk.Button(report_row, text="Abrir CSV", command=lambda: self.open_report(self.last_csv), cursor="hand2")
+        self.open_csv_button.pack(side="left")
+        self.open_jsonl_button = ttk.Button(report_row, text="Abrir JSONL", command=lambda: self.open_report(self.last_jsonl), cursor="hand2")
+        self.open_jsonl_button.pack(side="left", padx=(SPACING["sm"], 0))
+        self.open_summary_button = ttk.Button(report_row, text="Abrir resumo", command=lambda: self.open_report(self.last_summary), cursor="hand2")
+        self.open_summary_button.pack(side="left", padx=(SPACING["sm"], 0))
+        tree_frame = ttk.Frame(panel, style="Panel.TFrame")
+        tree_frame.pack(fill="both", expand=True, pady=(SPACING["sm"], 0))
         tree_frame.columnconfigure(0, weight=1)
         tree_frame.rowconfigure(0, weight=1)
-
-        tree_columns = ("status", "arquivo", "linha", "original", "traducao")
-        self._preview_tree = ttk.Treeview(
-            tree_frame,
-            columns=tree_columns,
-            show="headings",
-            selectmode="browse",
-        )
-        self._preview_tree.heading("status", text="Status")
-        self._preview_tree.heading("arquivo", text="Arquivo")
-        self._preview_tree.heading("linha", text="Linha")
-        self._preview_tree.heading("original", text="Original")
-        self._preview_tree.heading("traducao", text="Traducao")
-
-        self._preview_tree.column("status", width=90, minwidth=70)
-        self._preview_tree.column("arquivo", width=160, minwidth=80)
-        self._preview_tree.column("linha", width=50, minwidth=40, anchor="e")
-        self._preview_tree.column("original", width=250, minwidth=100)
-        self._preview_tree.column("traducao", width=250, minwidth=100)
-
+        columns = ("status", "file", "line", "source", "translated")
+        self._preview_tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="browse")
+        for name, label, width in (("status", "Status", 90), ("file", "Arquivo", 160), ("line", "Linha", 50), ("source", "Original", 250), ("translated", "Tradução", 250)):
+            self._preview_tree.heading(name, text=label)
+            self._preview_tree.column(name, width=width, minwidth=40, anchor="e" if name == "line" else "w")
         tree_scroll = ttk.Scrollbar(tree_frame, orient="vertical", command=self._preview_tree.yview)
         self._preview_tree.configure(yscrollcommand=tree_scroll.set)
         self._preview_tree.grid(row=0, column=0, sticky="nsew")
         tree_scroll.grid(row=0, column=1, sticky="ns")
 
-        # --- Body (Execucao / Log) ---
-        body_edge = ttk.Frame(root, style="PanelEdge.TFrame")
-        body_edge.grid(row=3, column=0, sticky="nsew")
-        body_edge.columnconfigure(0, weight=1)
-        body_edge.rowconfigure(0, weight=1)
-        body = ttk.Frame(body_edge, style="Panel.TFrame", padding=16)
-        body.grid(row=0, column=0, sticky="nsew")
-        body.columnconfigure(0, weight=1)
-        body.rowconfigure(2, weight=1)
+    def _build_apply_stage(self, parent):
+        self.apply_card, panel = self._card(
+            parent, "apply", "Aplicar", "Confirme a gravação apenas depois de revisar a tradução."
+        )
+        self.apply_summary = tk.StringVar()
+        self.game_path.trace_add("write", self._refresh_apply_summary)
+        self._refresh_apply_summary()
+        ttk.Label(panel, textvariable=self.apply_summary, style="PanelMuted.TLabel", justify="left", wraplength=620).pack(anchor="w")
+        ttk.Label(
+            panel,
+            text="Aplicar e restaurar modificam arquivos do jogo e exigem confirmação.",
+            style="PanelMuted.TLabel",
+            justify="left",
+            wraplength=620,
+        ).pack(anchor="w", pady=(SPACING["md"], 0))
+        actions = ttk.Frame(panel, style="Panel.TFrame")
+        actions.pack(anchor="w", pady=(SPACING["panel"], 0))
+        self.apply_button = ttk.Button(actions, text="Aplicar no jogo", style="Danger.TButton", command=self.run_apply, state="disabled", cursor="hand2")
+        self.apply_button.pack(side="left")
+        self.restore_button = ttk.Button(actions, text="Restaurar backups", style="Danger.TButton", command=self.run_restore, cursor="hand2")
+        self.restore_button.pack(side="left", padx=(SPACING["sm"], 0))
 
-        ttk.Label(body, text="Execucao", style="PanelTitle.TLabel").grid(row=0, column=0, sticky="w")
-        ttk.Label(body, textvariable=self.status, style="Status.TLabel", padding=(10, 8)).grid(
-            row=1,
-            column=0,
-            sticky="ew",
-            pady=(12, 8),
+    def _refresh_apply_summary(self, *_args):
+        """Show the currently selected game folder and translated output safely."""
+        destination = self.game_path.get().strip()
+        destination_text = destination or "nenhuma pasta do jogo selecionada."
+        translated_dir = self.translated_dir
+        source_text = "nenhuma tradução concluída."
+        file_count = 0
+        if translated_dir:
+            source_text = str(translated_dir)
+            try:
+                if translated_dir.is_dir():
+                    file_count = self._count_translated_files(translated_dir)
+            except (AttributeError, OSError, TypeError, ValueError):
+                pass
+        self.apply_summary.set(
+            "Destino: %s\nOrigem: %s\nArquivos traduzidos: %d."
+            % (destination_text, source_text, file_count)
         )
 
-        log_font_family = "Cascadia Code" if "Cascadia Code" in tkfont.families(self) else "Consolas"
-        self.log = tk.Text(
-            body,
-            wrap="word",
-            height=12,
-            bg="#0B1222",
-            fg="#CBD5E1",
-            insertbackground="#CBD5E1",
-            selectbackground="#2563EB",
-            selectforeground="#F1F5F9",
-            relief="flat",
-            highlightthickness=0,
-            padx=12,
-            pady=12,
-            font=(log_font_family, 10),
+    def _refresh_stage_navigation(self):
+        """Render workflow status and derive every workflow action state from it."""
+        for stage in Stage:
+            self.stage_navigation.set_status(stage, self.workflow.status(stage))
+        self.stage_navigation.set_active(self.active_stage)
+
+        scan_running = self.workflow.status(Stage.PREPARE) is StageStatus.RUNNING
+        panel_running = self._panel_command_running
+        translation_status = self.workflow.status(Stage.TRANSLATE)
+        review_status = self.workflow.status(Stage.REVIEW)
+        apply_status = self.workflow.status(Stage.APPLY)
+
+        start_blocked = scan_running or panel_running
+        review_available = self.workflow.can_open(Stage.REVIEW) and not start_blocked
+        apply_available = self.workflow.can_open(Stage.APPLY) and not start_blocked
+        self.run_button.configure(state="disabled" if start_blocked else "normal")
+        self.stop_button.configure(state="normal" if scan_running else "disabled")
+        self.translate_button.configure(
+            state="normal"
+            if not start_blocked and translation_status not in (StageStatus.LOCKED, StageStatus.RUNNING)
+            else "disabled"
         )
-        self.log.grid(row=2, column=0, sticky="nsew")
+        self.translate_stop_button.configure(
+            state="normal" if panel_running and self._panel_command_with_progress else "disabled"
+        )
+        self.retry_button.configure(
+            state="normal"
+            if review_available and review_status is not StageStatus.RUNNING and self._retry_available
+            else "disabled"
+        )
+        for button in (self.open_csv_button, self.open_jsonl_button, self.open_summary_button):
+            button.configure(state="normal" if review_available else "disabled")
+        self.apply_button.configure(
+            state="normal"
+            if apply_available and apply_status is not StageStatus.RUNNING and self._preview_loaded
+            else "disabled"
+        )
+        self.restore_button.configure(state="normal" if apply_available else "disabled")
 
-        footer = ttk.Frame(body, style="Panel.TFrame")
-        footer.grid(row=3, column=0, sticky="ew", pady=(12, 0))
-        ttk.Button(
-            footer, text="Abrir CSV", command=lambda: self.open_report(self.last_csv), cursor="hand2"
-        ).pack(side="left")
-        ttk.Button(
-            footer, text="Abrir JSONL", command=lambda: self.open_report(self.last_jsonl), cursor="hand2"
-        ).pack(side="left", padx=(8, 0))
-        ttk.Button(
-            footer, text="Abrir resumo", command=lambda: self.open_report(self.last_summary), cursor="hand2"
-        ).pack(side="left", padx=(8, 0))
-        ttk.Button(footer, text="Limpar log", command=self.clear_log, cursor="hand2").pack(side="right")
+    def _set_stage_feedback(self, stage, kind, title, detail):
+        """Show a workflow message without changing the user's active stage."""
+        self._feedback_stage = stage
+        self.activity_banner.set_state(kind, title, detail)
 
-    def _on_canvas_configure(self, _event):
-        """Atualiza a largura do frame interno do Canvas para acompanhar a janela."""
-        self._canvas.itemconfigure(self._canvas_window, width=self._canvas.winfo_width())
+    def _recommend_next_stage(self, stage):
+        """Remember the next available step; navigation remains user initiated."""
+        self.recommended_stage = stage
+        return stage
 
-    def _on_mousewheel(self, event):
-        """Rola o Canvas com a roda do mouse (Windows: delta)."""
-        self._canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+    def show_stage(self, stage):
+        available = self.workflow.can_open(stage)
+        if not available:
+            self.activity_banner.set_state("info", "Etapa ainda não disponível", self.workflow.requirement(stage))
+        self.stage_frames[self.active_stage].grid_remove()
+        self.active_stage = stage
+        self.stage_frames[stage].grid()
+        self.stage_navigation.set_active(stage)
+        return available
+
+    def _activate_stage_from_keyboard(self, stage):
+        """Open a stage from a focused navigation item without propagating the key."""
+        self.show_stage(stage)
+        return "break"
+
+    def _sync_activity_banner(self, *_args):
+        if hasattr(self, "activity_banner"):
+            self.activity_banner.set_state("info", "Atividade", self.status.get())
 
     def choose_game_folder(self):
         selected = filedialog.askdirectory(title="Escolha a pasta do jogo", mustexist=True)
@@ -663,9 +611,9 @@ class TextScannerApp(tk.Tk):
         if not output:
             raise ValueError("Escolha um caminho de saida para o relatorio.")
 
-        command = [
-            sys.executable,
-            str(SCRIPT_PATH),
+        command = build_worker_command(
+            "extract_non_english_text",
+            SCRIPT_PATH,
             game,
             "--out",
             output,
@@ -675,7 +623,7 @@ class TextScannerApp(tk.Tk):
             str(self.context_chars.get()),
             "--batch-size",
             str(self.batch_size.get()),
-        ]
+        )
 
         for ext in self.extra_ext.get().replace(";", ",").split(","):
             ext = ext.strip()
@@ -700,10 +648,17 @@ class TextScannerApp(tk.Tk):
             return
 
         self.clear_log()
+        self.recommended_stage = None
         self.append_log("> " + " ".join(f'"{part}"' if " " in part else part for part in command))
+        self.workflow.mark_scan_started()
         self.status.set("Varredura em andamento...")
-        self.run_button.configure(state="disabled")
-        self.stop_button.configure(state="normal")
+        self._refresh_stage_navigation()
+        self._set_stage_feedback(
+            Stage.PREPARE,
+            "info",
+            "Varredura em andamento",
+            "A varredura é somente leitura. Aguarde a geração dos relatórios.",
+        )
 
         thread = threading.Thread(target=self._run_worker, args=(command,), daemon=True)
         thread.start()
@@ -718,6 +673,7 @@ class TextScannerApp(tk.Tk):
                 text=True,
                 encoding="utf-8",
                 errors="replace",
+                **worker_popen_kwargs(),
             )
             for line in self.process.stdout:
                 self.after(0, self.append_log, line.rstrip())
@@ -734,14 +690,29 @@ class TextScannerApp(tk.Tk):
         self.last_csv = output.with_suffix(".csv")
         self.last_jsonl = output.with_suffix(".jsonl")
         self.last_summary = output.with_suffix(".summary.md")
-        if code == 0 and self.last_jsonl.exists():
+        success = code == 0 and self.last_jsonl.exists()
+        self.workflow.mark_scan_finished(success)
+        if success:
             self.translate_jsonl.set(str(self.last_jsonl))
-        if code == 0:
+        if success:
             self.status.set("Varredura concluida. Relatorios prontos para revisar.")
+            self._recommend_next_stage(Stage.TRANSLATE)
+            self._set_stage_feedback(
+                Stage.PREPARE,
+                "success",
+                "Varredura concluída",
+                "Os relatórios estão prontos. A etapa Traduzir está pronta quando você quiser continuar.",
+            )
         else:
+            self.recommended_stage = None
             self.status.set(f"Varredura terminou com erro. Codigo: {code}")
-        self.run_button.configure(state="normal")
-        self.stop_button.configure(state="disabled")
+            self._set_stage_feedback(
+                Stage.PREPARE,
+                "error",
+                "Varredura não concluída",
+                "Verifique o log para os detalhes antes de tentar novamente.",
+            )
+        self._refresh_stage_navigation()
 
     def stop_scan(self):
         if self.process and self.process.poll() is None:
@@ -769,7 +740,7 @@ class TextScannerApp(tk.Tk):
         return Path(self.game_path.get().strip()).name or "jogo"
 
     def _translated_dir(self):
-        return TRANSLATED_BASE / self._game_name()
+        return TRANSLATED_BASE / game_workspace_name(self.game_path.get().strip())
 
     def build_translation_command(self):
         scan = self.translate_jsonl.get().strip()
@@ -781,9 +752,9 @@ class TextScannerApp(tk.Tk):
         if not game:
             raise ValueError("Escolha a pasta do jogo antes de traduzir.")
 
-        command = [
-            sys.executable,
-            str(TRANSLATE_SCRIPT_PATH),
+        command = build_worker_command(
+            "translate_game_text",
+            TRANSLATE_SCRIPT_PATH,
             scan,
             "--out-dir",
             str(self._translated_dir()),
@@ -791,7 +762,7 @@ class TextScannerApp(tk.Tk):
             self.engine_url.get().strip() or DEFAULT_ENGINE_URL,
             "--engine-model",
             self.engine_model.get().strip() or DEFAULT_ENGINE_MODEL,
-        ]
+        )
         if self.use_tm.get():
             command.extend(["--tm", str(TM_DIR / ("%s.jsonl" % self._game_name()))])
         return command
@@ -807,12 +778,23 @@ class TextScannerApp(tk.Tk):
             return
 
         self.translated_dir = None
+        self.recommended_stage = None
+        self._retry_available = False
+        self._preview_loaded = False
+        self._refresh_apply_summary()
+        self.workflow.mark_translation_started()
         self.append_log("--- Traducao ---")
         self._start_panel_command(
             command,
             self._finish_translation,
             "Traducao em andamento...",
             with_progress=True,
+        )
+        self._set_stage_feedback(
+            Stage.TRANSLATE,
+            "info",
+            "Tradução em andamento",
+            "O progresso e o log estão sendo atualizados nesta janela.",
         )
 
     def _panel_busy(self):
@@ -821,13 +803,10 @@ class TextScannerApp(tk.Tk):
     def _start_panel_command(self, command, on_finish, busy_label, with_progress):
         self.append_log("> " + self._format_command(command))
         self.status.set(busy_label)
-        self.translate_button.configure(state="disabled")
-        self.apply_button.configure(state="disabled")
-        self.restore_button.configure(state="disabled")
-        self.retry_button.configure(state="disabled")
-        self.translate_stop_button.configure(state="normal" if with_progress else "disabled")
+        self._panel_command_running = True
+        self._panel_command_with_progress = with_progress
+        self._refresh_stage_navigation()
         self._progress_total = None
-        self._preview_loaded = False
         self._eta_history = []
         if with_progress:
             self.progress.configure(value=0)
@@ -852,6 +831,7 @@ class TextScannerApp(tk.Tk):
                 encoding="utf-8",
                 errors="replace",
                 env=env,
+                **worker_popen_kwargs(),
             )
             for line in self.translate_process.stdout:
                 text = line.rstrip()
@@ -871,11 +851,9 @@ class TextScannerApp(tk.Tk):
         try:
             on_finish(code, output_lines)
         finally:
-            self.translate_button.configure(state="normal")
-            self.translate_stop_button.configure(state="disabled")
-            self.restore_button.configure(state="normal")
-            if self._preview_loaded:
-                self.apply_button.configure(state="normal")
+            self._panel_command_running = False
+            self._panel_command_with_progress = False
+            self._refresh_stage_navigation()
 
     def _observe_progress_line(self, text):
         match = PROGRESS_RE.match(text.strip())
@@ -896,15 +874,37 @@ class TextScannerApp(tk.Tk):
 
     def _finish_translation(self, code, output_lines):
         out_dir = self._translated_dir()
+        csv_path = out_dir / REPORT_CSV_NAME
+        has_review = csv_path.is_file()
+        self.workflow.mark_translation_finished(code == 0, has_review)
         if code != 0:
             message = "Traducao terminou com erro. Codigo: %s" % code
             self.translate_status_text.set(message)
             self.status.set(message + " Verifique o log.")
+            self._set_stage_feedback(
+                Stage.TRANSLATE,
+                "error",
+                "Tradução não concluída",
+                "Verifique o log para os detalhes antes de tentar novamente.",
+            )
+            self._refresh_stage_navigation()
+            return
+        if not has_review:
+            self.translate_status_text.set("Tradução concluída sem relatório de revisão.")
+            self.status.set("Tradução concluída, mas o relatório de revisão não foi encontrado.")
+            self._set_stage_feedback(
+                Stage.TRANSLATE,
+                "warning",
+                "Relatório de revisão ausente",
+                "Verifique o log e gere a tradução novamente para liberar a etapa Revisar.",
+            )
+            self._refresh_stage_navigation()
             return
         self.translated_dir = out_dir
+        self._refresh_apply_summary()
         if self._progress_total is not None:
             self.progress.configure(value=self._progress_total)
-        self._populate_preview_tree(out_dir / REPORT_CSV_NAME)
+        self._populate_preview_tree(csv_path)
         model_name = self.engine_model.get().strip() or DEFAULT_ENGINE_MODEL
         total = self._progress_total or 0
         eta_str = estimate_eta(self._eta_history, total, total)
@@ -913,16 +913,17 @@ class TextScannerApp(tk.Tk):
             parts.append(eta_str)
         self.translate_status_text.set(" | ".join(parts))
         self.status.set("Traducao concluida. Revise o resumo e use Aplicar no jogo quando desejar.")
-        counts = count_report_statuses(out_dir / REPORT_CSV_NAME)
+        counts = self._count_report_statuses(csv_path)
         retryable = counts.get("needs_review", 0) + counts.get("failed", 0)
-        self.retry_button.configure(state="normal" if retryable > 0 else "disabled")
-        summary = "\n".join("- %s: %d" % (name, counts.get(name, 0)) for name in STATUS_ORDER)
-        messagebox.showinfo(
-            "Traducao concluida",
-            "Resumo por status:\n%s\n\nRelatorio: %s\n\nO botao \"Aplicar no jogo\" foi habilitado."
-            % (summary, out_dir / REPORT_CSV_NAME),
-            parent=self,
+        self._retry_available = retryable > 0
+        self._recommend_next_stage(Stage.REVIEW)
+        self._set_stage_feedback(
+            Stage.TRANSLATE,
+            "success",
+            "Tradução concluída",
+            "O relatório foi carregado. A etapa Revisar está pronta; use Aplicar apenas após a sua conferência.",
         )
+        self._refresh_stage_navigation()
 
     @staticmethod
     def _count_report_statuses(csv_path):
@@ -966,6 +967,21 @@ class TextScannerApp(tk.Tk):
             )
             return
 
+        try:
+            command = build_worker_command(
+                "translate_game_text",
+                TRANSLATE_SCRIPT_PATH,
+                "apply",
+                "--translated-dir",
+                str(translated_dir),
+                "--game-root",
+                game_root,
+                "--i-approve-write-game-files",
+            )
+        except ValueError as exc:
+            messagebox.showwarning("Worker indisponivel", str(exc), parent=self)
+            return
+
         messagebox.showinfo(
             "Aplicar traducoes",
             "Destino: %s\nOrigem: %s\nArquivos que serao substituidos: %d"
@@ -981,22 +997,20 @@ class TextScannerApp(tk.Tk):
             return
 
         manifest_path = translated_dir / MANIFEST_NAME
-        command = [
-            sys.executable,
-            str(TRANSLATE_SCRIPT_PATH),
-            "apply",
-            "--translated-dir",
-            str(translated_dir),
-            "--game-root",
-            game_root,
-            "--i-approve-write-game-files",
-        ]
+        self.recommended_stage = None
+        self.workflow.mark_apply_started()
         self.append_log("--- Aplicar no jogo ---")
         self._start_panel_command(
             command,
             lambda code, lines: self._finish_apply(code, lines, manifest_path),
             "Aplicando traducoes no jogo...",
             with_progress=False,
+        )
+        self._set_stage_feedback(
+            Stage.APPLY,
+            "info",
+            "Aplicação em andamento",
+            "Os arquivos do jogo serão alterados somente após a confirmação já realizada.",
         )
 
     @staticmethod
@@ -1016,12 +1030,18 @@ class TextScannerApp(tk.Tk):
         outcome = classify_apply_result(code, applied_count)
         applied_line = next((line for line in output_lines if line.startswith("Aplicados:")), "")
         self.append_log("Manifesto de aplicacao: %s" % manifest_path)
+        self.workflow.mark_apply_finished(
+            outcome == "success",
+            warning=outcome in {"warning", "no_approval"},
+        )
         if outcome == "success":
             self.status.set("Traducao aplicada no jogo. Backups .bak registrados no manifesto.")
-            messagebox.showinfo(
-                "Aplicacao concluida",
-                "%s\n\nManifesto: %s" % (applied_line or "Arquivos aplicados no jogo.", manifest_path),
-                parent=self,
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "success",
+                "Aplicação concluída",
+                "%s Manifesto: %s. A restauração de backups permanece disponível se necessário."
+                % (applied_line or "Arquivos aplicados no jogo.", manifest_path),
             )
         elif outcome == "warning":
             # Exit 0 nao garante escrita: com N==0 nada mudou no jogo
@@ -1040,12 +1060,24 @@ class TextScannerApp(tk.Tk):
                 % (detail, manifest_path),
                 parent=self,
             )
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "warning",
+                "Nenhum arquivo foi aplicado",
+                "Verifique o log e o manifesto antes de uma nova tentativa.",
+            )
         elif outcome == "no_approval":
             self.status.set("Aplicacao sem aprovacao. Nada foi gravado.")
             messagebox.showwarning(
                 "Aplicacao interrompida",
                 "O CLI saiu com codigo 3 (sem aprovacao). Nada foi gravado.",
                 parent=self,
+            )
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "warning",
+                "Aplicação interrompida",
+                "Nenhum arquivo foi gravado. Confirme a operação para tentar novamente.",
             )
         else:
             self.status.set("Aplicacao terminou com erro. Codigo: %s" % code)
@@ -1054,21 +1086,34 @@ class TextScannerApp(tk.Tk):
                 "%s\nCodigo de saida: %s\nVerifique o log para detalhes." % (applied_line, code),
                 parent=self,
             )
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "error",
+                "Falha na aplicação",
+                "Verifique o log para os detalhes antes de tentar novamente.",
+            )
+        self._refresh_stage_navigation()
 
     def _find_latest_manifest(self):
-        base = TRANSLATED_BASE
-        if not base.is_dir():
+        game_root = self.game_path.get().strip()
+        if not game_root or not Path(game_root).is_dir():
             return None
-        direct = base / self._game_name() / MANIFEST_NAME
-        if direct.is_file():
-            return direct
-        try:
-            candidates = [path for path in base.glob("*/%s" % MANIFEST_NAME) if path.is_file()]
-        except OSError:
-            return None
-        if not candidates:
-            return None
-        return max(candidates, key=lambda path: path.stat().st_mtime)
+        candidates = []
+        for directory in (
+            self.translated_dir,
+            self._translated_dir(),
+            # Compatibilidade conservadora: apenas o local legado do nome
+            # atual, e somente se os .bak pertencerem a este exato jogo.
+            TRANSLATED_BASE / self._game_name(),
+        ):
+            if directory is not None:
+                candidate = Path(directory) / MANIFEST_NAME
+                if candidate not in candidates:
+                    candidates.append(candidate)
+        for candidate in candidates:
+            if candidate.is_file() and manifest_matches_game_root(candidate, game_root):
+                return candidate
+        return None
 
     @staticmethod
     def _manifest_entry_count(manifest_path):
@@ -1109,13 +1154,17 @@ class TextScannerApp(tk.Tk):
             self.append_log("Restauracao cancelada pelo usuario.")
             return
 
-        command = [
-            sys.executable,
-            str(TRANSLATE_SCRIPT_PATH),
-            "restore",
-            "--manifest",
-            str(manifest_path),
-        ]
+        try:
+            command = build_worker_command(
+                "translate_game_text",
+                TRANSLATE_SCRIPT_PATH,
+                "restore",
+                "--manifest",
+                str(manifest_path),
+            )
+        except ValueError as exc:
+            messagebox.showwarning("Worker indisponivel", str(exc), parent=self)
+            return
         self.append_log("--- Restaurar backups ---")
         self._start_panel_command(
             command,
@@ -1128,10 +1177,11 @@ class TextScannerApp(tk.Tk):
         restored_line = next((line for line in output_lines if line.startswith("Restaurados:")), "")
         if code == 0:
             self.status.set("Backups restaurados com sucesso.")
-            messagebox.showinfo(
-                "Restauracao concluida",
-                "%s\n\nManifesto: %s" % (restored_line or "Arquivos originais recuperados.", manifest_path),
-                parent=self,
+            self._set_stage_feedback(
+                Stage.APPLY,
+                "success",
+                "Restauração concluída",
+                "%s Manifesto: %s" % (restored_line or "Arquivos originais recuperados.", manifest_path),
             )
         else:
             self.status.set("Restauracao terminou com erro. Codigo: %s" % code)
@@ -1223,30 +1273,44 @@ class TextScannerApp(tk.Tk):
             messagebox.showinfo("Nada para retraduzir", "Nenhum item com status needs_review ou failed.", parent=self)
             return
 
-        command = [
-            sys.executable,
-            str(TRANSLATE_SCRIPT_PATH),
-            "retry",
-            "--scan",
-            scan,
-            "--out-dir",
-            str(out_dir),
-            "--statuses",
-            "needs_review,failed",
-            "--force-engine",
-            "--engine-url",
-            self.engine_url.get().strip() or DEFAULT_ENGINE_URL,
-            "--engine-model",
-            self.engine_model.get().strip() or DEFAULT_ENGINE_MODEL,
-        ]
+        try:
+            command = build_worker_command(
+                "translate_game_text",
+                TRANSLATE_SCRIPT_PATH,
+                "retry",
+                "--scan",
+                scan,
+                "--out-dir",
+                str(out_dir),
+                "--statuses",
+                "needs_review,failed",
+                "--force-engine",
+                "--engine-url",
+                self.engine_url.get().strip() or DEFAULT_ENGINE_URL,
+                "--engine-model",
+                self.engine_model.get().strip() or DEFAULT_ENGINE_MODEL,
+            )
+        except ValueError as exc:
+            messagebox.showwarning("Worker indisponivel", str(exc), parent=self)
+            return
         if self.use_tm.get():
-            command.extend(["--tm", str(TM_DIR / ("%s.jsonl" % self._game_name()))])
+            command.extend(
+                ["--tm", str(TM_DIR / ("%s.jsonl" % game_workspace_name(game)))]
+            )
+        self.recommended_stage = None
+        self.workflow.mark_retry_started()
         self.append_log("--- Retraduzir falhas ---")
         self._start_panel_command(
             command,
             self._finish_retry,
             "Retraduzindo %d item(s)..." % retryable,
             with_progress=True,
+        )
+        self._set_stage_feedback(
+            Stage.REVIEW,
+            "info",
+            "Retradução em andamento",
+            "Os itens pendentes serão atualizados no relatório de revisão.",
         )
 
     def _finish_retry(self, code, output_lines):
@@ -1255,14 +1319,47 @@ class TextScannerApp(tk.Tk):
         csv_path = out_dir / REPORT_CSV_NAME
         if code == 0 and csv_path.is_file():
             self._populate_preview_tree(csv_path)
-            counts = count_report_statuses(csv_path)
+            counts = self._count_report_statuses(csv_path)
             retryable = counts.get("needs_review", 0) + counts.get("failed", 0)
-            self.retry_button.configure(state="normal" if retryable > 0 else "disabled")
+            self._retry_available = retryable > 0
+            self.workflow.mark_retry_finished(success=True, has_remaining=retryable > 0)
             self.status.set("Retraducao concluida. %d item(s) restante(s)." % retryable)
+            if retryable:
+                self._recommend_next_stage(Stage.REVIEW)
+                self._set_stage_feedback(
+                    Stage.REVIEW,
+                    "warning",
+                    "Ainda há itens para revisar",
+                    "%d item(s) continuam pendentes. Revise o relatório ou execute outra retradução." % retryable,
+                )
+            else:
+                self._recommend_next_stage(Stage.APPLY)
+                self._set_stage_feedback(
+                    Stage.REVIEW,
+                    "success",
+                    "Retradução concluída",
+                    "Não há itens pendentes. A etapa Aplicar está pronta quando você quiser continuar.",
+                )
         elif code == 0:
             self.status.set("Retraducao concluida.")
+            self._retry_available = False
+            self.workflow.mark_retry_finished(success=True, has_remaining=True)
+            self._set_stage_feedback(
+                Stage.REVIEW,
+                "warning",
+                "Relatório de revisão ausente",
+                "Verifique o log antes de aplicar ou tentar uma nova retradução.",
+            )
         else:
             self.status.set("Retraducao terminou com erro. Codigo: %s" % code)
+            self.workflow.mark_retry_finished(success=False, has_remaining=True)
+            self._set_stage_feedback(
+                Stage.REVIEW,
+                "error",
+                "Retradução não concluída",
+                "Verifique o log para os detalhes antes de tentar novamente.",
+            )
+        self._refresh_stage_navigation()
 
 
 if __name__ == "__main__":

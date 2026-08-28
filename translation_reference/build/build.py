@@ -28,9 +28,10 @@ BUILD_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BUILD_DIR.parents[1]
 SPECS = {
     "app": BUILD_DIR / "build_app.spec",
+    "extract": BUILD_DIR / "build_extract.spec",
     "cli": BUILD_DIR / "build_cli.spec",
 }
-TARGETS_VALIDOS = tuple(SPECS.keys()) + ("all",)
+TARGETS_VALIDOS = ("app", "cli", "all")
 
 
 # --- Funcoes auxiliares ---------------------------------------------------
@@ -109,7 +110,7 @@ def main(argv=None):
         "--target",
         choices=TARGETS_VALIDOS,
         required=True,
-        help="Alvo a construir: app (GUI), cli (worker) ou all (ambos)",
+        help="Alvo a construir: app (GUI + workers), cli (worker de traducao) ou all (GUI + workers)",
     )
 
     args = parser.parse_args(argv)
@@ -119,8 +120,10 @@ def main(argv=None):
         sys.exit(1)
 
     # Definir lista de alvos
-    if args.target == "all":
-        alvos = ["app", "cli"]
+    if args.target in {"app", "all"}:
+        # A GUI congelada delega para os workers irmaos em dist/.  Sempre
+        # construa a distribuicao completa em uma unica limpeza.
+        alvos = ["app", "extract", "cli"]
     else:
         alvos = [args.target]
 
