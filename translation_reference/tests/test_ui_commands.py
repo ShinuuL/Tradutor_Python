@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Caracterização dos comandos preservados pela migração da interface."""
 
+import json
 import os
 import platform
 import sys
@@ -28,6 +29,8 @@ from text_scanner_app import (  # noqa: E402
     TRANSLATE_SCRIPT_PATH,
     TextScannerApp,
     build_worker_command,
+    game_workspace_name,
+    manifest_matches_game_root,
     worker_popen_kwargs,
 )
 from ui_state import Stage, StageStatus  # noqa: E402
@@ -41,6 +44,39 @@ class _Value:
 
     def get(self):
         return self.value
+
+
+class GameWorkspaceSafetyTests(unittest.TestCase):
+    """Relatorios e manifests nunca podem ser compartilhados entre jogos."""
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory(dir=HERE)
+        self.addCleanup(self.temporary.cleanup)
+        self.first_game = Path(self.temporary.name) / "first" / "Game"
+        self.second_game = Path(self.temporary.name) / "second" / "Game"
+        self.first_game.mkdir(parents=True)
+        self.second_game.mkdir(parents=True)
+
+    def test_same_folder_name_at_different_paths_gets_distinct_workspace(self):
+        self.assertNotEqual(
+            game_workspace_name(self.first_game),
+            game_workspace_name(self.second_game),
+        )
+
+    def test_manifest_for_one_game_is_rejected_for_another_same_named_game(self):
+        target = self.first_game / "data" / "Actors.json"
+        target.parent.mkdir()
+        target.write_text("{}", encoding="utf-8")
+        backup = Path(str(target) + ".bak")
+        backup.write_text("{}", encoding="utf-8")
+        manifest = Path(self.temporary.name) / MANIFEST_NAME
+        manifest.write_text(
+            json.dumps({"entries": [{"file": "data/Actors.json", "bak": str(backup), "sha256_before": "x"}]}),
+            encoding="utf-8",
+        )
+
+        self.assertTrue(manifest_matches_game_root(manifest, self.first_game))
+        self.assertFalse(manifest_matches_game_root(manifest, self.second_game))
 
 
 class WorkerPopenOptionTests(unittest.TestCase):

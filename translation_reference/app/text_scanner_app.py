@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import json
 import os
 import re
@@ -29,6 +30,55 @@ NON_GAME_FILES = frozenset({"translation_report.csv", "translation_report.md", M
 STATUS_ORDER = ("tm_hit", "llm", "needs_review", "failed")
 PROGRESS_RE = re.compile(r"^PROGRESS\s+(\d+)\s*/\s*(\d+)\s*$")
 APPLIED_COUNT_RE = re.compile(r"^Aplicados:\s*(\d+)")
+
+
+def canonical_game_root(game_root):
+    """Return the stable Windows-safe identity used for a selected game."""
+    try:
+        return os.path.normcase(str(Path(game_root).resolve()))
+    except OSError:
+        return os.path.normcase(os.path.abspath(str(game_root)))
+
+
+def game_workspace_name(game_root):
+    """Give each game path a collision-free, readable reports directory."""
+    canonical = canonical_game_root(game_root)
+    label = Path(canonical).name or "jogo"
+    digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:12]
+    return "%s--%s" % (label, digest)
+
+
+def _is_path_within(path, root):
+    try:
+        Path(path).resolve().relative_to(Path(root).resolve())
+        return True
+    except (OSError, ValueError):
+        return False
+
+
+def manifest_matches_game_root(manifest_path, game_root):
+    """Return whether a manifest is safe for the selected game root.
+
+    New manifests explicitly bind ``game_root``.  Legacy manifests have no
+    such field, so they are accepted only when every backup path resolves
+    inside the selected game.  This makes the migration conservative.
+    """
+    try:
+        doc = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeDecodeError):
+        return False
+    if not isinstance(doc, dict):
+        return False
+    declared_root = doc.get("game_root")
+    if declared_root:
+        return canonical_game_root(declared_root) == canonical_game_root(game_root)
+    entries = doc.get("entries") or []
+    backups = [str(entry.get("bak") or "") for entry in entries if isinstance(entry, dict)]
+    return bool(backups) and all(
+        backup.lower().endswith(".bak")
+        and _is_path_within(backup[: -len(".bak")], game_root)
+        for backup in backups
+    )
 
 
 def build_worker_command(worker_name, script_path, *arguments):
@@ -690,7 +740,7 @@ class TextScannerApp(tk.Tk):
         return Path(self.game_path.get().strip()).name or "jogo"
 
     def _translated_dir(self):
-        return TRANSLATED_BASE / self._game_name()
+        return TRANSLATED_BASE / game_workspace_name(self.game_path.get().strip())
 
     def build_translation_command(self):
         scan = self.translate_jsonl.get().strip()
@@ -1045,19 +1095,25 @@ class TextScannerApp(tk.Tk):
         self._refresh_stage_navigation()
 
     def _find_latest_manifest(self):
-        base = TRANSLATED_BASE
-        if not base.is_dir():
+        game_root = self.game_path.get().strip()
+        if not game_root or not Path(game_root).is_dir():
             return None
-        direct = base / self._game_name() / MANIFEST_NAME
-        if direct.is_file():
-            return direct
-        try:
-            candidates = [path for path in base.glob("*/%s" % MANIFEST_NAME) if path.is_file()]
-        except OSError:
-            return None
-        if not candidates:
-            return None
-        return max(candidates, key=lambda path: path.stat().st_mtime)
+        candidates = []
+        for directory in (
+            self.translated_dir,
+            self._translated_dir(),
+            # Compatibilidade conservadora: apenas o local legado do nome
+            # atual, e somente se os .bak pertencerem a este exato jogo.
+            TRANSLATED_BASE / self._game_name(),
+        ):
+            if directory is not None:
+                candidate = Path(directory) / MANIFEST_NAME
+                if candidate not in candidates:
+                    candidates.append(candidate)
+        for candidate in candidates:
+            if candidate.is_file() and manifest_matches_game_root(candidate, game_root):
+                return candidate
+        return None
 
     @staticmethod
     def _manifest_entry_count(manifest_path):
@@ -1238,7 +1294,9 @@ class TextScannerApp(tk.Tk):
             messagebox.showwarning("Worker indisponivel", str(exc), parent=self)
             return
         if self.use_tm.get():
-            command.extend(["--tm", str(TM_DIR / ("%s.jsonl" % self._game_name()))])
+            command.extend(
+                ["--tm", str(TM_DIR / ("%s.jsonl" % game_workspace_name(game)))]
+            )
         self.recommended_stage = None
         self.workflow.mark_retry_started()
         self.append_log("--- Retraduzir falhas ---")

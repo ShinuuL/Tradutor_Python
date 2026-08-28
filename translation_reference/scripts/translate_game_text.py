@@ -1034,6 +1034,14 @@ def cmd_apply(translated_dir, game_root, approve):
     old_entries = []
     migrated = False
     if old_doc is not None:
+        manifest_root = str(old_doc.get("game_root") or "")
+        if manifest_root and not _same_path(manifest_root, game_root):
+            print(
+                "ERRO: manifesto pertence a outra raiz de jogo: %s"
+                % manifest_root
+            )
+            print("Nada foi gravado.")
+            return 2
         # Migrador leve: manifesto antigo com entradas relativas/absolutas
         # duplicadas e normalizado+dedupado na carga; ``created`` e o bloco
         # ``restored`` permanecem intactos (o regravamento acontece junto da
@@ -1117,6 +1125,7 @@ def cmd_apply(translated_dir, game_root, approve):
         )
 
     doc = old_doc or {"created": _now_iso(), "entries": []}
+    doc["game_root"] = _canonical_path(game_root)
     doc["entries"] = old_entries + [
         {key: entry[key] for key in ("file", "bak", "sha256_before", "ts")}
         for entry in plan
