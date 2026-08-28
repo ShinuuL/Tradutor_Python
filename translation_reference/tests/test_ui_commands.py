@@ -28,6 +28,7 @@ from text_scanner_app import (  # noqa: E402
     TRANSLATE_SCRIPT_PATH,
     TextScannerApp,
     build_worker_command,
+    worker_popen_kwargs,
 )
 from ui_state import Stage, StageStatus  # noqa: E402
 
@@ -40,6 +41,91 @@ class _Value:
 
     def get(self):
         return self.value
+
+
+class WorkerPopenOptionTests(unittest.TestCase):
+    """GUI worker launches stay invisible on Windows without losing portability."""
+
+    class _Process:
+        stdout = ("worker output\n",)
+
+        def wait(self):
+            return 0
+
+    @staticmethod
+    def _scan_app():
+        app = TextScannerApp.__new__(TextScannerApp)
+        app.process = None
+        app.after = mock.Mock()
+        app.append_log = mock.Mock()
+        app._finish_run = mock.Mock()
+        return app
+
+    @staticmethod
+    def _panel_app():
+        app = TextScannerApp.__new__(TextScannerApp)
+        app.translate_process = None
+        app.after = mock.Mock()
+        app.append_log = mock.Mock()
+        app._collect_finish = mock.Mock()
+        return app
+
+    def test_windows_uses_create_no_window_when_available(self):
+        with (
+            mock.patch("text_scanner_app.os.name", "nt"),
+            mock.patch("text_scanner_app.subprocess.CREATE_NO_WINDOW", 0x08000000, create=True),
+        ):
+            self.assertEqual(worker_popen_kwargs(), {"creationflags": 0x08000000})
+
+    def test_non_windows_uses_no_windows_only_kwargs(self):
+        with mock.patch("text_scanner_app.os.name", "posix"):
+            self.assertEqual(worker_popen_kwargs(), {})
+
+    def test_scan_worker_passes_windows_creation_flag_to_popen(self):
+        app = self._scan_app()
+        process = self._Process()
+        with (
+            mock.patch("text_scanner_app.os.name", "nt"),
+            mock.patch("text_scanner_app.subprocess.CREATE_NO_WINDOW", 0x08000000, create=True),
+            mock.patch("text_scanner_app.subprocess.Popen", return_value=process) as popen,
+        ):
+            app._run_worker(["extract-worker"])
+
+        self.assertEqual(popen.call_args.kwargs["creationflags"], 0x08000000)
+
+    def test_panel_worker_passes_windows_creation_flag_to_popen(self):
+        app = self._panel_app()
+        process = self._Process()
+        with (
+            mock.patch("text_scanner_app.os.name", "nt"),
+            mock.patch("text_scanner_app.subprocess.CREATE_NO_WINDOW", 0x08000000, create=True),
+            mock.patch("text_scanner_app.subprocess.Popen", return_value=process) as popen,
+        ):
+            app._panel_worker(["translate-worker"], mock.Mock(), False)
+
+        self.assertEqual(popen.call_args.kwargs["creationflags"], 0x08000000)
+
+    def test_scan_worker_omits_windows_creation_flag_off_windows(self):
+        app = self._scan_app()
+        process = self._Process()
+        with (
+            mock.patch("text_scanner_app.os.name", "posix"),
+            mock.patch("text_scanner_app.subprocess.Popen", return_value=process) as popen,
+        ):
+            app._run_worker(["extract-worker"])
+
+        self.assertNotIn("creationflags", popen.call_args.kwargs)
+
+    def test_panel_worker_omits_windows_creation_flag_off_windows(self):
+        app = self._panel_app()
+        process = self._Process()
+        with (
+            mock.patch("text_scanner_app.os.name", "posix"),
+            mock.patch("text_scanner_app.subprocess.Popen", return_value=process) as popen,
+        ):
+            app._panel_worker(["translate-worker"], mock.Mock(), False)
+
+        self.assertNotIn("creationflags", popen.call_args.kwargs)
 
 
 class FrozenWorkerCommandTests(unittest.TestCase):

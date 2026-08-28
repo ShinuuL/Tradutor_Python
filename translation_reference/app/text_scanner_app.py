@@ -52,6 +52,13 @@ def build_worker_command(worker_name, script_path, *arguments):
     return [str(worker_executable), *map(str, arguments)]
 
 
+def worker_popen_kwargs():
+    """Return Windows-only process flags for workers launched by the GUI."""
+    if os.name == "nt" and hasattr(subprocess, "CREATE_NO_WINDOW"):
+        return {"creationflags": subprocess.CREATE_NO_WINDOW}
+    return {}
+
+
 def parse_applied_count(output_lines):
     """Extrai N da linha "Aplicados: N ..." do stdout do apply; None se ausente."""
     for line in output_lines or []:
@@ -616,6 +623,7 @@ class TextScannerApp(tk.Tk):
                 text=True,
                 encoding="utf-8",
                 errors="replace",
+                **worker_popen_kwargs(),
             )
             for line in self.process.stdout:
                 self.after(0, self.append_log, line.rstrip())
@@ -773,6 +781,7 @@ class TextScannerApp(tk.Tk):
                 encoding="utf-8",
                 errors="replace",
                 env=env,
+                **worker_popen_kwargs(),
             )
             for line in self.translate_process.stdout:
                 text = line.rstrip()
